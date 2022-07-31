@@ -6,5 +6,9 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "coverageDirectory": "./coverage-e2e"
+  "coverageDirectory": "./coverage-e2e",
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/../src/$1",
+    "^@Helper/(.*)$": "<rootDir>/../src/common/helper/$1"
+  }
 }

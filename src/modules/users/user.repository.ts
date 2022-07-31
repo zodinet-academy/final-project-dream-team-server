@@ -1,4 +1,4 @@
-import { Repository } from "src/common/repository";
+import { Repository } from "@/common/repository";
 import { User } from "./entities/user.entity";
 import { IUserRepository } from "./interfaces/user-repository.interface";
 export class UserRepository
