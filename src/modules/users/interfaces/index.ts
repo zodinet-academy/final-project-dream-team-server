@@ -1,2 +1,2 @@
-export * from "./user.interface";
+export * from "./user-entity.interface";
 export * from "./user-service.interface";

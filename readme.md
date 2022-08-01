@@ -17,3 +17,7 @@
 ## Branch
 
 Everything must be merge request into dev branch and carefully testing before takes it into main
+
+## Structure
+
+Ref: https://github.dev/NarHakobyan/awesome-nest-boilerplate
