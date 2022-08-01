@@ -53,16 +53,25 @@ export class OtpService implements IOtpService {
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
     const serviceSid = this.configService.get("TWILIO_MESSAGING_SERVICES_SID");
+    try {
+      const result = await this.twilioClient.verify.v2
+        .services(serviceSid)
+        .verificationChecks.create({
+          to: phone.number,
+          code: verificationCode,
+        });
 
-    const result = await this.twilioClient.verify.v2
-      .services(serviceSid)
-      .verificationChecks.create({
-        to: phone.number,
-        code: verificationCode,
-      });
-
-    if (!result.valid || result.status !== OtpStatus.APPROVED) {
-      throw new HttpException("Wrong code provided", HttpStatus.NOT_ACCEPTABLE);
+      if (!result.valid || result.status !== OtpStatus.APPROVED) {
+        throw new HttpException(
+          "Wrong code provided",
+          HttpStatus.NOT_ACCEPTABLE
+        );
+      }
+    } catch (error) {
+      throw new HttpException(
+        "Cannot find OTP for this phone",
+        HttpStatus.NOT_FOUND
+      );
     }
 
     return true;

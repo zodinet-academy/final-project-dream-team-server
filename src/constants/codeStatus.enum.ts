@@ -4,4 +4,5 @@ export enum CodeStatus {
   UnauthorizedException = 401,
   NotAcceptable = 406,
   InternalServerError = 500,
+  NotFound = 404,
 }
