@@ -1,10 +1,12 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { APPROVED, PENDING } from "src/constants";
+import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
+import { OtpStatus } from "src/constants";
 import { Twilio } from "twilio";
+import { IOtpService } from "./interfaces/otp-service.interface";
 
 @Injectable()
-export class OtpService {
+export class OtpService implements IOtpService {
   private twilioClient: Twilio;
   constructor(private readonly configService: ConfigService) {
     const accountSid = configService.get("TWILIO_ACCOUNT_SID");
@@ -14,15 +16,26 @@ export class OtpService {
   }
 
   async sendSmsOtp(phoneNumber: string): Promise<boolean> {
+    const isValid = isValidPhoneNumber(phoneNumber, "VN");
+
+    if (!isValid)
+      throw new HttpException(
+        "Phone number is not in correct form.",
+        HttpStatus.NOT_ACCEPTABLE
+      );
+
+    const phone = parsePhoneNumber(phoneNumber, "VN");
+
     const serviceSid = this.configService.get("TWILIO_MESSAGING_SERVICES_SID");
 
     const response = await this.twilioClient.verify.v2
       .services(serviceSid)
-      .verifications.create({ to: phoneNumber, channel: "sms" });
+      .verifications.create({ to: phone.number, channel: "sms" });
 
-    if (response && response.status === PENDING) {
+    if (response && response.status === OtpStatus.PENDING) {
       return true;
     }
+
     return false;
   }
 
@@ -30,14 +43,26 @@ export class OtpService {
     phoneNumber: string,
     verificationCode: string
   ): Promise<boolean> {
+    const isValid = isValidPhoneNumber(phoneNumber, "VN");
+    if (!isValid)
+      throw new HttpException(
+        "Phone number is not in correct form.",
+        HttpStatus.NOT_ACCEPTABLE
+      );
+
+    const phone = parsePhoneNumber(phoneNumber, "VN");
+
     const serviceSid = this.configService.get("TWILIO_MESSAGING_SERVICES_SID");
 
     const result = await this.twilioClient.verify.v2
       .services(serviceSid)
-      .verificationChecks.create({ to: phoneNumber, code: verificationCode });
+      .verificationChecks.create({
+        to: phone.number,
+        code: verificationCode,
+      });
 
-    if (!result.valid || result.status !== APPROVED) {
-      throw new BadRequestException("Wrong code provided");
+    if (!result.valid || result.status !== OtpStatus.APPROVED) {
+      throw new HttpException("Wrong code provided", HttpStatus.NOT_ACCEPTABLE);
     }
 
     return true;

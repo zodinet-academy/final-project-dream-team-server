@@ -1,2 +1,3 @@
 export * from "./gender.enum";
-export * from "./otp-status-respone";
+export * from "./otpStatus.enum";
+export * from "./codeStatus.enum";
