@@ -1,5 +1,5 @@
-import { User } from "../entities/user.entity";
+import { UserEntity } from "../entities/user.entity";
 
 export interface IUserService {
-  findAll(): Promise<Array<User>>;
+  findAll(): Promise<Array<UserEntity>>;
 }
