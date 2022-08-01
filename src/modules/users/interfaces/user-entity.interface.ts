@@ -5,6 +5,7 @@ export interface IUserEntity {
   avatar: string;
   nickname: string;
   fullname: string;
+  email: string;
   phone: string;
   gender: GenderType;
   is_block: boolean;
