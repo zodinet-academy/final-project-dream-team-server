@@ -11,9 +11,9 @@ import {
 import { DefaultEntity } from "../../../common/entity";
 import { GenderType } from "../../../constants";
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
-@Unique(["phone"])
+@Unique(["phone", "email"])
 export class UserEntity extends DefaultEntity implements IUserEntity {
-  @Column({ type: "varchar", nullable: false })
+  @Column({ type: "varchar", nullable: true })
   @AutoMap()
   avatar: string;
 
@@ -26,6 +26,11 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   @IsNotEmpty()
   fullname: string;
+
+  @Column({ type: "varchar", length: 100 })
+  @AutoMap()
+  @IsNotEmpty()
+  email: string;
 
   @Column({ type: "varchar", length: 50 })
   @AutoMap()
