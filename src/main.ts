@@ -8,8 +8,8 @@ async function bootstrap() {
   const logger = app.get(Logger);
 
   await app
-    .listen(3000)
-    .then(() => logger.log("Listening on port 3000", "Bootstrap"));
+    .listen(5500)
+    .then(() => logger.log("Listening on port 5500", "Bootstrap"));
 }
 
 bootstrap();
