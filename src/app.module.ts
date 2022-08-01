@@ -9,7 +9,7 @@ import { AuthModule } from "./modules/auth/auth.module";
 @Module({
   providers: [Logger],
   imports: [
-    UsersModule,
+    // UsersModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,

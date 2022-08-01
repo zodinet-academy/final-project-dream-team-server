@@ -1,5 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { hashPassword } from "src/common/helper/hash.helper";
+import { Injectable } from "@nestjs/common";
 import { ExistedException } from "src/exceptions/existed.exception";
 import { Repository } from "typeorm";
 import { SignUpDto } from "./dto";
@@ -8,19 +7,15 @@ import { AuthEntity } from "./entities/auth.entity";
 import { InjectMapper } from "@automapper/nestjs";
 import { Mapper } from "@automapper/core";
 import { InjectRepository } from "@nestjs/typeorm";
-import { ConfigService } from "@nestjs/config";
-import { UsersService } from "../users/users.service";
+import { hashPassword } from "src/common/helper/hash.helper";
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(UsersService) private userService: UsersService,
     @InjectMapper() private mapper: Mapper,
     @InjectRepository(AuthEntity)
     private repository: Repository<AuthEntity>
   ) {}
-  // private repository: Repository<AuthEntity>,
-  // @InjectMapper() private readonly mapper: Mapper
 
   async signupUser(dto: SignUpDto): Promise<AuthEntity> {
     try {

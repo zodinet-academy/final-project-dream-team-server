@@ -1,9 +1,12 @@
-import { Repository } from "src/common/repository";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { UserEntity } from "./entities/user.entity";
 import { IUserRepository } from "./interfaces/user-repository.interface";
-export class UserRepository
-  extends Repository<UserEntity>
-  implements IUserRepository {
+export class UserRepository implements IUserRepository {
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepo: Repository<UserEntity>
+  ) {}
   getUserByFullName(fullname: string): Promise<UserEntity> {
     console.log(fullname);
     throw new Error("Method not implemented.");
