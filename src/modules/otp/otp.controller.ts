@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, HttpException, Post } from "@nestjs/common";
 import {
   ApiInternalServerErrorResponse,
   ApiNotAcceptableResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
 } from "@nestjs/swagger";
@@ -52,6 +53,7 @@ export class OtpControler {
   @Post("verify-otp")
   @ApiOkResponse({ description: "Verify otp success." })
   @ApiNotAcceptableResponse({ description: "Wrong otp provided." })
+  @ApiNotFoundResponse({ description: "Cannot find otp for this phone." })
   async verifyOtp(@Body() data: VerifyOtpDto) {
     try {
       await this.otpService.confirmOtp(data.phone, data.code);
@@ -62,7 +64,7 @@ export class OtpControler {
       ) as ResponseDto<string>;
     } catch (error) {
       return getDataError(
-        CodeStatus.NotAcceptable,
+        error.status,
         "",
         error.message,
         ""
