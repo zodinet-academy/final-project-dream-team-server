@@ -54,6 +54,7 @@
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
     "swagger-ui-express": "^4.1.6",
+    "twilio": "^3.80.0",
     "typeorm": "^0.2.31"
   },
   "devDependencies": {
