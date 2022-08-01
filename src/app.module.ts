@@ -1,5 +1,5 @@
 import { Logger, Module } from "@nestjs/common";
-import { UsersModule } from "@modules/users/users.module";
+import { UsersModule } from "./modules/users/users.module";
 
 @Module({
   providers: [Logger],
