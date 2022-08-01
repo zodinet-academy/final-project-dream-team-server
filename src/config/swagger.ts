@@ -11,5 +11,5 @@ export const initSwagger = (app: INestApplication) => {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup("document", app, document);
+  SwaggerModule.setup("swagger", app, document);
 };
