@@ -7,8 +7,14 @@ import GoogleVerificationDto from "./dto/google-verification.dto";
 @ApiTags("authentication")
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
   @Post("verify-google")
   async verifyGoogle(@Body() googleVerificationDto: GoogleVerificationDto) {
     return this.authService.verifyGoogle(googleVerificationDto.token);
   }
+
+  // @Post("signup")
+  // signupUser(@Body() dto: CreateUserDto) {
+  //   return this.usersService.signUp(dto);
+  // }
 }

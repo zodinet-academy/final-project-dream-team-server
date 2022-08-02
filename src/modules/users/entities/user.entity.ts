@@ -1,6 +1,6 @@
 import { IUserEntity } from "./../interfaces/user-entity.interface";
 import { AutoMap } from "@automapper/classes";
-import { IsEnum, IsNotEmpty } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 import {
   Column,
   DeleteDateColumn,

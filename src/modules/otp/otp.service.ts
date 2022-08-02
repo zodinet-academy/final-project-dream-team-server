@@ -1,16 +1,16 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
-import { OtpStatus } from "src/constants";
 import { Twilio } from "twilio";
+import { OtpStatus } from "../../constants/otpStatus.enum";
 import { IOtpService } from "./interfaces/otp-service.interface";
 
 @Injectable()
 export class OtpService implements IOtpService {
   private twilioClient: Twilio;
   constructor(private readonly configService: ConfigService) {
-    const accountSid = configService.get("TWILIO_ACCOUNT_SID");
-    const authToken = configService.get("TWILIO_AUTH_TOKEN");
+    const accountSid = configService.get("TWILIO_ACCOUNT_SID") || "ACasbd";
+    const authToken = configService.get("TWILIO_AUTH_TOKEN") || "asbd";
 
     this.twilioClient = new Twilio(accountSid, authToken);
   }

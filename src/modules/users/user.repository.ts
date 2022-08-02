@@ -1,4 +1,5 @@
 import { EntityRepository, Repository } from "typeorm";
+import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { IUserRepository } from "./interfaces/user-repository.interface";
 
@@ -6,8 +7,8 @@ import { IUserRepository } from "./interfaces/user-repository.interface";
 export class UserRepository
   extends Repository<UserEntity>
   implements IUserRepository {
-  getUserByFullName(fullname: string): Promise<UserEntity> {
-    console.log(fullname);
+  findByCondition(condition: any): Promise<UserEntity> {
+    console.log(condition);
     throw new Error("Method not implemented.");
   }
   getById(id: number): Promise<UserEntity> {
@@ -15,6 +16,15 @@ export class UserRepository
     throw new Error("Method not implemented.");
   }
   getAll(): Promise<UserEntity[]> {
+    throw new Error("Method not implemented.");
+  }
+
+  getUserByFullName(fullname: string): Promise<UserEntity> {
+    console.log(fullname);
+    throw new Error("Method not implemented.");
+  }
+  signUp(signUpDto: CreateUserDto): Promise<UserEntity> {
+    console.log(signUpDto);
     throw new Error("Method not implemented.");
   }
 }

@@ -14,6 +14,7 @@ import databaseConfig from "./config/database.config";
   imports: [
     UsersModule,
     OtpModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
