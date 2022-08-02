@@ -1,35 +1,45 @@
-import { AutoMap } from "@automapper/classes";
+import { GenderType } from "./../../../constants/gender.enum";
+import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateUserDto {
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({
+    description: "email",
+    default: "zodinet@gmail.com",
+  })
   @IsEmail()
-  @AutoMap()
   email: string;
 
+  @ApiProperty({
+    description: "nickname",
+    default: "nickname",
+  })
   @IsString()
   @IsNotEmpty()
-  @AutoMap()
-  avatar: string;
+  nickname: string;
 
+  @ApiProperty({
+    description: "fullname",
+    default: "fullname",
+  })
   @IsString()
   @IsNotEmpty()
-  @AutoMap()
-  nickName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @AutoMap()
   fullName: string;
 
+  @ApiProperty({
+    description: "phone",
+    default: "0764079970",
+  })
   @IsString()
   @IsNotEmpty()
-  @AutoMap()
   phone: string;
 
+  @ApiProperty({
+    description: "gender",
+    enum: GenderType,
+    default: GenderType.FEMALE,
+  })
   @IsString()
   @IsNotEmpty()
-  @AutoMap()
-  gender: string;
+  gender: GenderType;
 }

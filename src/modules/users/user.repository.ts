@@ -16,10 +16,6 @@ export class UserRepository
     console.log(fullname);
     throw new Error("Method not implemented.");
   }
-  signUp(signUpDto: CreateUserDto): Promise<CreateUserDto> {
-    console.log(signUpDto);
-    throw new Error("Method not implemented.");
-  }
 
   getById(id: number): Promise<UserEntity> {
     console.log(id);
