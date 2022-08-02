@@ -12,7 +12,7 @@ export class UsersController {
   }
 
   @Post("signup")
-  signupUser(@Body() dto: CreateUserDto) {
+  signupUser(@Body() dto: CreateUserDto): Promise<CreateUserDto> {
     return this.usersService.signUp(dto);
   }
 }

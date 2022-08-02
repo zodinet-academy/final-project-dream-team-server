@@ -18,7 +18,7 @@ import { OtpModule } from "./modules/otp/otp.module";
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
-      envFilePath: `env/.env.${process.env.NODE_ENV || "local"}`, // .env.development
+      envFilePath: `env/.env.${process.env.NODE_ENV || "local"}`,
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .valid("local", "development", "production")
@@ -34,6 +34,7 @@ import { OtpModule } from "./modules/otp/otp.module";
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),
+    AuthModule,
   ],
 })
 export class AppModule {}

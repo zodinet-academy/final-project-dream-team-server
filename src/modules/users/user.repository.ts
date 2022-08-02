@@ -2,6 +2,7 @@ import { EntityRepository, Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { IUserRepository } from "./interfaces/user-repository.interface";
+
 @EntityRepository(UserEntity)
 export class UserRepository
   extends Repository<UserEntity>
@@ -15,7 +16,7 @@ export class UserRepository
     console.log(fullname);
     throw new Error("Method not implemented.");
   }
-  signUp(signUpDto: CreateUserDto): Promise<UserEntity> {
+  signUp(signUpDto: CreateUserDto): Promise<CreateUserDto> {
     console.log(signUpDto);
     throw new Error("Method not implemented.");
   }

@@ -1,12 +1,14 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { CreateUserDto } from "../users/dto/create-user.dto";
-import { UsersService } from "../users/users.service";
+import { ApiTags } from "@nestjs/swagger";
+import { AuthService } from "./auth.service";
+import GoogleVerificationDto from "./dto/google-verification.dto";
 
 @Controller("auth")
+@ApiTags("authentication")
 export class AuthController {
-  constructor(private readonly usersService: UsersService) {}
-  @Post("signup")
-  signupUser(@Body() dto: CreateUserDto) {
-    return this.usersService.signUp(dto);
+  constructor(private readonly authService: AuthService) {}
+  @Post("verify-google")
+  async verifyGoogle(@Body() googleVerificationDto: GoogleVerificationDto) {
+    return this.authService.verifyGoogle(googleVerificationDto.token);
   }
 }

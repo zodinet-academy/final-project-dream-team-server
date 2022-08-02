@@ -1,7 +1,9 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
-import { Injectable } from "@nestjs/common";
-import { v4 as uuidv4 } from "uuid";
+import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
 import { ExistedException } from "../../exceptions/existed.exception";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "./entities/user.entity";
@@ -11,8 +13,9 @@ import { UserRepository } from "./user.repository";
 @Injectable()
 export class UsersService implements IUserService {
   constructor(
-    @InjectMapper() private mapper: Mapper,
-    private repository: UserRepository
+    @InjectRepository(UserEntity)
+    private repository: Repository<UserEntity>,
+    @InjectMapper() private mapper: Mapper
   ) {}
   findAll(): Promise<UserEntity[]> {
     throw new Error("Method not implemented.");
@@ -26,21 +29,14 @@ export class UsersService implements IUserService {
       if (userExisted) {
         throw new ExistedException(dto.email);
       }
-
-      const uuid = uuidv4();
-
       const entity = this.mapper.map(dto, CreateUserDto, UserEntity);
+
       await this.mapper.mapAsync(
         await this.repository.save(entity),
         UserEntity,
         CreateUserDto
       );
-
-      await this.repository.save({
-        id: uuid,
-        ...entity,
-      });
-      return uuid;
+      return dto;
     } catch (error) {
       throw new Error(`Register error: ${error.message}.`);
     }
