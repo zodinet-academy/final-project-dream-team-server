@@ -7,12 +7,14 @@ import { classes } from "@automapper/classes";
 import { AuthModule } from "./modules/auth/auth.module";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import databaseConfig from "./config/database.config";
+import { OtpModule } from "./modules/otp/otp.module";
 
 @Module({
   providers: [Logger],
   imports: [
     UsersModule,
     AuthModule,
+    OtpModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
