@@ -1,5 +1,6 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { IUserRepository } from "./interfaces/user-repository.interface";
 export class UserRepository implements IUserRepository {
@@ -11,8 +12,8 @@ export class UserRepository implements IUserRepository {
     console.log(fullname);
     throw new Error("Method not implemented.");
   }
-  create(data: UserEntity): Promise<UserEntity> {
-    console.log(data);
+  signUp(signUpDto: CreateUserDto): Promise<UserEntity> {
+    console.log(signUpDto);
     throw new Error("Method not implemented.");
   }
   update(id: number, data: UserEntity): Promise<UserEntity> {

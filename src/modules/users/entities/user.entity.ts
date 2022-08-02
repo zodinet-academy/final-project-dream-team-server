@@ -1,6 +1,6 @@
 import { IUserEntity } from "./../interfaces/user-entity.interface";
 import { AutoMap } from "@automapper/classes";
-import { IsEnum, IsNotEmpty } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 import {
   Column,
   DeleteDateColumn,
@@ -13,6 +13,11 @@ import { GenderType } from "../../../constants";
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
 @Unique(["phone", "email"])
 export class UserEntity extends DefaultEntity implements IUserEntity {
+  @Column({ type: "varchar", length: 255, nullable: false })
+  @IsNotEmpty()
+  @IsString()
+  password: string;
+
   @Column({ type: "varchar", nullable: true })
   @AutoMap()
   avatar: string;
