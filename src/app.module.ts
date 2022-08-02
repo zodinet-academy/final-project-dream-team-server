@@ -6,6 +6,7 @@ import { AutomapperModule } from "@automapper/nestjs";
 import { classes } from "@automapper/classes";
 import { AuthModule } from "./modules/auth/auth.module";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
+import databaseConfig from "./config/database.config";
 
 @Module({
   providers: [Logger],
@@ -14,7 +15,8 @@ import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `env/.env.${process.env.NODE_ENV || "local"}`,
+      load: [databaseConfig],
+      envFilePath: `env/.env.${process.env.NODE_ENV || "local"}`, // .env.development
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .valid("local", "development", "production")

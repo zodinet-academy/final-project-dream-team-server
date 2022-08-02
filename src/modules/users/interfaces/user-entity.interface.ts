@@ -6,7 +6,6 @@ export interface IUserEntity {
   nickname: string;
   fullname: string;
   email: string;
-  password: string;
   phone: string;
   gender: GenderType;
   is_block: boolean;

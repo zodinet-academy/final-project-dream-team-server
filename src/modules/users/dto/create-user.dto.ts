@@ -11,11 +11,6 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @AutoMap()
-  password: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @AutoMap()
   avatar: string;
 
   @IsString()
