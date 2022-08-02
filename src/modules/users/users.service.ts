@@ -2,6 +2,7 @@ import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { Injectable } from "@nestjs/common";
 import { v4 as uuidv4 } from "uuid";
+import { ExistedException } from "../../exceptions/existed.exception";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { IUserService } from "./interfaces/user-service.interface";
@@ -18,13 +19,12 @@ export class UsersService implements IUserService {
   }
   async signUp(dto: CreateUserDto): Promise<CreateUserDto> {
     try {
-      const userExisted = await this.repository.findByCondition({
+      const userExisted = await this.repository.findOne({
         email: dto.email,
         phone: dto.phone,
       });
       if (userExisted) {
-        // throw new ExistedException(dto.email);
-        throw new Error("Not Found");
+        throw new ExistedException(dto.email);
       }
 
       const uuid = uuidv4();
