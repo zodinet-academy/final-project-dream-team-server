@@ -1,9 +1,9 @@
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { LoginTicket, OAuth2Client, TokenPayload } from "google-auth-library";
 import { getDataError } from "src/common/utils";
 import { getDataSuccess } from "../../common/utils";
-import { ConfigService } from "@nestjs/config";
-import { Injectable } from "@nestjs/common";
-import { OAuth2Client, LoginTicket, TokenPayload } from "google-auth-library";
-import { CodeStatus } from "src/constants";
+import { CodeStatus } from "../../constants/codeStatus.enum";
 import IGoogleResponse from "./interface/auth.interface";
 
 @Injectable()

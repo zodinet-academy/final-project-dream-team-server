@@ -1,4 +1,4 @@
-import { Body, Controller, HttpException, Post } from "@nestjs/common";
+import { Body, Controller, Post } from "@nestjs/common";
 import {
   ApiInternalServerErrorResponse,
   ApiNotAcceptableResponse,
@@ -6,9 +6,9 @@ import {
   ApiOkResponse,
   ApiTags,
 } from "@nestjs/swagger";
-import { ResponseDto } from "src/common/response.dto";
-import { getDataError, getDataSuccess } from "src/common/utils";
-import { CodeStatus } from "src/constants";
+import { ResponseDto } from "../../common/response.dto";
+import { getDataError, getDataSuccess } from "../../common/utils";
+import { CodeStatus } from "../../constants/codeStatus.enum";
 import { SendOtpDto, VerifyOtpDto } from "./dto";
 import { OtpService } from "./otp.service";
 

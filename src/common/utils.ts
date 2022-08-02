@@ -1,4 +1,4 @@
-import { CodeStatus } from "src/constants";
+import { CodeStatus } from "../constants/codeStatus.enum";
 
 /**
  * This function format data json
