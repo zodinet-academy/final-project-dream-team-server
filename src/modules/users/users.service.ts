@@ -1,14 +1,13 @@
-import { IUserService } from "./interfaces/user-service.interface";
-import { Injectable } from "@nestjs/common";
-import { UserEntity } from "./entities/user.entity";
-import { InjectMapper } from "@automapper/nestjs";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Mapper } from "@automapper/core";
-import { Repository } from "typeorm";
+import { InjectMapper } from "@automapper/nestjs";
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { hashPassword } from "src/common/helper/hash.helper";
 import { v4 as uuidv4 } from "uuid";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { ExistedException } from "src/exceptions/existed.exception";
-import { hashPassword } from "src/common/helper/hash.helper";
+import { UserEntity } from "./entities/user.entity";
+import { IUserRepository } from "./interfaces/user-repository.interface";
+import { IUserService } from "./interfaces/user-service.interface";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -19,36 +18,37 @@ export class UsersService implements IUserService {
   constructor(
     @InjectMapper() private mapper: Mapper,
     @InjectRepository(UserEntity)
-    private repository: Repository<UserEntity>
+    private repository: IUserRepository
   ) {}
 
   async signUp(dto: CreateUserDto): Promise<CreateUserDto> {
     try {
-      const userExisted = await this.repository.findOne({
+      const userExisted = await this.repository.findByCondition({
         where: {
           email: dto.email,
           phone: dto.phone,
         },
       });
       if (userExisted) {
-        throw new ExistedException(dto.email);
+        // throw new ExistedException(dto.email);
+        throw new Error("Not Found");
       }
 
       const uuid = uuidv4();
       const hash = hashPassword(dto.password);
 
       const entity = this.mapper.map(dto, CreateUserDto, UserEntity);
-      await this.mapper.mapAsync(
-        await this.repository.save(entity),
-        UserEntity,
-        CreateUserDto
-      );
+      // await this.mapper.mapAsync(
+      //   await this.repository.save(entity),
+      //   UserEntity,
+      //   CreateUserDto
+      // );
 
-      await this.repository.save({
-        id: uuid,
-        ...entity,
-        password: hash,
-      });
+      // await this.repository.save({
+      //   id: uuid,
+      //   ...entity,
+      //   password: hash,
+      // });
       return uuid;
     } catch (error) {
       throw new Error(`Register error: ${error.message}.`);

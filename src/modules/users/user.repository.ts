@@ -8,6 +8,15 @@ export class UserRepository implements IUserRepository {
     @InjectRepository(UserEntity)
     private readonly userRepo: Repository<UserEntity>
   ) {}
+  findByCondition(condition: any): Promise<UserEntity> {
+    console.log(condition);
+    throw new Error("Method not implemented.");
+  }
+  create(data: UserEntity): Promise<UserEntity> {
+    console.log(data);
+
+    throw new Error("Method not implemented.");
+  }
   getUserByFullName(fullname: string): Promise<UserEntity> {
     console.log(fullname);
     throw new Error("Method not implemented.");

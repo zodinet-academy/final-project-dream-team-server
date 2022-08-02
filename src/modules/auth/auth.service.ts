@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { ExistedException } from "src/exceptions/existed.exception";
 import { Repository } from "typeorm";
 import { v4 as uuidv4 } from "uuid";
 import { InjectMapper } from "@automapper/nestjs";

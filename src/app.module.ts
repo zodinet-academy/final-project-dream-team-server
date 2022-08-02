@@ -1,15 +1,16 @@
 import { Logger, Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UsersModule } from "./modules/users/users.module";
 import * as Joi from "@hapi/joi";
 import { AutomapperModule } from "@automapper/nestjs";
 import { classes } from "@automapper/classes";
 import { AuthModule } from "./modules/auth/auth.module";
+import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 
 @Module({
   providers: [Logger],
   imports: [
-    // UsersModule,
+    UsersModule,
     AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -19,6 +20,12 @@ import { AuthModule } from "./modules/auth/auth.module";
           .valid("local", "development", "production")
           .default("local"),
       }),
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) =>
+        config.get<TypeOrmModuleOptions>("database"),
+      inject: [ConfigService],
     }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
