@@ -23,8 +23,8 @@ export function getDataSuccess(code: CodeStatus, data: any, message = null) {
 export function getDataError(
   code: CodeStatus,
   error_code: string,
-  message = null,
-  data: any
+  data: any,
+  message = null
 ) {
   return {
     code,
