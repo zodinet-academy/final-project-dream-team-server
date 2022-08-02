@@ -14,7 +14,11 @@ export class OtpService implements IOtpService {
 
     this.twilioClient = new Twilio(accountSid, authToken);
   }
-
+  /**
+   *
+   * @param phoneNumber
+   * @returns
+   */
   async sendSmsOtp(phoneNumber: string): Promise<boolean> {
     const isValid = isValidPhoneNumber(phoneNumber, "VN");
 
