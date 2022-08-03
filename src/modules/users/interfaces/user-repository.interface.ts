@@ -1,4 +1,4 @@
-import { CommonRepository } from "../../../common/repository";
+import { CommonRepository } from "src/common/repository";
 import { UserEntity } from "../entities/user.entity";
 
 export interface IUserRepository extends CommonRepository<UserEntity> {

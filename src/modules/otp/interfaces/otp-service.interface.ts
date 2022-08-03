@@ -1,4 +1,6 @@
+import { ResponseDto } from "src/common/response.dto";
+
 export interface IOtpService {
-  sendSmsOtp(phone: string): Promise<boolean>;
-  confirmOtp(phone: string, code: string): Promise<boolean>;
+  sendSmsOtp(phone: string): Promise<ResponseDto<string>>;
+  confirmOtp(phone: string, code: string): Promise<ResponseDto<string>>;
 }

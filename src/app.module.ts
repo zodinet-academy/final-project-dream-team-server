@@ -14,6 +14,7 @@ import databaseConfig from "./config/database.config";
   imports: [
     UsersModule,
     OtpModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
@@ -33,7 +34,12 @@ import databaseConfig from "./config/database.config";
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),
-    AuthModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) =>
+        config.get<TypeOrmModuleOptions>("database"),
+      inject: [ConfigService],
+    }),
   ],
 })
 export class AppModule {}
