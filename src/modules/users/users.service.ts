@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { getDataError, getDataSuccess } from "src/common/utils";
+import { getDataError, getDataSuccess, signToken } from "src/common/utils";
 import { ResponseDto } from "../../common/response.dto";
 import { CodeStatus } from "../../constants";
 import {
@@ -58,7 +58,12 @@ export class UsersService implements IUserService {
       const result = await this.userRepository.save(
         this.userRepository.create(dto)
       );
-      return getDataSuccess(CodeStatus.Created, result);
+      const jwtToken = await signToken(result.id, result.phone);
+      return getDataSuccess(
+        CodeStatus.Success,
+        jwtToken,
+        "Login luon."
+      ) as ResponseDto<string>;
     } catch (error) {
       return getDataError(CodeStatus.InternalServerError, ERROR_UNKNOW, null);
     }
