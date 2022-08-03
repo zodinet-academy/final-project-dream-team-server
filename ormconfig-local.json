@@ -1,16 +1,16 @@
 {
-  "type": "postgres",
-  "host": "localhost",
-  "port": 5432,
-  "username": "postgres",
-  "password": "password",
-  "database": "tinder",
-  "synchronize": true,
-  "logging": false,
-  "entities": ["src/modules/**/entities/**.entity{.ts,.js}"],
-  "migrations": ["src/database/migrations/*{.ts,.js}"],
-  "cli": {
-    "migrationsDir": "src/database/migrations"
-  },
-  "factories": ["src/database/factories/*{.ts,.js}"]
+	"type": "postgres",
+	"host": "localhost",
+	"port": 5432,
+	"username": "postgres",
+	"password": "08012001",
+	"database": "tinder",
+	"synchronize": true,
+	"logging": false,
+	"entities": ["src/modules/**/entities/**.entity{.ts,.js}"],
+	"migrations": ["src/database/migrations/*{.ts,.js}"],
+	"cli": {
+		"migrationsDir": "src/database/migrations"
+	},
+	"factories": ["src/database/factories/*{.ts,.js}"]
 }
