@@ -11,7 +11,7 @@ export class UsersService implements IUserService {
     throw new Error("Method not implemented.");
   }
   async getUserByPhone(phone: string): Promise<UserEntity> {
-    const user = await this.userRepository.getUserByPhone(phone);
+    const user = await this.userRepository.findOne({ phone: phone });
     return user;
   }
 }
