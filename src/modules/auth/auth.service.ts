@@ -50,15 +50,23 @@ export class AuthService {
   ): Promise<ResponseDto<UserEntity | IGoogleResponse | string>> {
     try {
       const verifiedData = await this.verifyGoogle(token);
+
       if (verifiedData.code !== CodeStatus.Success) return verifiedData;
       const { email } = verifiedData.data as IGoogleResponse;
+
       const findData = await this.usersService.findByEmail(email);
-      if (findData.code !== CodeStatus.Success) return verifiedData;
-      const { phone } = findData.data as UserEntity;
-      await this.otpService.sendSmsOtp(phone);
+      if (findData.code !== CodeStatus.Success) {
+        verifiedData.data["isCreated"] = false;
+        return verifiedData;
+      }
+
+      // const { phone } = findData.data as UserEntity;
       return getDataSuccess(
         CodeStatus.Success,
-        await this.otpService.sendSmsOtp(phone),
+        {
+          isCreated: true,
+          // sentOtp: await this.otpService.sendSmsOtp(phone),
+        },
         ""
       );
     } catch (error) {
