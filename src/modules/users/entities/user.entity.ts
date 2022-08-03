@@ -1,5 +1,3 @@
-import { IUserEntity } from "./../interfaces/user-entity.interface";
-import { AutoMap } from "@automapper/classes";
 import { IsEnum, IsNotEmpty } from "class-validator";
 import {
   Column,
@@ -10,35 +8,30 @@ import {
 } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
 import { GenderType } from "../../../constants";
+import { IUserEntity } from "./../interfaces/user-entity.interface";
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
 @Unique(["phone", "email"])
 export class UserEntity extends DefaultEntity implements IUserEntity {
   @Column({ type: "varchar", nullable: true })
-  @AutoMap()
   avatar: string;
 
   @Column({ type: "varchar", length: 150 })
-  @AutoMap()
   @IsNotEmpty()
   nickname: string;
 
   @Column({ type: "varchar", length: 150 })
-  @AutoMap()
   @IsNotEmpty()
   fullname: string;
 
   @Column({ type: "varchar", length: 100 })
-  @AutoMap()
   @IsNotEmpty()
   email: string;
 
   @Column({ type: "varchar", length: 50 })
-  @AutoMap()
   @IsNotEmpty()
   phone: string;
 
   @Column({ type: "varchar", length: 10 })
-  @AutoMap()
   @IsEnum(GenderType)
   gender: GenderType;
 
@@ -51,12 +44,10 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   balance: number;
 
   @Column({ type: "float", default: 0 })
-  @AutoMap()
   @IsNotEmpty()
   lat: number;
 
   @Column({ type: "float", default: 0 })
-  @AutoMap()
   @IsNotEmpty()
   lng: number;
 

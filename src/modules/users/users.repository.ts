@@ -3,13 +3,17 @@ import { UserEntity } from "./entities/user.entity";
 import { IUserRepository } from "./interfaces/user-repository.interface";
 
 @EntityRepository(UserEntity)
-export class UserRepository
+export class UsersRepository
   extends Repository<UserEntity>
   implements IUserRepository {
-  getUserByFullName(fullname: string): Promise<UserEntity> {
-    console.log(fullname);
+  findByCondition(condition: any): Promise<UserEntity> {
     throw new Error("Method not implemented.");
   }
+
+  getUserByFullName(fullname: string): Promise<UserEntity> {
+    throw new Error("Method not implemented.");
+  }
+
   getById(id: number): Promise<UserEntity> {
     throw new Error("Method not implemented.");
   }

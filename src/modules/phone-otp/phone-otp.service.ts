@@ -11,7 +11,6 @@ export class PhoneOtpService implements IPhoneOtpService {
   ) {}
 
   async numberOfWrongOtp(phone: string): Promise<number> {
-    console.log(phone);
     const phoneOtp = await this.phoneOtpRepository.findOne({ phone: phone });
     if (!phoneOtp) {
       return 0;
@@ -38,20 +37,9 @@ export class PhoneOtpService implements IPhoneOtpService {
       const expired = this.config.get<number>("EXPIRED");
       const timesLimit = this.config.get("TIME_LIMIT");
 
-      console.log("date", date);
-      console.log("expired", typeof expired);
       date.setMinutes(date.getMinutes() + +expired);
 
       const now = new Date();
-
-      console.log("date", date);
-      console.log("now", now);
-
-      console.log("now >= date", now >= date);
-      console.log(
-        "phoneOtp.times + 1 >= timesLimit || phoneOtp.times === 0",
-        phoneOtp.times + 1 >= timesLimit || phoneOtp.times === 0
-      );
 
       if (
         (now >= date && phoneOtp.times + 1 >= timesLimit) ||

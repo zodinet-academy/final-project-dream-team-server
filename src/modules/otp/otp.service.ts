@@ -38,8 +38,6 @@ export class OtpService implements IOtpService {
       "0" + phone.nationalNumber
     );
 
-    console.log("isValidSendOtp: ", isValidSendOtp);
-
     if (!isValidSendOtp)
       return getDataError(
         CodeStatus.NotAcceptable,
@@ -48,6 +46,13 @@ export class OtpService implements IOtpService {
         ""
       ) as ResponseDto<string>;
 
+    if (process.env.NODE_ENV === "local") {
+      return getDataSuccess(
+        CodeStatus.Success,
+        "",
+        "Please fill otp default"
+      ) as ResponseDto<string>;
+    }
     const serviceSid = this.configService.get("TWILIO_MESSAGING_SERVICES_SID");
 
     try {
@@ -87,6 +92,20 @@ export class OtpService implements IOtpService {
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
+    if (process.env.NODE_ENV === "local") {
+      if (process.env.OTP_DEFAULT === verificationCode)
+        return getDataSuccess(
+          CodeStatus.Success,
+          "",
+          "Verify OTP success"
+        ) as ResponseDto<string>;
+      return getDataError(
+        CodeStatus.NotAcceptable,
+        "OTP_NOT_VALID",
+        "OTP not valid",
+        ""
+      ) as ResponseDto<string>;
+    }
     const serviceSid = this.configService.get("TWILIO_MESSAGING_SERVICES_SID");
     try {
       const result = await this.twilioClient.verify.v2
@@ -128,7 +147,7 @@ export class OtpService implements IOtpService {
         CodeStatus.NotFountException,
         "NO_OTP_FOR_THIS_PHONE",
         "No OTP found for this phone",
-        ""
+        error
       ) as ResponseDto<string>;
     }
 
