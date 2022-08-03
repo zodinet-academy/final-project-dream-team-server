@@ -6,6 +6,6 @@ export abstract class DefaultEntity extends BaseEntity {
   @IsNotEmpty()
   id: string;
 
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
+  @CreateDateColumn({ name: "createdAt", type: "timestamp" })
   createdAt: Date;
 }

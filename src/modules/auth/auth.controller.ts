@@ -7,7 +7,7 @@ import {
 } from "@nestjs/swagger";
 import { SendOtpDto, VerifyOtpDto } from "../otp/dto";
 import { AuthService } from "./auth.service";
-import GoogleVerificationDto from "./dto/google-verification.dto";
+import { GoogleLoginDto } from "./dto/google-login.dto";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -44,8 +44,8 @@ export class AuthController {
     return this.authService.loginNormal(data.phone, data.code);
   }
 
-  @Post("verify-google")
-  async verifyGoogle(@Body() googleVerificationDto: GoogleVerificationDto) {
-    return this.authService.verifyGoogle(googleVerificationDto.token);
+  @Post("login-google")
+  async loginGoogle(@Body() googleLoginDto: GoogleLoginDto) {
+    return this.authService.loginGoogle(googleLoginDto);
   }
 }

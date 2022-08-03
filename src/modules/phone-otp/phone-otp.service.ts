@@ -26,14 +26,14 @@ export class PhoneOtpService implements IPhoneOtpService {
     }
     await this.phoneOtpRepository.update(
       { phone: phone },
-      { times: phoneOtp.times + 1, updated_at: new Date() }
+      { times: phoneOtp.times + 1, updatedAt: new Date() }
     );
   }
 
   async isValidToSendOTP(phone: string) {
     const phoneOtp = await this.phoneOtpRepository.findOne({ phone: phone });
     if (phoneOtp) {
-      const date = new Date(phoneOtp.updated_at);
+      const date = new Date(phoneOtp.updatedAt);
       const expired = this.config.get<number>("EXPIRED");
       const timesLimit = this.config.get("TIME_LIMIT");
 
@@ -56,7 +56,7 @@ export class PhoneOtpService implements IPhoneOtpService {
   async resetWrongTimes(phone: string) {
     await this.phoneOtpRepository.update(
       { phone: phone },
-      { times: 0, updated_at: new Date() }
+      { times: 0, updatedAt: new Date() }
     );
   }
 }

@@ -15,6 +15,6 @@ export class PhoneOtpEntity extends DefaultEntity implements IPhoneOtpEntity {
   @IsNotEmpty()
   times: number;
 
-  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
-  updated_at: Date;
+  @UpdateDateColumn({ name: "updatedAt", type: "timestamp" })
+  updatedAt: Date;
 }

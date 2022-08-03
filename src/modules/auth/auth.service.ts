@@ -1,14 +1,17 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { LoginTicket, OAuth2Client, TokenPayload } from "google-auth-library";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { ResponseDto } from "src/common/response.dto";
-import { getDataError, getDataSuccess, signToken } from "src/common/utils";
+import { getDataError, signToken } from "src/common/utils";
 import { CodeStatus } from "src/constants";
-import { OtpService } from "../otp/otp.service";
+import { getDataSuccess } from "../../common/utils";
 import { UsersService } from "../users/users.service";
-import { IAuthService } from "./interfaces/auth-service.interface";
-import { ConfigService } from "@nestjs/config";
-import { OAuth2Client, LoginTicket, TokenPayload } from "google-auth-library";
+import { OtpService } from "./../otp/otp.service";
+import { UserEntity } from "./../users/entities/user.entity";
+import { GoogleLoginDto } from "./dto/google-login.dto";
 import IGoogleResponse from "./interface/auth.interface";
+import { IAuthService } from "./interfaces/auth-service.interface";
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -101,6 +104,39 @@ export class AuthService implements IAuthService {
         nickname: payload.name,
       };
       return getDataSuccess(CodeStatus.Success, googleResponse);
+    } catch (error) {
+      return getDataError(
+        CodeStatus.InternalServerError,
+        "ERROR_UNKNOW",
+        error
+      );
+    }
+  }
+
+  async loginGoogle(
+    googleLoginDto: GoogleLoginDto
+  ): Promise<ResponseDto<UserEntity | IGoogleResponse | string>> {
+    try {
+      const verifiedData = await this.verifyGoogle(googleLoginDto.token);
+
+      if (verifiedData.code !== CodeStatus.Success) return verifiedData;
+      const { email } = verifiedData.data as IGoogleResponse;
+
+      const findData = await this.usersService.findByEmail(email);
+      if (findData.code !== CodeStatus.Success) {
+        verifiedData.data["isCreated"] = false;
+        return verifiedData;
+      }
+
+      // const { phone } = findData.data as UserEntity;
+      return getDataSuccess(
+        CodeStatus.Success,
+        {
+          isCreated: true,
+          // sentOtp: await this.otpService.sendSmsOtp(phone),
+        },
+        ""
+      );
     } catch (error) {
       return getDataError(
         CodeStatus.InternalServerError,

@@ -8,9 +8,9 @@ export interface IUserEntity {
   email?: string;
   phone?: string;
   gender?: GenderType;
-  is_block?: boolean;
+  isBlock?: boolean;
   balance?: number;
   lat?: number;
   lng?: number;
-  deleted_at?: Date;
+  deletedAt?: Date;
 }

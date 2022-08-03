@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty } from "class-validator";
 
-export class GoogleVerificationDto {
+export class GoogleLoginDto {
   @IsNotEmpty()
   @ApiProperty({
     example:
@@ -10,5 +10,3 @@ export class GoogleVerificationDto {
   })
   token: string;
 }
-
-export default GoogleVerificationDto;

@@ -37,7 +37,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
 
   @Column({ type: "boolean", default: false })
   @IsNotEmpty()
-  is_block: boolean;
+  isBlock: boolean;
 
   @Column({ type: "bigint", default: 0 })
   @IsNotEmpty()
@@ -51,9 +51,9 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @IsNotEmpty()
   lng: number;
 
-  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
+  @UpdateDateColumn({ name: "updatedAt", type: "timestamp" })
   updatedAt: Date;
 
-  @DeleteDateColumn({ name: "deleted_at", type: "timestamp" })
-  deleted_at: Date;
+  @DeleteDateColumn({ name: "deletedAt", type: "timestamp" })
+  deletedAt: Date;
 }

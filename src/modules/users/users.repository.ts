@@ -6,10 +6,6 @@ import { IUserRepository } from "./interfaces/user-repository.interface";
 export class UsersRepository
   extends Repository<UserEntity>
   implements IUserRepository {
-  findByCondition(condition: any): Promise<UserEntity> {
-    throw new Error("Method not implemented.");
-  }
-
   getUserByFullName(fullname: string): Promise<UserEntity> {
     throw new Error("Method not implemented.");
   }

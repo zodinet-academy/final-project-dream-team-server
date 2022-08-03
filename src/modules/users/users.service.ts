@@ -1,3 +1,4 @@
+import { IUserService } from "./interfaces/user-service.interface";
 import { Injectable } from "@nestjs/common";
 import { getDataError, getDataSuccess, signToken } from "src/common/utils";
 import { ResponseDto } from "../../common/response.dto";
@@ -11,25 +12,62 @@ import { OtpService } from "../otp/otp.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { VerifyUserDto } from "./dto/verify-user.dto";
 import { UserEntity } from "./entities/user.entity";
-import { IUserService } from "./interfaces/user-service.interface";
 import { UsersRepository } from "./users.repository";
 
 @Injectable()
 export class UsersService implements IUserService {
   constructor(
-    private readonly userRepository: UsersRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly otpService: OtpService
   ) {}
-  findById(id: string): Promise<ResponseDto<UserEntity>> {
-    throw new Error("Method not implemented.");
+  async findById(id: string): Promise<ResponseDto<UserEntity>> {
+    try {
+      const user = await this.usersRepository.findOne(id);
+      if (!user)
+        return getDataError(
+          CodeStatus.NotFountException,
+          "ERROR_USER_NOT_FOUND",
+          null
+        );
+      return getDataSuccess(CodeStatus.Success, user);
+    } catch (error) {
+      return getDataError(
+        CodeStatus.InternalServerError,
+        "error_unknow",
+        error
+      );
+    }
   }
   async getUserByPhone(phone: string): Promise<UserEntity> {
-    const user = await this.userRepository.findOne({ phone: phone });
+    const user = await this.usersRepository.findOne({ phone: phone });
     return user;
   }
   findAll(): Promise<UserEntity[]> {
     throw new Error("Method not implemented.");
   }
+  async findByEmail(email: string): Promise<ResponseDto<UserEntity>> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (!user)
+        return getDataError(
+          CodeStatus.NotFountException,
+          "ERROR_USER_NOT_FOUND",
+          null
+        );
+      return getDataSuccess(CodeStatus.Success, user);
+    } catch (error) {
+      return getDataError(
+        CodeStatus.InternalServerError,
+        "error_unknow",
+        error
+      );
+    }
+  }
+
   /**
    * check existed user be4 send otp
    * @param phone phone number
@@ -37,7 +75,7 @@ export class UsersService implements IUserService {
    */
   async verifyUser(dto: VerifyUserDto) {
     try {
-      const userExisted = await this.userRepository.findOne({
+      const userExisted = await this.usersRepository.findOne({
         phone: dto.phone,
       });
       if (userExisted) {
@@ -55,8 +93,8 @@ export class UsersService implements IUserService {
     try {
       const verifyOtp = await this.otpService.confirmOtp(dto.phone, dto.otp);
       if (verifyOtp.code !== CodeStatus.Success) return verifyOtp;
-      const result = await this.userRepository.save(
-        this.userRepository.create(dto)
+      const result = await this.usersRepository.save(
+        this.usersRepository.create(dto)
       );
       const jwtToken = await signToken(result.id, result.phone);
       return getDataSuccess(
