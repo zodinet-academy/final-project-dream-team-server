@@ -13,7 +13,7 @@ function typeOrmModuleOptions(): TypeOrmModuleOptions {
     entities: ["dist/**/**/entities/*.entity{.ts,.js}"],
     autoLoadEntities: true,
     migrationsRun: true,
-    migrations: [__dirname + "../migrations/*{.ts,.js}"],
+    migrations: [__dirname + "../database/migrations/*{.ts,.js}"],
     migrationsTableName: "migrations_typeorm",
     synchronize: true,
     logging: true,

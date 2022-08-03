@@ -15,6 +15,7 @@ import { OtpModule } from "./modules/otp/otp.module";
     UsersModule,
     AuthModule,
     OtpModule,
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
@@ -34,7 +35,12 @@ import { OtpModule } from "./modules/otp/otp.module";
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),
-    AuthModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) =>
+        config.get<TypeOrmModuleOptions>("database"),
+      inject: [ConfigService],
+    }),
   ],
 })
 export class AppModule {}

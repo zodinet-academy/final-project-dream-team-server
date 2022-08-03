@@ -23,17 +23,12 @@ export class UsersService implements IUserService {
   findById(id: string): Promise<ResponseDto<UserEntity>> {
     throw new Error("Method not implemented.");
   }
+  async getUserByPhone(phone: string): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({ phone: phone });
+    return user;
+  }
   findAll(): Promise<UserEntity[]> {
     throw new Error("Method not implemented.");
-  }
-  private async findUserByPhone(phone: string): Promise<UserEntity> {
-    try {
-      return await this.userRepository.findOne({
-        phone: phone,
-      });
-    } catch (error) {
-      throw new Error(error);
-    }
   }
   /**
    * check existed user be4 send otp
@@ -56,7 +51,7 @@ export class UsersService implements IUserService {
       return getDataError(CodeStatus.InternalServerError, ERROR_UNKNOW, null);
     }
   }
-  async signUp(dto: CreateUserDto): Promise<ResponseDto<UserEntity>> {
+  async signUp(dto: CreateUserDto): Promise<ResponseDto<UserEntity | string>> {
     try {
       const verifyOtp = await this.otpService.confirmOtp(dto.phone, dto.otp);
       if (verifyOtp.code !== CodeStatus.Success) return verifyOtp;

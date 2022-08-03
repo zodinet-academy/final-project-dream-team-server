@@ -1,7 +1,7 @@
 import { IUserEntity } from "./../interfaces/user-entity.interface";
 import { GenderType } from "./../../../constants/gender.enum";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateUserDto implements IUserEntity {
   @ApiProperty({

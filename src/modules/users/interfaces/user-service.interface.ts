@@ -4,5 +4,6 @@ import { UserEntity } from "../entities/user.entity";
 
 export interface IUserService {
   findAll(): Promise<Array<UserEntity>>;
-  signUp(user: CreateUserDto): Promise<ResponseDto<UserEntity>>;
+  signUp(user: CreateUserDto): Promise<ResponseDto<UserEntity | string>>;
+  getUserByPhone(phone: string): Promise<UserEntity>;
 }
