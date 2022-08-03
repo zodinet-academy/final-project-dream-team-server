@@ -124,16 +124,16 @@ export class AuthService implements IAuthService {
 
       const findData = await this.usersService.findByEmail(email);
       if (findData.code !== CodeStatus.Success) {
-        verifiedData.data["isCreated"] = false;
+        verifiedData.data["isNewUser"] = true;
         return verifiedData;
       }
 
-      // const { phone } = findData.data as UserEntity;
+      const { phone } = findData.data as UserEntity;
       return getDataSuccess(
         CodeStatus.Success,
         {
-          isCreated: true,
-          // sentOtp: await this.otpService.sendSmsOtp(phone),
+          isNewUsers: false,
+          sentOtp: await this.otpService.sendSmsOtp(phone),
         },
         ""
       );
