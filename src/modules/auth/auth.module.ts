@@ -1,12 +1,12 @@
 import { OtpModule } from "./../otp/otp.module";
 import { Module } from "@nestjs/common";
-import { AuthService } from "./auth.service";
-import { AuthController } from "./auth.controller";
 import { UsersModule } from "../users/users.module";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
 
 @Module({
-  imports: [UsersModule, OtpModule],
-  controllers: [AuthController],
+  imports: [OtpModule, UsersModule],
   providers: [AuthService],
+  controllers: [AuthController],
 })
 export class AuthModule {}
