@@ -25,6 +25,12 @@ import databaseConfig from "./config/database.config";
           .default("local"),
       }),
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (config: ConfigService) =>
+        config.get<TypeOrmModuleOptions>("database"),
+      inject: [ConfigService],
+    }),
     AutomapperModule.forRoot({
       strategyInitializer: classes(),
     }),

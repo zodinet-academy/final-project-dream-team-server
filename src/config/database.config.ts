@@ -10,7 +10,7 @@ function typeOrmModuleOptions(): TypeOrmModuleOptions {
     username: config.get("DATABASE_USER"),
     password: config.get("DATABASE_PASSWORD"),
     database: config.get("DATABASE_NAME"),
-    entities: ["dist/**/**/**/entities/*.entity{.ts,.js}"],
+    entities: ["dist/**/**/entities/*.entity{.ts,.js}"],
     autoLoadEntities: true,
 
     // Implementaremos Migrations.

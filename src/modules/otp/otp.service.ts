@@ -22,9 +22,9 @@ export class OtpService implements IOtpService {
   }
 
   async sendSmsOtp(phoneNumber: string): Promise<ResponseDto<string>> {
-    const isValid = isValidPhoneNumber(phoneNumber, "VN");
+    const isValidPhone = isValidPhoneNumber(phoneNumber, "VN");
 
-    if (!isValid)
+    if (!isValidPhone)
       return getDataError(
         CodeStatus.NotAcceptable,
         "PHONE_NOT_CORRECT_FORM",
@@ -34,7 +34,22 @@ export class OtpService implements IOtpService {
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
+    const isValidSendOtp = await this.phoneOtpService.isValidToSendOTP(
+      "0" + phone.nationalNumber
+    );
+
+    console.log("isValidSendOtp: ", isValidSendOtp);
+
+    if (!isValidSendOtp)
+      return getDataError(
+        CodeStatus.NotAcceptable,
+        "NOT_ALLOW_TO_CREATE_OTP",
+        "Not allow to create otp. Please wait for a while.",
+        ""
+      ) as ResponseDto<string>;
+
     const serviceSid = this.configService.get("TWILIO_MESSAGING_SERVICES_SID");
+
     try {
       const response = await this.twilioClient.verify.v2
         .services(serviceSid)
@@ -108,8 +123,9 @@ export class OtpService implements IOtpService {
         ) as ResponseDto<string>;
       }
     } catch (error) {
+      console.log(error);
       return getDataError(
-        CodeStatus.NotFound,
+        CodeStatus.NotFountException,
         "NO_OTP_FOR_THIS_PHONE",
         "No OTP found for this phone",
         ""
