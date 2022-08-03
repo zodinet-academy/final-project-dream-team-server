@@ -1,8 +1,9 @@
+import { IUserEntity } from "./../interfaces/user-entity.interface";
 import { GenderType } from "./../../../constants/gender.enum";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
-export class CreateUserDto {
+export class CreateUserDto implements IUserEntity {
   @ApiProperty({
     description: "email",
     default: "zodinet@gmail.com",
@@ -24,7 +25,7 @@ export class CreateUserDto {
   })
   @IsString()
   @IsNotEmpty()
-  fullName: string;
+  fullname: string;
 
   @ApiProperty({
     description: "phone",
@@ -42,4 +43,12 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   gender: GenderType;
+
+  @ApiProperty({
+    description: "otp",
+    default: "123456",
+  })
+  @IsString()
+  @IsNotEmpty()
+  otp: string;
 }

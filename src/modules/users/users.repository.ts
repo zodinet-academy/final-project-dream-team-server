@@ -1,10 +1,9 @@
 import { EntityRepository, Repository } from "typeorm";
-import { CreateUserDto } from "./dto/create-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { IUserRepository } from "./interfaces/user-repository.interface";
 
 @EntityRepository(UserEntity)
-export class UserRepository
+export class UsersRepository
   extends Repository<UserEntity>
   implements IUserRepository {
   findByCondition(condition: any): Promise<UserEntity> {

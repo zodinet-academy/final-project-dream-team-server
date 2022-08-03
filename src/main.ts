@@ -1,3 +1,4 @@
+import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 
@@ -10,6 +11,12 @@ async function bootstrap() {
   app.enableCors();
   initSwagger(app);
 
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    })
+  );
   const SWAGGER_API_SERVER = config.get<string>("SWAGGER_API_SERVER");
   const PORT = config.get<string>("PORT");
   await app.listen(PORT);
