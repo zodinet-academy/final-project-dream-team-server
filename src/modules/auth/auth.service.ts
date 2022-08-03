@@ -12,14 +12,22 @@ import { UserEntity } from "./../users/entities/user.entity";
 import { GoogleLoginDto } from "./dto/google-login.dto";
 import IGoogleResponse from "./interface/auth.interface";
 import { IAuthService } from "./interfaces/auth-service.interface";
+import { google, Auth } from "googleapis";
 
 @Injectable()
 export class AuthService implements IAuthService {
+  oauthClient: Auth.OAuth2Client;
+
   constructor(
     private otpService: OtpService,
     private usersService: UsersService,
     private configService: ConfigService
-  ) {}
+  ) {
+    const clientID = this.configService.get("CLIENT_ID");
+    const clientSecret = this.configService.get("CLIENT_SECRET");
+
+    this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
+  }
 
   async sendOtpLoginNormal(phone: string): Promise<ResponseDto<string>> {
     const isValid = isValidPhoneNumber(phone, "VN");
@@ -89,12 +97,8 @@ export class AuthService implements IAuthService {
 
   async verifyGoogle(token: string) {
     try {
-      const client: OAuth2Client = new OAuth2Client(
-        this.configService.get("CLIENT_ID")
-      );
-      const ticket: LoginTicket = await client.verifyIdToken({
+      const ticket: LoginTicket = await this.oauthClient.verifyIdToken({
         idToken: token,
-        audience: this.configService.get("CLIENT_ID"),
       });
       const payload: TokenPayload = ticket.getPayload();
       const googleResponse: IGoogleResponse = {
