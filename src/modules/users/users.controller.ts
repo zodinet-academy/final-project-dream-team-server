@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { DeleteUserDto, UpdateUserDto } from "./dto";
 import { UsersService } from "./users.service";
 
 type PhoneNumber = {
@@ -12,8 +12,8 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  getAllUser() {
+    return this.usersService.getAllUser();
   }
 
   @Get(":userId")
@@ -40,5 +40,14 @@ export class UsersController {
     @Body() dto: UpdateUserDto
   ) {
     return this.usersService.updateUserProfileById(userId, dto);
+  }
+
+  @Delete(":userId")
+  @ApiBearerAuth()
+  deleteUserProfileById(
+    @Param("userId") userId: string,
+    @Body() dto: DeleteUserDto
+  ) {
+    return this.usersService.deleteUserProfileById(userId, dto);
   }
 }

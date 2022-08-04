@@ -9,14 +9,17 @@ import {
   ERROR_USER_EXISTED,
 } from "../../constants/code-response.constant";
 import { OtpService } from "../otp/otp.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { VerifyUserDto } from "./dto/verify-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { UsersRepository } from "./users.repository";
 import { ResponsePublicUserInterface } from "./interfaces";
-import { UpdateUserDto } from "./dto/update-user.dto";
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
+import {
+  CreateUserDto,
+  VerifyUserDto,
+  UpdateUserDto,
+  DeleteUserDto,
+} from "./dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -61,7 +64,7 @@ export class UsersService implements IUserService {
     }
   }
 
-  async findAll(): Promise<UserEntity[]> {
+  async getAllUser(): Promise<UserEntity[]> {
     try {
       const users = await this.usersRepository.find();
       return users;
@@ -141,6 +144,31 @@ export class UsersService implements IUserService {
       }
 
       return getDataSuccess(null, "Your profile has been updated!");
+    } catch (error) {
+      return getDataError(
+        CodeStatus.NotFountException,
+        "ERROR_USER_NOT_FOUND",
+        null
+      );
+    }
+  }
+
+  async deleteUserProfileById(
+    userId: string,
+    dto: DeleteUserDto
+  ): Promise<ResponseDto<UserEntity>> {
+    try {
+      const userInfo: UserEntity = await this.usersRepository.findOne(userId);
+
+      if (
+        userInfo &&
+        userInfo.email === dto.email &&
+        userInfo.phone === dto.phone
+      ) {
+        await this.usersRepository.delete(userId);
+      }
+
+      return getDataSuccess(null, "Your profile has been deleted!");
     } catch (error) {
       return getDataError(
         CodeStatus.NotFountException,
