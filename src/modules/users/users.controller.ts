@@ -15,14 +15,11 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import { DeleteUserDto, UpdateUserDto } from "./dto";
+import { DeleteUserDto, PhoneUserDto, UpdateUserDto } from "./dto";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
 import { UsersService } from "./users.service";
 
-type PhoneNumber = {
-  phone: string;
-};
 @Controller("users")
 @ApiTags("users")
 @UseGuards(JwtAuthGuard)
@@ -30,25 +27,7 @@ type PhoneNumber = {
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  @ApiOperation({ summary: "Get list of all public users (all)" })
-  @ApiOkResponse({ description: "Matching user lists." })
-  getAllUser() {
-    return this.usersService.getAllUser();
-  }
-
-  @Get(":userId")
-  @ApiOperation({ summary: "Get public user by user-id (all)" })
-  @ApiOkResponse({ description: "Matching user." })
-  @ApiNotFoundResponse({
-    description: "User id not found.",
-  })
-  getPublicById(@Param("userId") userId: string) {
-    return this.usersService.getPublicById(userId);
-  }
-
-  @Post("/phone")
-  @ApiBearerAuth()
+  @Post("phone")
   @ApiOperation({ summary: "Get user profile by phone (user)" })
   @ApiOkResponse({ description: "Matching user." })
   @ApiNotAcceptableResponse({
@@ -57,12 +36,11 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: "Phone not found.",
   })
-  getUserByPhone(@Body() phone: PhoneNumber) {
+  getUserByPhone(@Body() phone: PhoneUserDto) {
     return this.usersService.getUserByPhone(phone.phone);
   }
 
-  @Post("/email")
-  @ApiBearerAuth()
+  @Post("email")
   @ApiOperation({ summary: "Get user profile by email (user)" })
   @ApiOkResponse({ description: "Matching user." })
   @ApiNotAcceptableResponse({
@@ -75,8 +53,7 @@ export class UsersController {
     return this.usersService.getUserByEmail(email);
   }
 
-  @Post(":userId")
-  @ApiBearerAuth()
+  @Post("update")
   @ApiOperation({ summary: "Update user profile by user-id (user)" })
   @ApiOkResponse({ description: "User has been updated." })
   @ApiNotAcceptableResponse({
@@ -86,14 +63,13 @@ export class UsersController {
     description: "User id not found.",
   })
   updateUserProfileById(
-    @Param("userId") userId: string,
+    @GetUser("userId") userId: string,
     @Body() dto: UpdateUserDto
   ) {
     return this.usersService.updateUserProfileById(userId, dto);
   }
 
   @Delete(":userId")
-  @ApiBearerAuth()
   @ApiOperation({ summary: "Delete user data (admin)" })
   @ApiOkResponse({ description: "User has been deleted." })
   @ApiNotAcceptableResponse({
@@ -108,8 +84,10 @@ export class UsersController {
   ) {
     return this.usersService.deleteUserProfileById(userId, dto);
   }
-  @Get("user-friends")
-  getListFriends(@GetUser("userId") id: string) {
-    return this.usersService.getListFriends(id);
+  @Get("friends")
+  @ApiOperation({ summary: "Get friends list (user)" })
+  @ApiOkResponse({ description: "Matching friends list." })
+  getListFriends(@GetUser("userId") userId: string) {
+    return this.usersService.getListFriends(userId);
   }
 }
