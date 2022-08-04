@@ -19,14 +19,17 @@ import {
   VerifyUserDto,
   UpdateUserDto,
   DeleteUserDto,
+  FriendDto,
 } from "./dto";
+import { MatchingUsersService } from "../matching-users/matching-users.service";
 
 @Injectable()
 export class UsersService implements IUserService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly otpService: OtpService,
-    @InjectMapper() private readonly mapper: Mapper
+    @InjectMapper() private readonly mapper: Mapper,
+    private readonly matchingUsersService: MatchingUsersService
   ) {}
 
   async signUp(dto: CreateUserDto): Promise<ResponseDto<UserEntity | string>> {
@@ -174,6 +177,32 @@ export class UsersService implements IUserService {
         CodeStatus.NotFountException,
         "ERROR_USER_NOT_FOUND",
         null
+      );
+    }
+  }
+
+  async getListFriends(id: string): Promise<ResponseDto<FriendDto[]>> {
+    try {
+      const listFriendsId = await this.matchingUsersService.getListFriendsId(
+        id
+      );
+
+      const listUserEntities = await this.usersRepository.getListFriends(
+        listFriendsId
+      );
+
+      return getDataSuccess(
+        CodeStatus.Success,
+        this.mapper.mapArray(listUserEntities, UserEntity, FriendDto),
+        ""
+      );
+    } catch (error) {
+      console.log(error);
+      return getDataError(
+        CodeStatus.InternalServerError,
+        "ERROR_UNKNOWN",
+        "",
+        "An error has occoured in server."
       );
     }
   }

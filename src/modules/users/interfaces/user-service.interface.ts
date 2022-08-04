@@ -1,5 +1,6 @@
 import { ResponseDto } from "../../../common/response.dto";
 import { CreateUserDto, DeleteUserDto, UpdateUserDto } from "../dto";
+import { FriendDto } from "../dto/friend.dto";
 import { UserEntity } from "../entities/user.entity";
 
 export interface IUserService {
@@ -16,4 +17,5 @@ export interface IUserService {
     userId: string,
     user: DeleteUserDto
   ): Promise<ResponseDto<UserEntity>>;
+  getListFriends(id: string): Promise<ResponseDto<FriendDto[]>>;
 }

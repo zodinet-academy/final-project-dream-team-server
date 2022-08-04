@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiNotAcceptableResponse,
@@ -8,6 +16,8 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { DeleteUserDto, UpdateUserDto } from "./dto";
+import { GetUser } from "../auth/decorator";
+import { JwtAuthGuard } from "../auth/guards";
 import { UsersService } from "./users.service";
 
 type PhoneNumber = {
@@ -15,6 +25,8 @@ type PhoneNumber = {
 };
 @Controller("users")
 @ApiTags("users")
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -95,5 +107,9 @@ export class UsersController {
     @Body() dto: DeleteUserDto
   ) {
     return this.usersService.deleteUserProfileById(userId, dto);
+  }
+  @Get("user-friends")
+  getListFriends(@GetUser("userId") id: string) {
+    return this.usersService.getListFriends(id);
   }
 }
