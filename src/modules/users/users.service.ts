@@ -14,12 +14,16 @@ import { VerifyUserDto } from "./dto/verify-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { UsersRepository } from "./users.repository";
 import { ResponsePublicUserInterface } from "./interfaces";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { Mapper } from "@automapper/core";
+import { InjectMapper } from "@automapper/nestjs";
 
 @Injectable()
 export class UsersService implements IUserService {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly otpService: OtpService
+    private readonly otpService: OtpService,
+    @InjectMapper() private readonly mapper: Mapper
   ) {}
 
   async signUp(dto: CreateUserDto): Promise<ResponseDto<UserEntity | string>> {
@@ -94,7 +98,7 @@ export class UsersService implements IUserService {
 
   async getUserByPhone(phone: string): Promise<UserEntity> {
     try {
-      const user = await this.usersRepository.findOne(phone);
+      const user = await this.usersRepository.findOne({ phone: phone });
 
       if (!user)
         throw getDataError(
@@ -119,6 +123,30 @@ export class UsersService implements IUserService {
       return getDataSuccess(CodeStatus.Success, user, null);
     } catch (error) {
       return error;
+    }
+  }
+
+  async updateUserProfileById(
+    userId: string,
+    dto: UpdateUserDto
+  ): Promise<ResponseDto<UserEntity>> {
+    try {
+      const userInfo: UserEntity = await this.usersRepository.findOne(userId);
+
+      if (userInfo) {
+        await this.usersRepository.update(userId, {
+          ...(dto.fullname && { fullname: dto.fullname }),
+          ...(dto.gender && { gender: dto.gender }),
+        });
+      }
+
+      return getDataSuccess(null, "Your profile has been updated!");
+    } catch (error) {
+      return getDataError(
+        CodeStatus.NotFountException,
+        "ERROR_USER_NOT_FOUND",
+        null
+      );
     }
   }
 }
