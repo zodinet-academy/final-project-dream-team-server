@@ -1,3 +1,4 @@
+import { JwtStrategy } from "./strategies/jwt.strategy";
 import { OtpModule } from "./../otp/otp.module";
 import { Module } from "@nestjs/common";
 import { UsersModule } from "../users/users.module";
@@ -5,7 +6,6 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
-import { JwtStragegy } from "./strategies";
 
 @Module({
   imports: [
@@ -20,7 +20,7 @@ import { JwtStragegy } from "./strategies";
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStragegy],
+  providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
