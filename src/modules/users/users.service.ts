@@ -74,7 +74,14 @@ export class UsersService implements IUserService {
           "ERROR_USER_NOT_FOUND",
           null
         );
-      return getDataSuccess(CodeStatus.Success, user);
+      const userPublic = {
+        id: user.id,
+        avatar: user.avatar,
+        nickname: user.nickname,
+        phone: user.phone,
+        gender: user.gender,
+      };
+      return getDataSuccess(CodeStatus.Success, userPublic);
     } catch (error) {
       return getDataError(
         CodeStatus.InternalServerError,
@@ -99,15 +106,20 @@ export class UsersService implements IUserService {
       return null;
     }
   }
-  async getUserByEmail(email: string): Promise<UserEntity> {
+  async getUserByEmail(email: string): Promise<ResponseDto<UserEntity>> {
     try {
       const user = await this.usersRepository.findOne({
         where: {
           email: email,
         },
       });
-      if (!user) return null;
-      return null;
+      if (!user)
+        return getDataError(
+          CodeStatus.NotFountException,
+          "ERROR_USER_NOT_FOUND",
+          null
+        );
+      return getDataSuccess(CodeStatus.Success, user, null);
     } catch (error) {
       return error;
     }

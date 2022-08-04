@@ -79,6 +79,7 @@ export class AuthService implements IAuthService {
     }
 
     const user = await this.usersService.getUserByPhone(phone);
+
     const jwtToken = await signToken(user.id, user.phone);
     return getDataSuccess(
       CodeStatus.Success,
