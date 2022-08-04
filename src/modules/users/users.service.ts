@@ -20,72 +20,7 @@ export class UsersService implements IUserService {
     private readonly usersRepository: UsersRepository,
     private readonly otpService: OtpService
   ) {}
-  async findById(id: string): Promise<ResponseDto<UserEntity>> {
-    try {
-      const user = await this.usersRepository.findOne(id);
-      if (!user)
-        return getDataError(
-          CodeStatus.NotFountException,
-          "ERROR_USER_NOT_FOUND",
-          null
-        );
-      return getDataSuccess(CodeStatus.Success, user);
-    } catch (error) {
-      return getDataError(
-        CodeStatus.InternalServerError,
-        "error_unknow",
-        error
-      );
-    }
-  }
-  async getUserByPhone(phone: string): Promise<UserEntity> {
-    const user = await this.usersRepository.findOne({ phone: phone });
-    return user;
-  }
-  async findByEmail(email: string): Promise<ResponseDto<UserEntity>> {
-    try {
-      const user = await this.usersRepository.findOne({
-        where: {
-          email: email,
-        },
-      });
-      if (!user)
-        return getDataError(
-          CodeStatus.NotFountException,
-          "ERROR_USER_NOT_FOUND",
-          null
-        );
-      return getDataSuccess(CodeStatus.Success, user);
-    } catch (error) {
-      return getDataError(
-        CodeStatus.InternalServerError,
-        "error_unknow",
-        error
-      );
-    }
-  }
 
-  /**
-   * check existed user be4 send otp
-   * @param phone phone number
-   * @returns error /  messge check phone
-   */
-  async verifyUser(dto: VerifyUserDto) {
-    try {
-      const userExisted = await this.usersRepository.findOne({
-        phone: dto.phone,
-      });
-      if (userExisted) {
-        return getDataError(CodeStatus.Conflict, ERROR_USER_EXISTED, "");
-      }
-      const result = await this.otpService.sendSmsOtp(dto.phone);
-      if (result.code !== CodeStatus.Success)
-        return getDataError(CodeStatus.InternalServerError, ERROR_UNKNOW, "");
-      return getDataSuccess(CodeStatus.Success, CHECK_PHONE_GET_OTP);
-    } catch (error) {
-      return getDataError(CodeStatus.InternalServerError, ERROR_UNKNOW, null);
-    }
-  }
   async signUp(dto: CreateUserDto): Promise<ResponseDto<UserEntity | string>> {
     try {
       const verifyOtp = await this.otpService.confirmOtp(dto.phone, dto.otp);
@@ -104,6 +39,23 @@ export class UsersService implements IUserService {
     }
   }
 
+  async verifyUser(dto: VerifyUserDto) {
+    try {
+      const userExisted = await this.usersRepository.findOne({
+        phone: dto.phone,
+      });
+      if (userExisted) {
+        return getDataError(CodeStatus.Conflict, ERROR_USER_EXISTED, "");
+      }
+      const result = await this.otpService.sendSmsOtp(dto.phone);
+      if (result.code !== CodeStatus.Success)
+        return getDataError(CodeStatus.InternalServerError, ERROR_UNKNOW, "");
+      return getDataSuccess(CodeStatus.Success, CHECK_PHONE_GET_OTP);
+    } catch (error) {
+      return getDataError(CodeStatus.InternalServerError, ERROR_UNKNOW, null);
+    }
+  }
+
   async findAll(): Promise<UserEntity[]> {
     try {
       const users = await this.usersRepository.find();
@@ -113,7 +65,7 @@ export class UsersService implements IUserService {
     }
   }
 
-  async findOneById(id: string): Promise<ResponseDto<UserEntity>> {
+  async getPublicById(id: string): Promise<ResponseDto<UserEntity>> {
     try {
       const user = await this.usersRepository.findOne(id);
       if (!user)
@@ -129,6 +81,35 @@ export class UsersService implements IUserService {
         "error_unknow",
         error
       );
+    }
+  }
+
+  async getUserByPhone(phone: string): Promise<UserEntity> {
+    try {
+      const user = await this.usersRepository.findOne({ phone: phone });
+
+      if (!user)
+        throw getDataError(
+          CodeStatus.NotFountException,
+          "ERROR_USER_NOT_FOUND",
+          null
+        );
+      return user;
+    } catch (error) {
+      return null;
+    }
+  }
+  async getUserByEmail(email: string): Promise<UserEntity> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (!user) return null;
+      return null;
+    } catch (error) {
+      return error;
     }
   }
 }

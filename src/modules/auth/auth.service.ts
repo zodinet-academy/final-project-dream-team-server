@@ -122,7 +122,7 @@ export class AuthService implements IAuthService {
       if (verifiedData.code !== CodeStatus.Success) return verifiedData;
       const { email } = verifiedData.data as IGoogleResponse;
 
-      const findData = await this.usersService.findByEmail(email);
+      const findData = await this.usersService.getUserByEmail(email);
       if (findData.code !== CodeStatus.Success) {
         verifiedData.data["isCreated"] = false;
         return verifiedData;

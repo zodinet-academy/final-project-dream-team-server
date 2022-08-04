@@ -7,7 +7,7 @@ export class VerifyOtpDto {
   @IsNotEmpty()
   phone: string;
 
-  @ApiProperty({ type: String, default: "123456" })
+  @ApiProperty({ type: String, default: "777777" })
   @IsString()
   @IsNotEmpty()
   code: string;
