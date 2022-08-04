@@ -15,7 +15,7 @@ function typeOrmModuleOptions(): TypeOrmModuleOptions {
     migrationsRun: true,
     migrations: [__dirname + "../database/migrations/*{.ts,.js}"],
     migrationsTableName: "migrations_typeorm",
-    synchronize: true,
+    synchronize: false,
     logging: true,
     logger: "file",
   };

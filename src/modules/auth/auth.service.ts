@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { LoginTicket, OAuth2Client, TokenPayload } from "google-auth-library";
+import { LoginTicket, TokenPayload } from "google-auth-library";
+import { Auth, google } from "googleapis";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { ResponseDto } from "src/common/response.dto";
 import { getDataError, signToken } from "src/common/utils";
@@ -10,9 +11,8 @@ import { UsersService } from "../users/users.service";
 import { OtpService } from "./../otp/otp.service";
 import { UserEntity } from "./../users/entities/user.entity";
 import { GoogleLoginDto } from "./dto/google-login.dto";
-import IGoogleResponse from "./interface/auth.interface";
 import { IAuthService } from "./interfaces/auth-service.interface";
-import { google, Auth } from "googleapis";
+import IGoogleResponse from "./interfaces/auth.interface";
 
 @Injectable()
 export class AuthService implements IAuthService {
