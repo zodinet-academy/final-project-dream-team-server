@@ -23,7 +23,7 @@ export class UsersService implements IUserService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly otpService: OtpService,
-    private matchingUsersService: MatchingUsersService,
+    private readonly matchingUsersService: MatchingUsersService,
     @InjectMapper()
     private readonly mapper: Mapper
   ) {}
@@ -123,13 +123,11 @@ export class UsersService implements IUserService {
         listFriendsId
       );
 
-      const listFriends = this.mapper.mapArray(
-        listUserEntities,
-        UserEntity,
-        FriendDto
+      return getDataSuccess(
+        CodeStatus.Success,
+        this.mapper.mapArray(listUserEntities, UserEntity, FriendDto),
+        ""
       );
-
-      return getDataSuccess(CodeStatus.Success, listFriends, "");
     } catch (error) {
       console.log(error);
       return getDataError(

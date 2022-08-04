@@ -13,9 +13,6 @@ import { UserProfile } from "./user.profile";
 @Module({
   imports: [
     TypeOrmModule.forFeature([UsersRepository]),
-    AutomapperModule.forRoot({
-      strategyInitializer: classes(),
-    }),
     OtpModule,
     MatchingUsersModule,
   ],

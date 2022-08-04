@@ -24,6 +24,7 @@ export class MatchingUsersRepository
       return listFriendsId;
     } catch (error) {
       console.log(error);
+      throw new Error("ERROR WITH MATCHING USERS REPOSITORY");
     }
   }
   getById(id: number): Promise<MatchingUsersEntity> {
