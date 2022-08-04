@@ -13,12 +13,19 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { VerifyUserDto } from "./dto/verify-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { UsersRepository } from "./users.repository";
+import { FriendDto } from "./dto/friend.dto";
+import { MatchingUsersService } from "../matching-users/matching-users.service";
+import { InjectMapper } from "@automapper/nestjs";
+import { Mapper } from "@automapper/core";
 
 @Injectable()
 export class UsersService implements IUserService {
   constructor(
     private readonly usersRepository: UsersRepository,
-    private readonly otpService: OtpService
+    private readonly otpService: OtpService,
+    private matchingUsersService: MatchingUsersService,
+    @InjectMapper()
+    private readonly mapper: Mapper
   ) {}
   async findById(id: string): Promise<ResponseDto<UserEntity>> {
     try {
@@ -104,6 +111,33 @@ export class UsersService implements IUserService {
       ) as ResponseDto<string>;
     } catch (error) {
       return getDataError(CodeStatus.InternalServerError, ERROR_UNKNOW, null);
+    }
+  }
+  async getListFriends(id: string): Promise<ResponseDto<FriendDto[]>> {
+    try {
+      const listFriendsId = await this.matchingUsersService.getListFriendsId(
+        id
+      );
+
+      const listUserEntities = await this.usersRepository.getListFriends(
+        listFriendsId
+      );
+
+      const listFriends = this.mapper.mapArray(
+        listUserEntities,
+        UserEntity,
+        FriendDto
+      );
+
+      return getDataSuccess(CodeStatus.Success, listFriends, "");
+    } catch (error) {
+      console.log(error);
+      return getDataError(
+        CodeStatus.InternalServerError,
+        "ERROR_UNKNOWN",
+        "",
+        "An error has occoured in server."
+      );
     }
   }
 }
