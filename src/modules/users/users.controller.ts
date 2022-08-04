@@ -13,17 +13,18 @@ export class UsersController {
   }
 
   @Get(":userId")
-  @ApiBearerAuth()
   getPublicById(@Param("userId") userId: string) {
     return this.usersService.getPublicById(userId);
   }
 
   @Post("/phone")
+  @ApiBearerAuth()
   getUserByPhone(@Body() phone: string) {
     return this.usersService.getUserByPhone(phone);
   }
 
   @Post("/email")
+  @ApiBearerAuth()
   getUserByEmail(@Body() email: string) {
     return this.usersService.getUserByEmail(email);
   }

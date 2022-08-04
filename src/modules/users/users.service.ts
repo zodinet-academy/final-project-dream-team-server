@@ -13,6 +13,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { VerifyUserDto } from "./dto/verify-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { UsersRepository } from "./users.repository";
+import { ResponsePublicUserInterface } from "./interfaces";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -74,7 +75,7 @@ export class UsersService implements IUserService {
           "ERROR_USER_NOT_FOUND",
           null
         );
-      const userPublic = {
+      const userPublic: ResponsePublicUserInterface = {
         id: user.id,
         avatar: user.avatar,
         nickname: user.nickname,
@@ -93,7 +94,7 @@ export class UsersService implements IUserService {
 
   async getUserByPhone(phone: string): Promise<UserEntity> {
     try {
-      const user = await this.usersRepository.findOne({ phone: phone });
+      const user = await this.usersRepository.findOne(phone);
 
       if (!user)
         throw getDataError(
@@ -108,11 +109,7 @@ export class UsersService implements IUserService {
   }
   async getUserByEmail(email: string): Promise<ResponseDto<UserEntity>> {
     try {
-      const user = await this.usersRepository.findOne({
-        where: {
-          email: email,
-        },
-      });
+      const user = await this.usersRepository.findOne(email);
       if (!user)
         return getDataError(
           CodeStatus.NotFountException,
