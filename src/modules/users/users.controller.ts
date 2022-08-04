@@ -11,4 +11,9 @@ export class UsersController {
   findAll() {
     return this.usersService.findAll();
   }
+
+  @Get(":userId")
+  findOneById(userId: string) {
+    return this.usersService.findOneById(userId);
+  }
 }

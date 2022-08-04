@@ -42,9 +42,6 @@ export class UsersService implements IUserService {
     const user = await this.usersRepository.findOne({ phone: phone });
     return user;
   }
-  findAll(): Promise<UserEntity[]> {
-    throw new Error("Method not implemented.");
-  }
   async findByEmail(email: string): Promise<ResponseDto<UserEntity>> {
     try {
       const user = await this.usersRepository.findOne({
@@ -104,6 +101,34 @@ export class UsersService implements IUserService {
       ) as ResponseDto<string>;
     } catch (error) {
       return getDataError(CodeStatus.InternalServerError, ERROR_UNKNOW, null);
+    }
+  }
+
+  async findAll(): Promise<UserEntity[]> {
+    try {
+      const users = await this.usersRepository.find();
+      return users;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  async findOneById(id: string): Promise<ResponseDto<UserEntity>> {
+    try {
+      const user = await this.usersRepository.findOne(id);
+      if (!user)
+        return getDataError(
+          CodeStatus.NotFountException,
+          "ERROR_USER_NOT_FOUND",
+          null
+        );
+      return getDataSuccess(CodeStatus.Success, user);
+    } catch (error) {
+      return getDataError(
+        CodeStatus.InternalServerError,
+        "error_unknow",
+        error
+      );
     }
   }
 }
