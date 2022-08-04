@@ -16,9 +16,7 @@ export class UsersController {
     return this.usersService.findAll();
   }
   @Get("user-friends")
-  getListFriends(@GetUser("id") id: string) {
-    console.log(id);
-    return "hello";
-    //return this.usersService.getListFriends(id);
+  getListFriends(@GetUser("userId") id: string) {
+    return this.usersService.getListFriends(id);
   }
 }

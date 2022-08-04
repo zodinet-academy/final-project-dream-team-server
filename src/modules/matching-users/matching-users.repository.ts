@@ -1,5 +1,4 @@
 import { Brackets, EntityRepository, Repository } from "typeorm";
-import { FriendDto } from "../users/dto/friend.dto";
 import { MatchingUsersEntity } from "./entities/matching-users.entity";
 import { IMatchingUsersRepository } from "./interfaces";
 
@@ -16,7 +15,6 @@ export class MatchingUsersRepository
           );
         })
       );
-      console.log(query.getSql());
       const result = await query.getMany();
       const listFriendsId = result.map((item) => {
         if (item.friendId !== id) return item.friendId;
