@@ -6,8 +6,6 @@ import { UsersController } from "./users.controller";
 import { UsersRepository } from "./users.repository";
 import { UsersService } from "./users.service";
 import { MatchingUsersModule } from "../matching-users/matching-users.module";
-import { AutomapperModule } from "@automapper/nestjs";
-import { classes } from "@automapper/classes";
 import { UserProfile } from "./user.profile";
 
 @Module({
@@ -16,7 +14,7 @@ import { UserProfile } from "./user.profile";
     OtpModule,
     MatchingUsersModule,
   ],
-  controllers: [UsersController, PublicUsersController],
+  controllers: [PublicUsersController, UsersController],
   providers: [UsersService, UserProfile],
   exports: [UsersService],
 })

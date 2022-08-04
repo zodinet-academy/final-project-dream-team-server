@@ -79,6 +79,7 @@ export class AuthService implements IAuthService {
     }
 
     const user = await this.usersService.getUserByPhone(phone);
+
     const jwtToken = await signToken(user.id, user.phone);
     return getDataSuccess(
       CodeStatus.Success,
@@ -126,7 +127,7 @@ export class AuthService implements IAuthService {
       if (verifiedData.code !== CodeStatus.Success) return verifiedData;
       const { email } = verifiedData.data as IGoogleResponse;
 
-      const findData = await this.usersService.findByEmail(email);
+      const findData = await this.usersService.getUserByEmail(email);
       if (findData.code !== CodeStatus.Success) {
         verifiedData.data["isNewUser"] = true;
         return verifiedData;

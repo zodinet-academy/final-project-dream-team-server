@@ -4,6 +4,7 @@ import {
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
 import { ResponseDto } from "src/common/response.dto";
@@ -18,6 +19,7 @@ export class OtpControler {
   constructor(private otpService: OtpService) {}
 
   @Post("send-otp")
+  @ApiOperation({ summary: "Send OTP code (user)" })
   @ApiOkResponse({ description: "Otp has been sent." })
   @ApiInternalServerErrorResponse({
     description: "An error occurs when sending otp sms.",
@@ -45,6 +47,7 @@ export class OtpControler {
   }
 
   @Post("verify-otp")
+  @ApiOperation({ summary: "Verify received OTP (user)" })
   @ApiOkResponse({ description: "Verify otp success." })
   @ApiNotAcceptableResponse({ description: "Wrong otp provided." })
   @ApiNotFoundResponse({ description: "Cannot find otp for this phone." })
