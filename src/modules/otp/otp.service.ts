@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
-import { ResponseDto } from "src/common/response.dto";
-import { getDataError, getDataSuccess } from "src/common/utils";
-import { CodeStatus, OtpStatus } from "src/constants";
+import { ResponseDto } from "../../common/response.dto";
+import { getDataError, getDataSuccess } from "../../common/utils";
+import { CodeStatus, OtpStatus } from "../../constants";
 import { Twilio } from "twilio";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
 import { IOtpService } from "./interfaces/otp-service.interface";

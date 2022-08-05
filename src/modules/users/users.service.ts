@@ -1,6 +1,6 @@
 import { IUserService } from "./interfaces/user-service.interface";
 import { Injectable } from "@nestjs/common";
-import { getDataError, getDataSuccess, signToken } from "src/common/utils";
+import { getDataError, getDataSuccess, signToken } from "../../common/utils";
 import { ResponseDto } from "../../common/response.dto";
 import { CodeStatus } from "../../constants";
 import {

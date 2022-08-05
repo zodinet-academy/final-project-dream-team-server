@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { CodeStatus } from "src/constants";
+import { CodeStatus } from "../constants";
 
 export class ResponseDto<T> {
   @ApiProperty({ example: 0, type: CodeStatus, required: false })

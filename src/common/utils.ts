@@ -1,8 +1,8 @@
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { CodeStatus } from "src/constants";
-import { JwtPayload } from "src/modules/auth/interfaces/jwt-payload.interfact";
-import { ResponseToken } from "src/modules/auth/interfaces/response-token.interface";
+import { CodeStatus } from "../constants";
+import { JwtPayload } from "../modules/auth/interfaces/jwt-payload.interfact";
+import { ResponseToken } from "../modules/auth/interfaces/response-token.interface";
 
 /**
  * This function format data json
