@@ -7,7 +7,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { VerifyUserDto } from "./dto/verify-user.dto";
+import { VerifyUserByEmailDto, VerifyUserDto } from "./dto/verify-user.dto";
 import { UsersService } from "./users.service";
 
 @Controller("users")
@@ -26,6 +26,18 @@ export class PublicUsersController {
   })
   signupUser(@Body() dto: CreateUserDto) {
     return this.usersService.signUp(dto);
+  }
+
+  @Post("verify-user-by-email")
+  @ApiOkResponse({ description: "New account is created." })
+  @ApiNotAcceptableResponse({
+    description: "Request is not in correct form.",
+  })
+  @ApiNotFoundResponse({
+    description: "User is existed.",
+  })
+  verifyUserByEmail(@Body() dto: VerifyUserByEmailDto) {
+    return this.usersService.verifyUserByEmail(dto.email);
   }
 
   @Post("verify-user")
