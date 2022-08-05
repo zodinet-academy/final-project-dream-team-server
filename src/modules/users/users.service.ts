@@ -19,9 +19,9 @@ import {
   VerifyUserDto,
   UpdateUserDto,
   DeleteUserDto,
-  FriendDto,
 } from "./dto";
 import { MatchingUsersService } from "../matching-users/matching-users.service";
+import { FriendDto } from "./dto/friend.dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -119,7 +119,9 @@ export class UsersService implements IUserService {
   }
   async getUserByEmail(email: string): Promise<ResponseDto<UserEntity>> {
     try {
-      const user = await this.usersRepository.findOne(email);
+      const user = await this.usersRepository.findOne({
+        where: { email: email },
+      });
       if (!user)
         return getDataError(
           CodeStatus.NotFountException,
@@ -196,6 +198,25 @@ export class UsersService implements IUserService {
         this.mapper.mapArray(listUserEntities, UserEntity, FriendDto),
         ""
       );
+    } catch (error) {
+      console.log(error);
+      return getDataError(
+        CodeStatus.InternalServerError,
+        "ERROR_UNKNOWN",
+        "",
+        "An error has occoured in server."
+      );
+    }
+  }
+
+  async verifyUserByEmail(email: string) {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { email: email },
+      });
+      return getDataSuccess(CodeStatus.Success, {
+        isNewUser: user ? false : true,
+      });
     } catch (error) {
       console.log(error);
       return getDataError(
