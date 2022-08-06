@@ -27,21 +27,6 @@ export class OtpControler {
   })
   async sendOtp(@Body() data: SendOtpDto): Promise<ResponseDto<string>> {
     return this.otpService.sendSmsOtp(data.phone);
-    // try {
-    //   await this.otpService.sendSmsOtp(data.phone);
-    //   return getDataSuccess(
-    //     CodeStatus.Success,
-    //     "",
-    //     "OTP has been sent."
-    //   ) as ResponseDto<string>;
-    // } catch (error) {
-    //   return getDataError(
-    //     CodeStatus.InternalServerError,
-    //     "",
-    //     error.message,
-    //     ""
-    //   ) as ResponseDto<string>;
-    // }
   }
 
   @Post("verify-otp")
@@ -50,21 +35,6 @@ export class OtpControler {
   @ApiNotAcceptableResponse({ description: "Wrong otp provided." })
   @ApiNotFoundResponse({ description: "Cannot find otp for this phone." })
   async verifyOtp(@Body() data: VerifyOtpDto) {
-    // try {
-    //   await this.otpService.confirmOtp(data.phone, data.code);
-    //   return getDataSuccess(
-    //     CodeStatus.Success,
-    //     "",
-    //     "Verify otp success."
-    //   ) as ResponseDto<string>;
-    // } catch (error) {
-    //   return getDataError(
-    //     error.status,
-    //     "",
-    //     error.message,
-    //     ""
-    //   ) as ResponseDto<string>;
-    // }
     return this.otpService.confirmOtp(data.phone, data.code);
   }
 }
