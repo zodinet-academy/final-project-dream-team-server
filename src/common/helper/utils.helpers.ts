@@ -1,5 +1,3 @@
-import { ConfigService } from "@nestjs/config";
-
 // Delay function
 export async function wait(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

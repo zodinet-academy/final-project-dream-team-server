@@ -22,6 +22,7 @@ export class UsersRepository
   }
 
   getById(id: number): Promise<UserEntity> {
+    console.log(id);
     throw new Error("Method not implemented.");
   }
   getAll(): Promise<UserEntity[]> {

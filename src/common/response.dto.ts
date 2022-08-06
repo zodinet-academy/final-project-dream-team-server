@@ -1,9 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { CodeStatus } from "src/constants";
 
 export class ResponseDto<T> {
-  @ApiProperty({ example: 0, type: CodeStatus, required: false })
-  code: number;
+  @ApiProperty({ example: "true/false", type: Boolean, required: false })
+  status: boolean;
 
   @ApiProperty({ example: "Unsuccess", type: String, required: false })
   message: string;

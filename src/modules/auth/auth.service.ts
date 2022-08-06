@@ -3,10 +3,8 @@ import { ConfigService } from "@nestjs/config";
 import { LoginTicket, TokenPayload } from "google-auth-library";
 import { Auth, google } from "googleapis";
 import { isValidPhoneNumber } from "libphonenumber-js";
-import { ResponseDto } from "src/common/response.dto";
-import { getDataError, signToken } from "src/common/utils";
-import { CodeStatus } from "src/constants";
-import { getDataSuccess } from "../../common/utils";
+import { ResponseDto } from "../../common/response.dto";
+import { getDataError, getDataSuccess, signToken } from "../../common/utils";
 import { UsersService } from "../users/users.service";
 import { OtpService } from "./../otp/otp.service";
 import { UserEntity } from "./../users/entities/user.entity";
@@ -34,7 +32,7 @@ export class AuthService implements IAuthService {
 
     if (!isValid)
       return getDataError(
-        CodeStatus.NotAcceptable,
+        false,
         "PHONE_NOT_CORRECT_FORM",
         "Phone not correct form.",
         ""
@@ -43,7 +41,7 @@ export class AuthService implements IAuthService {
     const isExist = await this.checkUserExist(phone);
     if (!isExist)
       return getDataError(
-        CodeStatus.NotFountException,
+        false,
         "PHONE_NOT_FOUND",
         "Phone not found.",
         ""
@@ -51,22 +49,18 @@ export class AuthService implements IAuthService {
 
     const response = await this.otpService.sendSmsOtp(phone);
 
-    if (response.code !== CodeStatus.Success) {
+    if (!response.status) {
       return response;
     }
 
-    return getDataSuccess(
-      CodeStatus.Success,
-      "",
-      "Send OTP success"
-    ) as ResponseDto<string>;
+    return getDataSuccess(false, "", "Send OTP success") as ResponseDto<string>;
   }
 
   async loginNormal(phone: string, code: string) {
     const isExist = this.checkUserExist(phone);
     if (!isExist)
       return getDataError(
-        CodeStatus.NotFountException,
+        false,
         "PHONE_NOT_FOUND",
         "Phone not found.",
         ""
@@ -74,14 +68,15 @@ export class AuthService implements IAuthService {
 
     const respone = await this.otpService.confirmOtp(phone, code);
 
-    if (respone.code !== CodeStatus.Success) {
+    if (!respone.status) {
       return respone;
     }
 
     const user = await this.usersService.getUserByPhone(phone);
+
     const jwtToken = await signToken(user.id, user.phone);
     return getDataSuccess(
-      CodeStatus.Success,
+      true,
       jwtToken,
       "Login success."
     ) as ResponseDto<string>;
@@ -107,13 +102,9 @@ export class AuthService implements IAuthService {
         fullname: `${payload.family_name} ${payload.given_name}`,
         nickname: payload.name,
       };
-      return getDataSuccess(CodeStatus.Success, googleResponse);
+      return getDataSuccess(true, googleResponse);
     } catch (error) {
-      return getDataError(
-        CodeStatus.InternalServerError,
-        "ERROR_UNKNOW",
-        error
-      );
+      return getDataError(true, "ERROR_UNKNOW", error);
     }
   }
 
@@ -123,18 +114,18 @@ export class AuthService implements IAuthService {
     try {
       const verifiedData = await this.verifyGoogle(googleLoginDto.token);
 
-      if (verifiedData.code !== CodeStatus.Success) return verifiedData;
+      if (!verifiedData.status) return verifiedData;
       const { email } = verifiedData.data as IGoogleResponse;
 
-      const findData = await this.usersService.findByEmail(email);
-      if (findData.code !== CodeStatus.Success) {
+      const findData = await this.usersService.getUserByEmail(email);
+      if (!findData.status) {
         verifiedData.data["isNewUser"] = true;
         return verifiedData;
       }
 
       const { phone } = findData.data as UserEntity;
       return getDataSuccess(
-        CodeStatus.Success,
+        true,
         {
           isNewUsers: false,
           sentOtp: await this.otpService.sendSmsOtp(phone),
@@ -142,11 +133,7 @@ export class AuthService implements IAuthService {
         ""
       );
     } catch (error) {
-      return getDataError(
-        CodeStatus.InternalServerError,
-        "ERROR_UNKNOW",
-        error
-      );
+      return getDataError(false, "ERROR_UNKNOW", error);
     }
   }
 }

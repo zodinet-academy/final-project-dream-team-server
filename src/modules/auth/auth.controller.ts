@@ -3,6 +3,7 @@ import {
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
 import { SendOtpDto, VerifyOtpDto } from "../otp/dto";
@@ -14,7 +15,8 @@ import { GoogleLoginDto } from "./dto/google-login.dto";
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post("send-otp-login-normal")
+  @Post("check-account")
+  @ApiOperation({ summary: "Check user account existed by phone (user)" })
   @ApiOkResponse({ description: "Otp has been sent." })
   @ApiNotAcceptableResponse({
     description: "Phone number is not in correct form.",
@@ -26,7 +28,8 @@ export class AuthController {
     return this.authService.sendOtpLoginNormal(data.phone);
   }
 
-  @Post("verify-otp-login")
+  @Post("otp-login")
+  @ApiOperation({ summary: "Login with OTP (user)" })
   @ApiOkResponse({ description: "Otp has been sent." })
   @ApiNotAcceptableResponse({
     description: "Phone number is not in correct form.",
@@ -45,6 +48,7 @@ export class AuthController {
   }
 
   @Post("login-google")
+  @ApiOperation({ summary: "Login with Google account (user)" })
   async loginGoogle(@Body() googleLoginDto: GoogleLoginDto) {
     return this.authService.loginGoogle(googleLoginDto);
   }

@@ -1,37 +1,25 @@
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { CodeStatus } from "src/constants";
-import { JwtPayload } from "src/modules/auth/interfaces/jwt-payload.interfact";
-import { ResponseToken } from "src/modules/auth/interfaces/response-token.interface";
+import { JwtPayload } from "../modules/auth/interfaces/jwt-payload.interfact";
+import { ResponseToken } from "../modules/auth/interfaces/response-token.interface";
 
-/**
- * This function format data json
- * @param message
- * @param data
- */
-export function getDataSuccess(code: CodeStatus, data: any, message = null) {
+export function getDataSuccess(status: boolean, data: any, message = null) {
   return {
-    code,
+    status,
     message,
     data,
     error: null,
   };
 }
 
-/**
- * This function format data json
- * @param message
- * @param data
- * @param result_code
- */
 export function getDataError(
-  code: CodeStatus,
+  status: boolean,
   error_code: string,
   data: any,
   message = null
 ) {
   return {
-    code,
+    status,
     message,
     data,
     error: error_code,

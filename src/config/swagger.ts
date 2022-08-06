@@ -5,8 +5,8 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 export const initSwagger = (app: INestApplication) => {
   const config = new ConfigService();
   const swaggerConfig = new DocumentBuilder()
-    .setTitle("API Document")
-    .setDescription("API description")
+    .setTitle("Tinder API Document")
+    .setDescription("Description of Tinder API clone app")
     .addServer(config.get("SWAGGER_API_SERVER"))
     .addBearerAuth()
     .build();

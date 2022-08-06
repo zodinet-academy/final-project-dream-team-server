@@ -1,4 +1,4 @@
-import { ResponseDto } from "src/common/response.dto";
+import { ResponseDto } from "../../../common/response.dto";
 
 export interface IOtpService {
   sendSmsOtp(phone: string): Promise<ResponseDto<string>>;
