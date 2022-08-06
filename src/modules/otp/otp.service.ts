@@ -99,6 +99,23 @@ export class OtpService implements IOtpService {
           "",
           "Verify OTP success"
         ) as ResponseDto<string>;
+
+      const timesLimit = this.configService.get("TIME_LIMIT");
+      const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
+        "0" + phone.nationalNumber
+      );
+
+      if (countTimesWrongOtp + 1 >= timesLimit) {
+        return getDataError(
+          CodeStatus.BadRequestException,
+          "EXCEED_TIMES_WRONG_OTP",
+          "Exceed times wrong otp",
+          ""
+        );
+      }
+
+      await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
+
       return getDataError(
         CodeStatus.NotAcceptable,
         "OTP_NOT_VALID",
@@ -144,7 +161,7 @@ export class OtpService implements IOtpService {
     } catch (error) {
       console.log(error);
       return getDataError(
-        CodeStatus.NotFountException,
+        CodeStatus.NotFound,
         "NO_OTP_FOR_THIS_PHONE",
         "No OTP found for this phone",
         error
