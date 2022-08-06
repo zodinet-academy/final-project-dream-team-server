@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { ResponseDto } from "src/common/response.dto";
 import { getDataError, getDataSuccess } from "src/common/utils";
-import { CodeStatus, OtpStatus } from "src/constants";
+import { OtpStatus } from "src/constants";
 import { Twilio } from "twilio";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
 import { IOtpService } from "./interfaces/otp-service.interface";
@@ -26,7 +26,7 @@ export class OtpService implements IOtpService {
 
     if (!isValidPhone)
       return getDataError(
-        CodeStatus.NotAcceptable,
+        false,
         "PHONE_NOT_CORRECT_FORM",
         "Phone not correct form.",
         ""
@@ -40,7 +40,7 @@ export class OtpService implements IOtpService {
 
     if (!isValidSendOtp)
       return getDataError(
-        CodeStatus.NotAcceptable,
+        false,
         "NOT_ALLOW_TO_CREATE_OTP",
         "Not allow to create otp. Please wait for a while.",
         ""
@@ -48,7 +48,7 @@ export class OtpService implements IOtpService {
 
     if (process.env.NODE_ENV === "local") {
       return getDataSuccess(
-        CodeStatus.Success,
+        false,
         "",
         "Please fill otp default"
       ) as ResponseDto<string>;
@@ -62,14 +62,14 @@ export class OtpService implements IOtpService {
 
       if (response && response.status === OtpStatus.PENDING) {
         return getDataSuccess(
-          CodeStatus.Success,
+          false,
           "",
           "Send OTP success."
         ) as ResponseDto<string>;
       }
     } catch (error) {
       return getDataError(
-        CodeStatus.InternalServerError,
+        false,
         "SEND_OTP_ERROR",
         "Please wait about 10 minutes and try to create a new otp.",
         ""
@@ -84,7 +84,7 @@ export class OtpService implements IOtpService {
     const isValid = isValidPhoneNumber(phoneNumber, "VN");
     if (!isValid)
       return getDataError(
-        CodeStatus.NotAcceptable,
+        false,
         "PHONE_NOT_CORRECT_FORM",
         "Phone not correct form.",
         ""
@@ -95,12 +95,12 @@ export class OtpService implements IOtpService {
     if (process.env.NODE_ENV === "local") {
       if (process.env.OTP_DEFAULT === verificationCode)
         return getDataSuccess(
-          CodeStatus.Success,
+          true,
           "",
           "Verify OTP success"
         ) as ResponseDto<string>;
       return getDataError(
-        CodeStatus.NotAcceptable,
+        false,
         "OTP_NOT_VALID",
         "OTP not valid",
         ""
@@ -123,7 +123,7 @@ export class OtpService implements IOtpService {
 
         if (countTimesWrongOtp + 1 >= timesLimit) {
           return getDataError(
-            CodeStatus.BadRequestException,
+            false,
             "EXCEED_TIMES_WRONG_OTP",
             "Exceed times wrong otp",
             ""
@@ -135,7 +135,7 @@ export class OtpService implements IOtpService {
         );
 
         return getDataError(
-          CodeStatus.NotAcceptable,
+          false,
           "OTP_NOT_VALID",
           "OTP not valid",
           ""
@@ -144,7 +144,7 @@ export class OtpService implements IOtpService {
     } catch (error) {
       console.log(error);
       return getDataError(
-        CodeStatus.NotFountException,
+        false,
         "NO_OTP_FOR_THIS_PHONE",
         "No OTP found for this phone",
         error
@@ -152,7 +152,7 @@ export class OtpService implements IOtpService {
     }
 
     return getDataSuccess(
-      CodeStatus.Success,
+      true,
       "",
       "Verify OTP success"
     ) as ResponseDto<string>;
