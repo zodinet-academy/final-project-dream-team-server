@@ -9,6 +9,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import databaseConfig from "./config/database.config";
 import { OtpModule } from "./modules/otp/otp.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
+import { SettingsModule } from "./modules/settings/settings.module";
 
 @Module({
   providers: [Logger],
@@ -43,6 +44,7 @@ import { MatchingUsersModule } from "./modules/matching-users/matching-users.mod
         config.get<TypeOrmModuleOptions>("database"),
       inject: [ConfigService],
     }),
+    SettingsModule,
   ],
 })
 export class AppModule {}

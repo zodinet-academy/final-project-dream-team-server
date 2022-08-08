@@ -10,7 +10,7 @@ import {
 import { DefaultEntity } from "../../../common/entity";
 import { GenderType } from "../../../constants";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
-@Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "users", synchronize: false }) // bat buoc co, false: migration bo qua,
 @Unique(["phone", "email"])
 export class UserEntity extends DefaultEntity implements IUserEntity {
   @Column({ type: "varchar", nullable: true })

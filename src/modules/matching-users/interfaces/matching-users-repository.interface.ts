@@ -1,5 +1,4 @@
 import { CommonRepository } from "../../../common/repository";
-import { FriendDto } from "../../users/dto/friend.dto";
 import { MatchingUsersEntity } from "../entities/matching-users.entity";
 
 export interface IMatchingUsersRepository

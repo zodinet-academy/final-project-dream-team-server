@@ -11,5 +11,5 @@ export class ResponseDto<T> {
   data?: T | T[];
 
   @ApiProperty({ example: "ERROR_UNKNOWN", type: String, required: false })
-  error: string;
+  error_code: string;
 }

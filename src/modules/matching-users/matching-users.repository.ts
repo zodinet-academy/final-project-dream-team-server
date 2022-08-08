@@ -27,7 +27,7 @@ export class MatchingUsersRepository
       throw new Error("ERROR WITH MATCHING USERS REPOSITORY");
     }
   }
-  getById(id: number): Promise<MatchingUsersEntity> {
+  getById(): Promise<MatchingUsersEntity> {
     throw new Error("Method not implemented.");
   }
   getAll(): Promise<MatchingUsersEntity[]> {
