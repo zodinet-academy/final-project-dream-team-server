@@ -10,6 +10,7 @@ import databaseConfig from "./config/database.config";
 import { OtpModule } from "./modules/otp/otp.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
 import { SettingsModule } from "./modules/settings/settings.module";
+import { SystemUsersModule } from "./modules/system-users/system-users.module";
 
 @Module({
   providers: [Logger],
@@ -45,6 +46,7 @@ import { SettingsModule } from "./modules/settings/settings.module";
       inject: [ConfigService],
     }),
     SettingsModule,
+    SystemUsersModule,
   ],
 })
 export class AppModule {}
