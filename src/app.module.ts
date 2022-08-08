@@ -9,6 +9,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 import databaseConfig from "./config/database.config";
 import { OtpModule } from "./modules/otp/otp.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
+import { ProductsModule } from "./modules/products/products.module";
 
 @Module({
   providers: [Logger],
@@ -18,6 +19,7 @@ import { MatchingUsersModule } from "./modules/matching-users/matching-users.mod
     OtpModule,
     AuthModule,
     MatchingUsersModule,
+    ProductsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],

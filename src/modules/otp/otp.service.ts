@@ -48,7 +48,7 @@ export class OtpService implements IOtpService {
 
     if (process.env.NODE_ENV === "local") {
       return getDataSuccess(
-        false,
+        true,
         "",
         "Please fill otp default"
       ) as ResponseDto<string>;
@@ -62,7 +62,7 @@ export class OtpService implements IOtpService {
 
       if (response && response.status === OtpStatus.PENDING) {
         return getDataSuccess(
-          false,
+          true,
           "",
           "Send OTP success."
         ) as ResponseDto<string>;
