@@ -1,3 +1,4 @@
+import { SystemUsersService } from "./../system-users/system-users.service";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { LoginTicket, TokenPayload } from "google-auth-library";
@@ -11,6 +12,12 @@ import { UserEntity } from "./../users/entities/user.entity";
 import { GoogleLoginDto } from "./dto/google-login.dto";
 import { IAuthService } from "./interfaces/auth-service.interface";
 import IGoogleResponse from "./interfaces/auth.interface";
+import { AdminLoginDto } from "./dto/admin-login.dto";
+import {
+  ERROR_UNKNOW,
+  ERROR_WRONG_USERNAME_OR_PASSWORD,
+} from "../../constants/code-response.constant";
+import { UserRoles } from "../../constants";
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -19,7 +26,8 @@ export class AuthService implements IAuthService {
   constructor(
     private otpService: OtpService,
     private usersService: UsersService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private readonly systemUsersService: SystemUsersService
   ) {
     const clientID = this.configService.get("CLIENT_ID");
     const clientSecret = this.configService.get("CLIENT_SECRET");
@@ -74,7 +82,7 @@ export class AuthService implements IAuthService {
 
     const user = await this.usersService.getUserByPhone(phone);
 
-    const jwtToken = await signToken(user.id, user.phone);
+    const jwtToken = await signToken(user.id, user.phone, UserRoles.USER);
     return getDataSuccess(
       true,
       jwtToken,
@@ -134,6 +142,28 @@ export class AuthService implements IAuthService {
       );
     } catch (error) {
       return getDataError(false, "ERROR_UNKNOW", error);
+    }
+  }
+
+  async adminLogin(adminLoginDto: AdminLoginDto): Promise<ResponseDto<string>> {
+    try {
+      const findData = await this.systemUsersService.findByUsernameAndPassword(
+        adminLoginDto
+      );
+      if (!findData)
+        return getDataError(false, ERROR_WRONG_USERNAME_OR_PASSWORD, "");
+      const jwtToken = await signToken(
+        findData.id,
+        findData.phone,
+        UserRoles.ADMIN
+      );
+      return getDataSuccess(
+        true,
+        jwtToken,
+        "Login success."
+      ) as ResponseDto<string>;
+    } catch (error) {
+      return getDataError(false, ERROR_UNKNOW, "");
     }
   }
 }

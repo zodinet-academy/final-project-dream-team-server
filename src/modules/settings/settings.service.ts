@@ -49,6 +49,11 @@ export class SettingsService implements ISettingService {
     }
   }
 
+  /**
+   * update setting
+   * @param updateSettingDto
+   * @returns setting after updated
+   */
   async updateSetting(
     updateSettingDto: UpdateSettingDto
   ): Promise<ResponseDto<string | SettingEntity>> {

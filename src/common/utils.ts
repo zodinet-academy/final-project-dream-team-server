@@ -1,5 +1,6 @@
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { UserRoles } from "../constants";
 import { JwtPayload } from "../modules/auth/interfaces/jwt-payload.interfact";
 import { ResponseToken } from "../modules/auth/interfaces/response-token.interface";
 
@@ -28,11 +29,13 @@ export function getDataError(
 
 export async function signToken(
   userId: string,
-  phone: string
+  phone: string,
+  role: UserRoles
 ): Promise<ResponseToken> {
   const payload: JwtPayload = {
     userId,
     phone,
+    role,
   };
   const config = new ConfigService();
   const jwt = new JwtService();

@@ -21,6 +21,7 @@ import {
 } from "./dto";
 import { MatchingUsersService } from "../matching-users/matching-users.service";
 import { FriendDto } from "./dto/friend.dto";
+import { UserRoles } from "../../constants";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -38,7 +39,7 @@ export class UsersService implements IUserService {
       const result = await this.usersRepository.save(
         this.usersRepository.create(dto)
       );
-      const jwtToken = await signToken(result.id, result.phone);
+      const jwtToken = await signToken(result.id, result.phone, UserRoles.USER);
       return getDataSuccess(
         true,
         jwtToken,

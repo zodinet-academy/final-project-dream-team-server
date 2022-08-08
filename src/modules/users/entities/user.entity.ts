@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
-import { GenderType } from "../../../constants";
+import { GenderEnum } from "../../../constants";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
 @Entity({ name: "users", synchronize: false }) // bat buoc co, false: migration bo qua,
 @Unique(["phone", "email"])
@@ -38,9 +38,9 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   phone: string;
 
   @Column({ type: "varchar", length: 10 })
-  @IsEnum(GenderType)
+  @IsEnum(GenderEnum)
   @AutoMap()
-  gender: GenderType;
+  gender: GenderEnum;
 
   @Column({ type: "boolean", default: false })
   @IsNotEmpty()
