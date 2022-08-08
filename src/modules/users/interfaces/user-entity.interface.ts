@@ -1,4 +1,4 @@
-import { GenderType } from "../../../constants";
+import { GenderEnum } from "../../../constants";
 
 export interface IUserEntity {
   id?: string;
@@ -7,7 +7,7 @@ export interface IUserEntity {
   fullname?: string;
   email?: string;
   phone?: string;
-  gender?: GenderType;
+  gender?: GenderEnum;
   isBlock?: boolean;
   balance?: number;
   lat?: number;
