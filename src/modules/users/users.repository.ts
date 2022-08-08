@@ -17,7 +17,7 @@ export class UsersRepository
 
     return result;
   }
-  getUserByFullName(fullname: string): Promise<UserEntity> {
+  getUserByFullName(): Promise<UserEntity> {
     throw new Error("Method not implemented.");
   }
 

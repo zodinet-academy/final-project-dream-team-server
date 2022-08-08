@@ -8,7 +8,7 @@ export function getDataSuccess(status: boolean, data: any, message = null) {
     status,
     message,
     data,
-    error: null,
+    error_code: null,
   };
 }
 
@@ -22,7 +22,7 @@ export function getDataError(
     status,
     message,
     data,
-    error: error_code,
+    error_code: error_code,
   };
 }
 
