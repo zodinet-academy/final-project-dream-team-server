@@ -1,5 +1,4 @@
 import { SettingsRepository } from "./settings.repositoty";
-import { ISettingService } from "./interfaces/settings-service.interface";
 import { Injectable } from "@nestjs/common";
 import { CreateSettingDto } from "./dto/create-setting.dto";
 import { UpdateSettingDto } from "./dto/update-setting.dto";
@@ -11,6 +10,7 @@ import {
   ERROR_DATA_NOT_FOUND,
   ERROR_UNKNOW,
 } from "../../constants/code-response.constant";
+import { ISettingService } from "./interfaces";
 
 @Injectable()
 export class SettingsService implements ISettingService {
