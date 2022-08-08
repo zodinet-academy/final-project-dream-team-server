@@ -4,7 +4,7 @@ import { Column, Entity } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
 import { IProductImagesEntity } from "../interfaces/product-images-entity.interface";
 
-@Entity({ name: "product_images", synchronize: true })
+@Entity({ name: "productImages", synchronize: true })
 export class ProductImagesEntity
   extends DefaultEntity
   implements IProductImagesEntity {

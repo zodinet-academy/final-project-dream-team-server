@@ -8,10 +8,10 @@ export class MatchingUsersRepository
   implements IMatchingUsersRepository {
   async getListFriends(id: string): Promise<string[]> {
     try {
-      const query = this.createQueryBuilder("matching_users").andWhere(
+      const query = this.createQueryBuilder("matchingUsers").andWhere(
         new Brackets((qb) => {
-          qb.where(`matching_users.friendId = '${id}'`).orWhere(
-            `matching_users.userId ='${id}'`
+          qb.where(`matchingUsers.friendId = '${id}'`).orWhere(
+            `matchingUsers.userId ='${id}'`
           );
         })
       );

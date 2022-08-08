@@ -10,12 +10,10 @@ import {
   UploadedFile,
   UploadedFiles,
   UseInterceptors,
-  UsePipes,
 } from "@nestjs/common";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { ResponseDto } from "../../common/response.dto";
-import { ParseFile } from "./decorator/parse-file.pipe";
 import {
   AddImageProductDto,
   CreateProductDto,
@@ -92,7 +90,7 @@ export class ProductsController {
   })
   addImageProduct(
     @Body() dto: AddImageProductDto,
-    @UploadedFile(ParseFile) file: Express.Multer.File
+    @UploadedFile() file: Express.Multer.File
   ) {
     if (!file)
       throw new BadRequestException(["file is require"], "Validation failt");
