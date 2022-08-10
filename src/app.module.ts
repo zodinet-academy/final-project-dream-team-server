@@ -11,6 +11,7 @@ import { OtpModule } from "./modules/otp/otp.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
 import { SettingsModule } from "./modules/settings/settings.module";
 import { SystemUsersModule } from "./modules/system-users/system-users.module";
+import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 
 @Module({
   providers: [Logger],
@@ -47,6 +48,7 @@ import { SystemUsersModule } from "./modules/system-users/system-users.module";
     }),
     SettingsModule,
     SystemUsersModule,
+    UserLocationsModule,
   ],
 })
 export class AppModule {}

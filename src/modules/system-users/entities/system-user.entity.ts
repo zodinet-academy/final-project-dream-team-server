@@ -5,7 +5,7 @@ import { DefaultEntity } from "../../../common/entity";
 import { GenderEnum } from "../../../constants";
 import { ISystemUserEntity } from "../interfaces/system-user-entity.interface";
 
-@Entity({ name: "system_users", synchronize: true }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "system_users", synchronize: false }) // bat buoc co, false: migration bo qua,
 export class SystemUserEntity
   extends DefaultEntity
   implements ISystemUserEntity {

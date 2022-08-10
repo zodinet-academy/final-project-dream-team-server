@@ -65,7 +65,7 @@ export class AuthService implements IAuthService {
   }
 
   async loginNormal(phone: string, code: string) {
-    const isExist = this.checkUserExist(phone);
+    const isExist = await this.checkUserExist(phone);
     if (!isExist)
       return getDataError(
         false,
@@ -81,8 +81,7 @@ export class AuthService implements IAuthService {
     }
 
     const user = await this.usersService.getUserByPhone(phone);
-
-    const jwtToken = await signToken(user.id, user.phone, UserRoles.USER);
+    const jwtToken = await signToken(user?.id, user?.phone, UserRoles.USER);
     return getDataSuccess(
       true,
       jwtToken,

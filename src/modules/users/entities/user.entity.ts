@@ -10,7 +10,7 @@ import {
 import { DefaultEntity } from "../../../common/entity";
 import { GenderEnum } from "../../../constants";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
-@Entity({ name: "users", synchronize: false }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
 @Unique(["phone", "email"])
 export class UserEntity extends DefaultEntity implements IUserEntity {
   @Column({ type: "varchar", nullable: true })
@@ -51,16 +51,6 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @IsNotEmpty()
   @AutoMap()
   balance: number;
-
-  @Column({ type: "float", default: 0 })
-  @IsNotEmpty()
-  @AutoMap()
-  lat: number;
-
-  @Column({ type: "float", default: 0 })
-  @IsNotEmpty()
-  @AutoMap()
-  lng: number;
 
   @UpdateDateColumn({ name: "updatedAt", type: "timestamp" })
   @AutoMap()

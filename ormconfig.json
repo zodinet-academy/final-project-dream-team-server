@@ -5,7 +5,7 @@
   "username": "postgres",
   "password": "password",
   "database": "tinder",
-  "synchronize": true,
+  "synchronize": false,
   "logging": false,
   "entities": ["src/modules/**/entities/**.entity{.ts,.js}"],
   "migrations": ["src/database/migrations/*{.ts,.js}"],
