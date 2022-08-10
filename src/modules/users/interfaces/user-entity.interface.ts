@@ -10,7 +10,5 @@ export interface IUserEntity {
   gender?: GenderEnum;
   isBlock?: boolean;
   balance?: number;
-  lat?: number;
-  lng?: number;
   deletedAt?: Date;
 }
