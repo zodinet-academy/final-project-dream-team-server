@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
-import { GenderEnum } from "../../../constants";
+import { GenderEnum } from "../../../constants/enum";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
 @Unique(["phone", "email"])

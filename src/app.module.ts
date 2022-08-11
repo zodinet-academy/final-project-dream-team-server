@@ -12,6 +12,7 @@ import { MatchingUsersModule } from "./modules/matching-users/matching-users.mod
 import { SettingsModule } from "./modules/settings/settings.module";
 import { SystemUsersModule } from "./modules/system-users/system-users.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
+import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 
 @Module({
   providers: [Logger],
@@ -49,6 +50,7 @@ import { UserLocationsModule } from "./modules/user-locations/user-locations.mod
     SettingsModule,
     SystemUsersModule,
     UserLocationsModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}

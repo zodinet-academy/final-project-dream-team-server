@@ -5,7 +5,7 @@ import {
 } from "./../../common/helper/hash.helper";
 import { SystemUsersRepository } from "./system-users.repository";
 import { Injectable } from "@nestjs/common";
-import { getDataError, getDataSuccess } from "../../common/utils";
+import { responseData } from "../../common/utils";
 import {
   DATA_DELETED,
   ERROR_DATA_NOT_FOUND,
@@ -31,17 +31,17 @@ export class SystemUsersService implements ISystemUsersService {
       const result = await this.systemUsersRepository.save(
         this.systemUsersRepository.create(createSystemUserDto)
       );
-      return getDataSuccess(true, result);
+      return responseData(result);
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, error.message);
+      return responseData(null, error.message, ERROR_UNKNOW);
     }
   }
 
   async findAll(): Promise<ResponseDto<ISystemUserEntity[] | string>> {
     try {
-      return getDataSuccess(true, await this.systemUsersRepository.find({}));
+      return responseData(await this.systemUsersRepository.find({}));
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, error.message);
+      return responseData(null, error.message, ERROR_UNKNOW);
     }
   }
 
@@ -49,12 +49,9 @@ export class SystemUsersService implements ISystemUsersService {
     id: string
   ): Promise<ResponseDto<ISystemUserEntity | undefined | string>> {
     try {
-      return getDataSuccess(
-        true,
-        await this.systemUsersRepository.findByIds([id])
-      );
+      return responseData(await this.systemUsersRepository.findByIds([id]));
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, error.message);
+      return responseData(null, error.message, ERROR_UNKNOW);
     }
   }
 
@@ -65,26 +62,25 @@ export class SystemUsersService implements ISystemUsersService {
     try {
       const findData = await this.findOne(id);
       if (!findData.status) return findData;
-      if (!findData.data) return getDataError(false, ERROR_DATA_NOT_FOUND, "");
+      if (!findData.data) return responseData(null, null, ERROR_DATA_NOT_FOUND);
       const data = findData.data as ISystemUserEntity;
-      return getDataSuccess(
-        true,
+      return responseData(
         await this.systemUsersRepository.save({
           id: data.id,
           ...updateSystemUserDto,
         })
       );
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, error.message);
+      return responseData(null, error.message, ERROR_UNKNOW);
     }
   }
 
   async remove(id: string): Promise<ResponseDto<string>> {
     try {
       await this.systemUsersRepository.softDelete(id);
-      return getDataSuccess(true, DATA_DELETED);
+      return responseData(DATA_DELETED);
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, error.message);
+      return responseData(null, error.message, ERROR_UNKNOW);
     }
   }
 

@@ -1,4 +1,4 @@
-import { GenderEnum } from "../../../constants";
+import { GenderEnum } from "../../../constants/enum";
 
 export interface IUserEntity {
   id?: string;

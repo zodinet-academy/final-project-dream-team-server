@@ -15,7 +15,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import { UserRoles } from "../../constants";
+import { UserRolesEnum } from "../../constants/enum";
 import { GetUser, Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
 import { CreateUserLocationDto } from "./dto/create-user-location.dto";
@@ -25,7 +25,7 @@ import { UserLocationsService } from "./user-locations.service";
 @ApiTags("user_locations")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
-@Roles(UserRoles.USER)
+@Roles(UserRolesEnum.USER)
 export class UserLocationsController {
   constructor(private readonly userLocationsService: UserLocationsService) {}
 

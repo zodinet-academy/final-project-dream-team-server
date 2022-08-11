@@ -1,7 +1,7 @@
 import { Point } from "geojson";
 import { Injectable } from "@nestjs/common";
 import { ResponseDto } from "../../common/response.dto";
-import { getDataError, getDataSuccess } from "../../common/utils";
+import { responseData } from "../../common/utils";
 import { SettingEntity } from "../settings/entities/setting.entity";
 import { SettingsService } from "../settings/settings.service";
 import {
@@ -40,8 +40,7 @@ export class UserLocationsService implements IUserLocationsService {
       };
 
       if (!findData)
-        return getDataSuccess(
-          true,
+        return responseData(
           await this.userLocationsRepository.save(
             this.userLocationsRepository.create({
               userId,
@@ -51,8 +50,7 @@ export class UserLocationsService implements IUserLocationsService {
           )
         );
 
-      return getDataSuccess(
-        true,
+      return responseData(
         await this.userLocationsRepository.save({
           id: findData.id,
           location: pointObject,
@@ -60,7 +58,7 @@ export class UserLocationsService implements IUserLocationsService {
         })
       );
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, error.message);
+      return responseData(null, error.message, ERROR_UNKNOW);
     }
   }
 
@@ -69,7 +67,7 @@ export class UserLocationsService implements IUserLocationsService {
       const findData = await this.userLocationsRepository.findOne({
         userId: userId,
       });
-      if (!findData) return getDataError(false, ERROR_DATA_NOT_FOUND, "");
+      if (!findData) return responseData(null, null, ERROR_DATA_NOT_FOUND);
 
       const findSetting: ResponseDto<
         SettingEntity | string
@@ -101,7 +99,7 @@ export class UserLocationsService implements IUserLocationsService {
         .getRawMany();
       return locations;
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, error.message);
+      return responseData(null, error.message, ERROR_UNKNOW);
     }
   }
 

@@ -1,36 +1,22 @@
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-import { UserRoles } from "../constants";
+import { UserRolesEnum } from "../constants/enum";
 import { JwtPayload } from "../modules/auth/interfaces/jwt-payload.interfact";
 import { ResponseToken } from "../modules/auth/interfaces/response-token.interface";
 
-export function getDataSuccess(status: boolean, data: any, message = null) {
+export function responseData(data: any, message = null, error_code?: string) {
   return {
-    status,
+    status: error_code ? false : true,
     message,
     data,
-    error_code: null,
-  };
-}
-
-export function getDataError(
-  status: boolean,
-  error_code: string,
-  data: any,
-  message = null
-) {
-  return {
-    status,
-    message,
-    data,
-    error_code: error_code,
+    error_code,
   };
 }
 
 export async function signToken(
   userId: string,
   phone: string,
-  role: UserRoles
+  role: UserRolesEnum
 ): Promise<ResponseToken> {
   const payload: JwtPayload = {
     userId,

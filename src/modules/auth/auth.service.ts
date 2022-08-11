@@ -5,7 +5,7 @@ import { LoginTicket, TokenPayload } from "google-auth-library";
 import { Auth, google } from "googleapis";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { ResponseDto } from "../../common/response.dto";
-import { getDataError, getDataSuccess, signToken } from "../../common/utils";
+import { responseData, signToken } from "../../common/utils";
 import { UsersService } from "../users/users.service";
 import { OtpService } from "./../otp/otp.service";
 import { UserEntity } from "./../users/entities/user.entity";
@@ -17,7 +17,7 @@ import {
   ERROR_UNKNOW,
   ERROR_WRONG_USERNAME_OR_PASSWORD,
 } from "../../constants/code-response.constant";
-import { UserRoles } from "../../constants";
+import { UserRolesEnum } from "../../constants/enum";
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -39,20 +39,18 @@ export class AuthService implements IAuthService {
     const isValid = isValidPhoneNumber(phone, "VN");
 
     if (!isValid)
-      return getDataError(
-        false,
-        "PHONE_NOT_CORRECT_FORM",
+      return responseData(
         "Phone not correct form.",
-        ""
+        null,
+        "PHONE_NOT_CORRECT_FORM"
       ) as ResponseDto<string>;
 
     const isExist = await this.checkUserExist(phone);
     if (!isExist)
-      return getDataError(
-        false,
-        "PHONE_NOT_FOUND",
+      return responseData(
+        null,
         "Phone not found.",
-        ""
+        "PHONE_NOT_FOUND"
       ) as ResponseDto<string>;
 
     const response = await this.otpService.sendSmsOtp(phone);
@@ -61,17 +59,16 @@ export class AuthService implements IAuthService {
       return response;
     }
 
-    return getDataSuccess(false, "", "Send OTP success") as ResponseDto<string>;
+    return responseData("Send OTP success") as ResponseDto<string>;
   }
 
   async loginNormal(phone: string, code: string) {
     const isExist = await this.checkUserExist(phone);
     if (!isExist)
-      return getDataError(
-        false,
-        "PHONE_NOT_FOUND",
+      return responseData(
+        null,
         "Phone not found.",
-        ""
+        "PHONE_NOT_FOUND"
       ) as ResponseDto<string>;
 
     const respone = await this.otpService.confirmOtp(phone, code);
@@ -81,12 +78,8 @@ export class AuthService implements IAuthService {
     }
 
     const user = await this.usersService.getUserByPhone(phone);
-    const jwtToken = await signToken(user?.id, user?.phone, UserRoles.USER);
-    return getDataSuccess(
-      true,
-      jwtToken,
-      "Login success."
-    ) as ResponseDto<string>;
+    const jwtToken = await signToken(user?.id, user?.phone, UserRolesEnum.USER);
+    return responseData(jwtToken) as ResponseDto<string>;
   }
 
   async checkUserExist(phone: string): Promise<boolean> {
@@ -109,9 +102,9 @@ export class AuthService implements IAuthService {
         fullname: `${payload.family_name} ${payload.given_name}`,
         nickname: payload.name,
       };
-      return getDataSuccess(true, googleResponse);
+      return responseData(googleResponse);
     } catch (error) {
-      return getDataError(true, "ERROR_UNKNOW", error);
+      return responseData(null, null, "ERROR_UNKNOW");
     }
   }
 
@@ -131,16 +124,12 @@ export class AuthService implements IAuthService {
       }
 
       const { phone } = findData.data as UserEntity;
-      return getDataSuccess(
-        true,
-        {
-          isNewUsers: false,
-          sentOtp: await this.otpService.sendSmsOtp(phone),
-        },
-        ""
-      );
+      return responseData({
+        isNewUsers: false,
+        sentOtp: await this.otpService.sendSmsOtp(phone),
+      });
     } catch (error) {
-      return getDataError(false, "ERROR_UNKNOW", error);
+      return responseData(null, null, "ERROR_UNKNOW");
     }
   }
 
@@ -150,19 +139,15 @@ export class AuthService implements IAuthService {
         adminLoginDto
       );
       if (!findData)
-        return getDataError(false, ERROR_WRONG_USERNAME_OR_PASSWORD, "");
+        return responseData(null, null, ERROR_WRONG_USERNAME_OR_PASSWORD);
       const jwtToken = await signToken(
         findData.id,
         findData.phone,
-        UserRoles.ADMIN
+        UserRolesEnum.ADMIN
       );
-      return getDataSuccess(
-        true,
-        jwtToken,
-        "Login success."
-      ) as ResponseDto<string>;
+      return responseData(jwtToken) as ResponseDto<string>;
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, "");
+      return responseData(null, null, ERROR_UNKNOW);
     }
   }
 }

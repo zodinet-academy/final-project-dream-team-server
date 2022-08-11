@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Observable } from "rxjs";
-import { UserRoles } from "../../../constants";
+import { UserRolesEnum } from "../../../constants/enum";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -9,7 +9,7 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const roles = this.reflector.getAllAndOverride<UserRoles[]>("roles", [
+    const roles = this.reflector.getAllAndOverride<UserRolesEnum[]>("roles", [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -22,7 +22,7 @@ export class RolesGuard implements CanActivate {
     if (!user || !user.role) return false;
     return this.matchRoles(roles, user.role);
   }
-  matchRoles(roles: UserRoles[], role: string) {
+  matchRoles(roles: UserRolesEnum[], role: string) {
     return roles.find((el) => el === role) ? true : false;
   }
 }

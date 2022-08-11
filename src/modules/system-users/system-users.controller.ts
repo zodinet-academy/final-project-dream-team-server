@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { UserRoles } from "../../constants";
+import { UserRolesEnum } from "../../constants/enum";
 import { Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
 import { CreateSystemUserDto } from "./dto/create-system-user.dto";
@@ -20,7 +20,7 @@ import { SystemUsersService } from "./system-users.service";
 @ApiTags("system_users")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
-@Roles(UserRoles.ADMIN)
+@Roles(UserRolesEnum.ADMIN)
 export class SystemUsersController {
   constructor(private readonly systemUsersService: SystemUsersService) {}
 

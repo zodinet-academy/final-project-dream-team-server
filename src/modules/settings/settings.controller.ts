@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { UserRoles } from "../../constants";
+import { UserRolesEnum } from "../../constants/enum";
 import { Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
 import { CreateSettingDto } from "./dto/create-setting.dto";
@@ -11,7 +11,7 @@ import { SettingsService } from "./settings.service";
 @ApiTags("settings")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
-@Roles(UserRoles.ADMIN)
+@Roles(UserRolesEnum.ADMIN)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 

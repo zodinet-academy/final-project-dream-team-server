@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { Twilio } from "twilio";
 import { ResponseDto } from "../../common/response.dto";
-import { getDataError, getDataSuccess } from "../../common/utils";
+import { responseData } from "../../common/utils";
 import { OtpStatus } from "../../constants";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
 import { IOtpService } from "./interfaces/otp-service.interface";
@@ -25,11 +25,10 @@ export class OtpService implements IOtpService {
     const isValidPhone = isValidPhoneNumber(phoneNumber, "VN");
 
     if (!isValidPhone)
-      return getDataError(
-        false,
-        "PHONE_NOT_CORRECT_FORM",
-        "Phone not correct form.",
-        ""
+      return responseData(
+        null,
+        null,
+        "PHONE_NOT_CORRECT_FORM"
       ) as ResponseDto<string>;
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
@@ -39,19 +38,14 @@ export class OtpService implements IOtpService {
     );
 
     if (!isValidSendOtp)
-      return getDataError(
-        false,
-        "NOT_ALLOW_TO_CREATE_OTP",
-        "Not allow to create otp. Please wait for a while.",
-        ""
+      return responseData(
+        null,
+        null,
+        "NOT_ALLOW_TO_CREATE_OTP"
       ) as ResponseDto<string>;
 
     if (process.env.NODE_ENV === "local") {
-      return getDataSuccess(
-        false,
-        "",
-        "Please fill otp default"
-      ) as ResponseDto<string>;
+      return responseData("Please fill otp default") as ResponseDto<string>;
     }
     const serviceSid = this.configService.get("TWILIO_MESSAGING_SERVICES_SID");
 
@@ -61,18 +55,13 @@ export class OtpService implements IOtpService {
         .verifications.create({ to: phone.number, channel: "sms" });
 
       if (response && response.status === OtpStatus.PENDING) {
-        return getDataSuccess(
-          false,
-          "",
-          "Send OTP success."
-        ) as ResponseDto<string>;
+        return responseData("Send OTP success.") as ResponseDto<string>;
       }
     } catch (error) {
-      return getDataError(
-        false,
-        "SEND_OTP_ERROR",
+      return responseData(
+        null,
         "Please wait about 10 minutes and try to create a new otp.",
-        ""
+        "SEND_OTP_ERROR"
       ) as ResponseDto<string>;
     }
   }
@@ -83,22 +72,17 @@ export class OtpService implements IOtpService {
   ): Promise<ResponseDto<string>> {
     const isValid = isValidPhoneNumber(phoneNumber, "VN");
     if (!isValid)
-      return getDataError(
-        false,
-        "PHONE_NOT_CORRECT_FORM",
+      return responseData(
+        null,
         "Phone not correct form.",
-        ""
+        "PHONE_NOT_CORRECT_FORM"
       ) as ResponseDto<string>;
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
     if (process.env.NODE_ENV === "local") {
       if (process.env.OTP_DEFAULT === verificationCode)
-        return getDataSuccess(
-          true,
-          "",
-          "Verify OTP success"
-        ) as ResponseDto<string>;
+        return responseData("Verify OTP success") as ResponseDto<string>;
 
       const timesLimit = this.configService.get("TIME_LIMIT");
       const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
@@ -106,21 +90,19 @@ export class OtpService implements IOtpService {
       );
 
       if (countTimesWrongOtp + 1 >= timesLimit) {
-        return getDataError(
-          false,
-          "EXCEED_TIMES_WRONG_OTP",
+        return responseData(
+          null,
           "Exceed times wrong otp",
-          ""
+          "EXCEED_TIMES_WRONG_OTP"
         );
       }
 
       await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
 
-      return getDataError(
-        false,
-        "OTP_NOT_VALID",
+      return responseData(
+        null,
         "OTP not valid",
-        ""
+        "OTP_NOT_VALID"
       ) as ResponseDto<string>;
     }
     const serviceSid = this.configService.get("TWILIO_MESSAGING_SERVICES_SID");
@@ -139,11 +121,10 @@ export class OtpService implements IOtpService {
         );
 
         if (countTimesWrongOtp + 1 >= timesLimit) {
-          return getDataError(
-            false,
-            "EXCEED_TIMES_WRONG_OTP",
+          return responseData(
+            null,
             "Exceed times wrong otp",
-            ""
+            "EXCEED_TIMES_WRONG_OTP"
           );
         }
 
@@ -151,27 +132,21 @@ export class OtpService implements IOtpService {
           "0" + phone.nationalNumber
         );
 
-        return getDataError(
-          false,
-          "OTP_NOT_VALID",
+        return responseData(
+          null,
           "OTP not valid",
-          ""
+          "OTP_NOT_VALID"
         ) as ResponseDto<string>;
       }
     } catch (error) {
       console.log(error);
-      return getDataError(
-        false,
-        "NO_OTP_FOR_THIS_PHONE",
+      return responseData(
+        null,
         "No OTP found for this phone",
-        error
+        "NO_OTP_FOR_THIS_PHONE"
       ) as ResponseDto<string>;
     }
 
-    return getDataSuccess(
-      true,
-      "",
-      "Verify OTP success"
-    ) as ResponseDto<string>;
+    return responseData(true, "", "Verify OTP success") as ResponseDto<string>;
   }
 }

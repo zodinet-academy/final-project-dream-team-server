@@ -1,6 +1,6 @@
 import { IUserService } from "./interfaces/user-service.interface";
 import { Injectable } from "@nestjs/common";
-import { getDataError, getDataSuccess, signToken } from "../../common/utils";
+import { responseData, signToken } from "../../common/utils";
 import { ResponseDto } from "../../common/response.dto";
 import {
   CHECK_PHONE_GET_OTP,
@@ -21,7 +21,7 @@ import {
 } from "./dto";
 import { MatchingUsersService } from "../matching-users/matching-users.service";
 import { FriendDto } from "./dto/friend.dto";
-import { UserRoles } from "../../constants";
+import { UserRolesEnum } from "../../constants/enum";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -39,14 +39,14 @@ export class UsersService implements IUserService {
       const result = await this.usersRepository.save(
         this.usersRepository.create(dto)
       );
-      const jwtToken = await signToken(result.id, result.phone, UserRoles.USER);
-      return getDataSuccess(
-        true,
-        jwtToken,
-        "Login luon."
-      ) as ResponseDto<string>;
+      const jwtToken = await signToken(
+        result.id,
+        result.phone,
+        UserRolesEnum.USER
+      );
+      return responseData(jwtToken, "Login luon.") as ResponseDto<string>;
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, null);
+      return responseData(null, null, ERROR_UNKNOW);
     }
   }
 
@@ -56,13 +56,13 @@ export class UsersService implements IUserService {
         phone: dto.phone,
       });
       if (userExisted) {
-        return getDataError(false, ERROR_USER_EXISTED, "");
+        return responseData(null, "", ERROR_USER_EXISTED);
       }
       const result = await this.otpService.sendSmsOtp(dto.phone);
-      if (!result.status) return getDataError(false, ERROR_UNKNOW, "");
-      return getDataSuccess(true, CHECK_PHONE_GET_OTP);
+      if (!result.status) return responseData(null, null, ERROR_UNKNOW);
+      return responseData(CHECK_PHONE_GET_OTP);
     } catch (error) {
-      return getDataError(false, ERROR_UNKNOW, null);
+      return responseData(null, null, ERROR_UNKNOW);
     }
   }
 
@@ -78,7 +78,7 @@ export class UsersService implements IUserService {
   async getPublicById(id: string): Promise<ResponseDto<UserEntity>> {
     try {
       const user = await this.usersRepository.findOne(id);
-      if (!user) return getDataError(false, "ERROR_USER_NOT_FOUND", null);
+      if (!user) return responseData(null, null, "ERROR_USER_NOT_FOUND");
       const userPublic: ResponsePublicUserInterface = {
         id: user.id,
         avatar: user.avatar,
@@ -86,9 +86,9 @@ export class UsersService implements IUserService {
         phone: user.phone,
         gender: user.gender,
       };
-      return getDataSuccess(true, userPublic);
+      return responseData(userPublic);
     } catch (error) {
-      return getDataError(false, "error_unknow", error);
+      return responseData(null, null, "error_unknow");
     }
   }
 
@@ -96,7 +96,7 @@ export class UsersService implements IUserService {
     try {
       const user = await this.usersRepository.findOne({ phone: phone });
 
-      if (!user) throw getDataError(false, "ERROR_USER_NOT_FOUND", null);
+      if (!user) throw responseData(null, null, "ERROR_USER_NOT_FOUND");
       return user;
     } catch (error) {
       return null;
@@ -107,8 +107,8 @@ export class UsersService implements IUserService {
       const user = await this.usersRepository.findOne({
         where: { email: email },
       });
-      if (!user) return getDataError(false, "ERROR_USER_NOT_FOUND", null);
-      return getDataSuccess(true, user, null);
+      if (!user) return responseData(null, null, "ERROR_USER_NOT_FOUND");
+      return responseData(user, null);
     } catch (error) {
       return error;
     }
@@ -128,9 +128,9 @@ export class UsersService implements IUserService {
         });
       }
 
-      return getDataSuccess(null, "Your profile has been updated!");
+      return responseData(null, "Your profile has been updated!");
     } catch (error) {
-      return getDataError(false, "ERROR_USER_NOT_FOUND", null);
+      return responseData(null, null, "ERROR_USER_NOT_FOUND");
     }
   }
 
@@ -149,9 +149,9 @@ export class UsersService implements IUserService {
         await this.usersRepository.delete(userId);
       }
 
-      return getDataSuccess(null, "Your profile has been deleted!");
+      return responseData(null, "Your profile has been deleted!");
     } catch (error) {
-      return getDataError(false, "ERROR_USER_NOT_FOUND", null);
+      return responseData(null, null, "ERROR_USER_NOT_FOUND");
     }
   }
 
@@ -165,19 +165,13 @@ export class UsersService implements IUserService {
         listFriendsId
       );
 
-      return getDataSuccess(
-        true,
+      return responseData(
         this.mapper.mapArray(listUserEntities, UserEntity, FriendDto),
         ""
       );
     } catch (error) {
       console.log(error);
-      return getDataError(
-        false,
-        "ERROR_UNKNOWN",
-        "",
-        "An error has occoured in server."
-      );
+      return responseData(null, null, "ERROR_UNKNOWN");
     }
   }
 
@@ -186,17 +180,12 @@ export class UsersService implements IUserService {
       const user = await this.usersRepository.findOne({
         where: { email: email },
       });
-      return getDataSuccess(true, {
+      return responseData({
         isNewUser: user ? false : true,
       });
     } catch (error) {
       console.log(error);
-      return getDataError(
-        false,
-        "ERROR_UNKNOWN",
-        "",
-        "An error has occoured in server."
-      );
+      return responseData(null, null, "ERROR_UNKNOWN");
     }
   }
 }

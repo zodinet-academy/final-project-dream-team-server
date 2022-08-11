@@ -1,6 +1,13 @@
-import { UserRoles } from "./../../../constants/roles.enum";
+import { UserRolesEnum } from "../../../constants/enum";
+
 export interface JwtPayload {
   userId: string;
   phone: string;
-  role: UserRoles;
+  role: UserRolesEnum;
+}
+export interface IJwtServicePayload {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
 }
