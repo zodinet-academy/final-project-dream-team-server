@@ -4,13 +4,12 @@
   "port": 5432,
   "username": "postgres",
   "password": "password",
-  "database": "tinder",
+  "database": "dream_team",
   "synchronize": false,
   "logging": false,
   "entities": ["src/modules/**/entities/**.entity{.ts,.js}"],
   "migrations": ["src/database/migrations/*{.ts,.js}"],
   "cli": {
     "migrationsDir": "src/database/migrations"
-  },
-  "factories": ["src/database/factories/*{.ts,.js}"]
+  }
 }

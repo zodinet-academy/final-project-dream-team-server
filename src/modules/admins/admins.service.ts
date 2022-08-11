@@ -1,9 +1,7 @@
-import { ISystemUsersService } from "./interfaces/system-users-service.interface";
 import {
   hashPasswords,
   comparePassword,
-} from "./../../common/helper/hash.helper";
-import { SystemUsersRepository } from "./system-users.repository";
+} from "../../common/helper/hash.helper";
 import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
 import {
@@ -11,25 +9,25 @@ import {
   ERROR_DATA_NOT_FOUND,
   ERROR_UNKNOW,
 } from "../../constants/code-response.constant";
-import { CreateSystemUserDto } from "./dto/create-system-user.dto";
-import { UpdateSystemUserDto } from "./dto/update-system-user.dto";
+
 import { ResponseDto } from "../../common/response.dto";
-import { ISystemUserEntity } from "./interfaces/system-user-entity.interface";
 import { AdminLoginDto } from "../auth/dto/admin-login.dto";
+import { AdminsRepository } from "./admins.repository";
+import { IAdminEntity, IAdminsService } from "./interfaces";
+import { CreateAdminsDto } from "./dto/create-admins.dto";
+import { UpdateAdminsDto } from "./dto/update-admins.dto";
 
 @Injectable()
-export class SystemUsersService implements ISystemUsersService {
-  constructor(private readonly systemUsersRepository: SystemUsersRepository) {}
+export class AdminsService implements IAdminsService {
+  constructor(private readonly adminsRepository: AdminsRepository) {}
 
   async create(
-    createSystemUserDto: CreateSystemUserDto
-  ): Promise<ResponseDto<ISystemUserEntity | string>> {
+    createAdminsDto: CreateAdminsDto
+  ): Promise<ResponseDto<IAdminEntity | string>> {
     try {
-      createSystemUserDto.password = hashPasswords(
-        createSystemUserDto.password
-      );
-      const result = await this.systemUsersRepository.save(
-        this.systemUsersRepository.create(createSystemUserDto)
+      createAdminsDto.password = hashPasswords(createAdminsDto.password);
+      const result = await this.adminsRepository.save(
+        this.adminsRepository.create(createAdminsDto)
       );
       return responseData(result);
     } catch (error) {
@@ -37,9 +35,9 @@ export class SystemUsersService implements ISystemUsersService {
     }
   }
 
-  async findAll(): Promise<ResponseDto<ISystemUserEntity[] | string>> {
+  async findAll(): Promise<ResponseDto<IAdminEntity[] | string>> {
     try {
-      return responseData(await this.systemUsersRepository.find({}));
+      return responseData(await this.adminsRepository.find({}));
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOW);
     }
@@ -47,9 +45,9 @@ export class SystemUsersService implements ISystemUsersService {
 
   async findOne(
     id: string
-  ): Promise<ResponseDto<ISystemUserEntity | undefined | string>> {
+  ): Promise<ResponseDto<IAdminEntity | undefined | string>> {
     try {
-      return responseData(await this.systemUsersRepository.findByIds([id]));
+      return responseData(await this.adminsRepository.findByIds([id]));
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOW);
     }
@@ -57,17 +55,17 @@ export class SystemUsersService implements ISystemUsersService {
 
   async update(
     id: string,
-    updateSystemUserDto: UpdateSystemUserDto
-  ): Promise<ResponseDto<ISystemUserEntity | string>> {
+    updateAdminDto: UpdateAdminsDto
+  ): Promise<ResponseDto<IAdminEntity | string>> {
     try {
       const findData = await this.findOne(id);
       if (!findData.status) return findData;
       if (!findData.data) return responseData(null, null, ERROR_DATA_NOT_FOUND);
-      const data = findData.data as ISystemUserEntity;
+      const data = findData.data as IAdminEntity;
       return responseData(
-        await this.systemUsersRepository.save({
+        await this.adminsRepository.save({
           id: data.id,
-          ...updateSystemUserDto,
+          ...updateAdminDto,
         })
       );
     } catch (error) {
@@ -77,7 +75,7 @@ export class SystemUsersService implements ISystemUsersService {
 
   async remove(id: string): Promise<ResponseDto<string>> {
     try {
-      await this.systemUsersRepository.softDelete(id);
+      await this.adminsRepository.softDelete(id);
       return responseData(DATA_DELETED);
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOW);
@@ -86,8 +84,8 @@ export class SystemUsersService implements ISystemUsersService {
 
   async findByUsernameAndPassword(
     adminLoginDto: AdminLoginDto
-  ): Promise<ISystemUserEntity | undefined> {
-    const findData = await this.systemUsersRepository.findOne({
+  ): Promise<IAdminEntity | undefined> {
+    const findData = await this.adminsRepository.findOne({
       where: {
         username: adminLoginDto.username,
       },

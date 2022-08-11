@@ -82,7 +82,6 @@ export class UsersService implements IUserService {
       const userPublic: ResponsePublicUserInterface = {
         id: user.id,
         avatar: user.avatar,
-        nickname: user.nickname,
         phone: user.phone,
         gender: user.gender,
       };

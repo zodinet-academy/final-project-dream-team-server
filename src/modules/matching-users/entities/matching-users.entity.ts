@@ -3,7 +3,7 @@ import { Column, Entity } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
 import { IMatchingUsersEntity } from "../interfaces";
 
-@Entity({ name: "matching_users", synchronize: true })
+@Entity({ name: "matching_users", synchronize: false })
 export class MatchingUsersEntity
   extends DefaultEntity
   implements IMatchingUsersEntity {

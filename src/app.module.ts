@@ -1,7 +1,7 @@
 import { Logger, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UsersModule } from "./modules/users/users.module";
-import * as Joi from "@hapi/joi";
+import * as Joi from "joi";
 import { AutomapperModule } from "@automapper/nestjs";
 import { classes } from "@automapper/classes";
 import { AuthModule } from "./modules/auth/auth.module";
@@ -10,9 +10,9 @@ import databaseConfig from "./config/database.config";
 import { OtpModule } from "./modules/otp/otp.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
 import { SettingsModule } from "./modules/settings/settings.module";
-import { SystemUsersModule } from "./modules/system-users/system-users.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
+import { AdminsModule } from "./modules/admins/admins.module";
 
 @Module({
   providers: [Logger],
@@ -48,7 +48,7 @@ import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
       inject: [ConfigService],
     }),
     SettingsModule,
-    SystemUsersModule,
+    AdminsModule,
     UserLocationsModule,
     CloudinaryModule,
   ],

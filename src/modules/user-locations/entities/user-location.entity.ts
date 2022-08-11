@@ -13,7 +13,7 @@ import { DefaultEntity } from "../../../common/entity";
 import { UserEntity } from "../../users/entities/user.entity";
 import { IUserLocationEntity } from "../interfaces/user-location-entity.interface";
 
-@Entity({ name: "user_locations", synchronize: true }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "user_locations", synchronize: false }) // bat buoc co, false: migration bo qua,
 export class UserLocationEntity
   extends DefaultEntity
   implements IUserLocationEntity {

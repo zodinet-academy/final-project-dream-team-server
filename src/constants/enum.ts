@@ -21,3 +21,22 @@ export enum SocialEnum {
   FACEBOOK = "facebook",
   GOOGLE = "google",
 }
+export enum AlcoholEnum {
+  SOMETIMES = "sometime",
+  USUALLY = "usually",
+  NEVER = "never",
+}
+export enum ReligionEnum {
+  BUDDHISM = "buddhism",
+  GOD = "god",
+  OTHER = "other",
+  NON_RELIGIONS = "non-religion",
+}
+export enum EducationEnum {
+  PRIMARY = "primary",
+  SECONDARY = "secondary",
+  HIGH_SCHOOL = "high_school",
+  COLLEGE = "college",
+  UNIVERSITY = "university",
+  OTHER = "other",
+}

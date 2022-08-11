@@ -4,7 +4,7 @@ import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { Twilio } from "twilio";
 import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
-import { OtpStatus } from "../../constants";
+import { OtpStatusEnum } from "../../constants/enum";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
 import { IOtpService } from "./interfaces/otp-service.interface";
 
@@ -54,7 +54,7 @@ export class OtpService implements IOtpService {
         .services(serviceSid)
         .verifications.create({ to: phone.number, channel: "sms" });
 
-      if (response && response.status === OtpStatus.PENDING) {
+      if (response && response.status === OtpStatusEnum.PENDING) {
         return responseData("Send OTP success.") as ResponseDto<string>;
       }
     } catch (error) {
@@ -114,7 +114,7 @@ export class OtpService implements IOtpService {
           code: verificationCode,
         });
 
-      if (!result.valid || result.status !== OtpStatus.APPROVED) {
+      if (!result.valid || result.status !== OtpStatusEnum.APPROVED) {
         const timesLimit = this.configService.get("TIME_LIMIT");
         const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
           "0" + phone.nationalNumber

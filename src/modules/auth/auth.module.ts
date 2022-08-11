@@ -6,13 +6,13 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
-import { SystemUsersModule } from "../system-users/system-users.module";
+import { AdminsModule } from "../admins/admins.module";
 
 @Module({
   imports: [
     OtpModule,
     UsersModule,
-    SystemUsersModule,
+    AdminsModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

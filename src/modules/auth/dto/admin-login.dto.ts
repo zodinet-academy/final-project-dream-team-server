@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString } from "class-validator";
-import { ISystemUserEntity } from "./../../system-users/interfaces";
-export class AdminLoginDto implements ISystemUserEntity {
+import { IAdminEntity } from "../../admins/interfaces";
+export class AdminLoginDto implements IAdminEntity {
   @ApiProperty({
     example: "Admin",
     required: true,

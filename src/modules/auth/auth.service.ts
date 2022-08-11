@@ -1,4 +1,3 @@
-import { SystemUsersService } from "./../system-users/system-users.service";
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { LoginTicket, TokenPayload } from "google-auth-library";
@@ -18,6 +17,7 @@ import {
   ERROR_WRONG_USERNAME_OR_PASSWORD,
 } from "../../constants/code-response.constant";
 import { UserRolesEnum } from "../../constants/enum";
+import { AdminsService } from "../admins/admins.service";
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -27,7 +27,7 @@ export class AuthService implements IAuthService {
     private otpService: OtpService,
     private usersService: UsersService,
     private configService: ConfigService,
-    private readonly systemUsersService: SystemUsersService
+    private readonly adminsService: AdminsService
   ) {
     const clientID = this.configService.get("CLIENT_ID");
     const clientSecret = this.configService.get("CLIENT_SECRET");
@@ -135,17 +135,13 @@ export class AuthService implements IAuthService {
 
   async adminLogin(adminLoginDto: AdminLoginDto): Promise<ResponseDto<string>> {
     try {
-      const findData = await this.systemUsersService.findByUsernameAndPassword(
+      const findData = await this.adminsService.findByUsernameAndPassword(
         adminLoginDto
       );
       if (!findData)
         return responseData(null, null, ERROR_WRONG_USERNAME_OR_PASSWORD);
-      const jwtToken = await signToken(
-        findData.id,
-        findData.phone,
-        UserRolesEnum.ADMIN
-      );
-      return responseData(jwtToken) as ResponseDto<string>;
+      // const jwtToken = await signToken(findData.id, null, UserRolesEnum.ADMIN);
+      return responseData("jwtToken") as ResponseDto<string>;
     } catch (error) {
       return responseData(null, null, ERROR_UNKNOW);
     }
