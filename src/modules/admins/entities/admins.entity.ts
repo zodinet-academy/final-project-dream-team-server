@@ -28,7 +28,7 @@ export class AdminEntity extends DefaultEntity implements IAdminEntity {
   @Column({ type: "varchar" })
   @IsNotEmpty()
   password: string;
-  @UpdateDateColumn({ name: "updatedAt", type: "timestamp" })
+  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
   @AutoMap()
   updatedAt: Date;
 }

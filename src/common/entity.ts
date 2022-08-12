@@ -8,7 +8,7 @@ export abstract class DefaultEntity extends BaseEntity {
   @AutoMap()
   id: string;
 
-  @CreateDateColumn({ name: "createdAt", type: "timestamp" })
+  @CreateDateColumn({ name: "created_at", type: "timestamp" })
   @AutoMap()
   createdAt: Date;
 }
