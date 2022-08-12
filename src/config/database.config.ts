@@ -1,6 +1,5 @@
 import { ConfigService } from "@nestjs/config";
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
-import { SnakeNamingStrategy } from "typeorm-naming-strategies";
 function typeOrmModuleOptions(): TypeOrmModuleOptions {
   const config = new ConfigService();
   return {
@@ -18,7 +17,6 @@ function typeOrmModuleOptions(): TypeOrmModuleOptions {
     synchronize: false,
     logging: true,
     logger: "file",
-    namingStrategy: new SnakeNamingStrategy(),
   };
 }
 
