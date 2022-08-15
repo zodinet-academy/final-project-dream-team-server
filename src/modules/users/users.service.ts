@@ -1,27 +1,33 @@
-import { IUserService } from "./interfaces/user-service.interface";
+import { Mapper } from "@automapper/core";
 import { Injectable } from "@nestjs/common";
+import { InjectMapper } from "@automapper/nestjs";
 import { responseData, signToken } from "../../common/utils";
-import { ResponseDto } from "../../common/response.dto";
+
 import {
   CHECK_PHONE_GET_OTP,
   ERROR_UNKNOW,
   ERROR_USER_EXISTED,
 } from "../../constants/code-response.constant";
-import { OtpService } from "../otp/otp.service";
+
 import { UserEntity } from "./entities/user.entity";
 import { UsersRepository } from "./users.repository";
+import { UserRolesEnum } from "../../constants/enum";
+
 import { ResponsePublicUserInterface } from "./interfaces";
-import { Mapper } from "@automapper/core";
-import { InjectMapper } from "@automapper/nestjs";
+import { IUserService } from "./interfaces/user-service.interface";
+import { ResponseToken } from "../auth/interfaces/response-token.interface";
+
 import {
   CreateUserDto,
   VerifyUserDto,
   UpdateUserDto,
   DeleteUserDto,
+  FriendDto,
 } from "./dto";
+import { ResponseDto } from "../../common/response.dto";
+
+import { OtpService } from "../otp/otp.service";
 import { MatchingUsersService } from "../matching-users/matching-users.service";
-import { FriendDto } from "./dto/friend.dto";
-import { UserRolesEnum } from "../../constants/enum";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -32,19 +38,24 @@ export class UsersService implements IUserService {
     private readonly matchingUsersService: MatchingUsersService
   ) {}
 
-  async signUp(dto: CreateUserDto): Promise<ResponseDto<UserEntity | string>> {
+  async signUp(
+    dto: CreateUserDto
+  ): Promise<ResponseDto<ResponseToken | string | boolean | null>> {
     try {
       const verifyOtp = await this.otpService.confirmOtp(dto.phone, dto.otp);
       if (!verifyOtp.status) return verifyOtp;
+
       const result = await this.usersRepository.save(
         this.usersRepository.create(dto)
       );
+
       const jwtToken = await signToken(
         result.id,
         result.phone,
         UserRolesEnum.USER
       );
-      return responseData(jwtToken, "Login luon.") as ResponseDto<string>;
+
+      return responseData(jwtToken, "Login luon");
     } catch (error) {
       return responseData(null, null, ERROR_UNKNOW);
     }
@@ -75,7 +86,9 @@ export class UsersService implements IUserService {
     }
   }
 
-  async getPublicById(id: string): Promise<ResponseDto<UserEntity>> {
+  async getPublicById(
+    id: string
+  ): Promise<ResponseDto<ResponsePublicUserInterface | null>> {
     try {
       const user = await this.usersRepository.findOne(id);
       if (!user) return responseData(null, null, "ERROR_USER_NOT_FOUND");

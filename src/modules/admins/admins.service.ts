@@ -47,7 +47,8 @@ export class AdminsService implements IAdminsService {
     id: string
   ): Promise<ResponseDto<IAdminEntity | undefined | string>> {
     try {
-      return responseData(await this.adminsRepository.findByIds([id]));
+      const adminData = await this.adminsRepository.findOne(id);
+      return responseData(adminData);
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOW);
     }

@@ -1,16 +1,20 @@
 import { Point } from "geojson";
 import { Injectable } from "@nestjs/common";
-import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
-import { SettingEntity } from "../settings/entities/setting.entity";
-import { SettingsService } from "../settings/settings.service";
+
 import {
   ERROR_DATA_NOT_FOUND,
   ERROR_UNKNOW,
 } from "./../../constants/code-response.constant";
-import { CreateUserLocationDto } from "./dto/create-user-location.dto";
-import { UserLocationEntity } from "./entities/user-location.entity";
 import { IUserLocationsService } from "./interfaces";
+
+import { SettingEntity } from "../settings/entities/setting.entity";
+import { UserLocationEntity } from "./entities/user-location.entity";
+
+import { ResponseDto } from "../../common/response.dto";
+import { CreateUserLocationDto } from "./dto/create-user-location.dto";
+
+import { SettingsService } from "../settings/settings.service";
 import { UserLocationsRepository } from "./user-locations.repository";
 
 @Injectable()
