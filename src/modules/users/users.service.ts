@@ -94,6 +94,7 @@ export class UsersService implements IUserService {
       if (!user) return responseData(null, null, "ERROR_USER_NOT_FOUND");
       const userPublic: ResponsePublicUserInterface = {
         id: user.id,
+        name: user.name,
         avatar: user.avatar,
         phone: user.phone,
         gender: user.gender,

@@ -7,6 +7,7 @@ import {
   SocketDeviceRepository,
 } from "./chat.repository";
 
+import { UsersModule } from "../users/users.module";
 import { ChatGateway } from "./chat.gateway";
 import { ChatService } from "./chat.service";
 
@@ -17,6 +18,7 @@ import { ChatService } from "./chat.service";
       ConversationRepository,
       SocketDeviceRepository,
     ]),
+    UsersModule,
   ],
   providers: [ChatGateway, ChatService],
   exports: [ChatService],
