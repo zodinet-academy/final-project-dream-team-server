@@ -1,15 +1,18 @@
-import { Logger, Module } from "@nestjs/common";
-import { ConfigModule, ConfigService } from "@nestjs/config";
-import { UsersModule } from "./modules/users/users.module";
-import * as Joi from "joi";
-import { AutomapperModule } from "@automapper/nestjs";
 import { classes } from "@automapper/classes";
-import { AuthModule } from "./modules/auth/auth.module";
+import { Logger, Module } from "@nestjs/common";
+import { AutomapperModule } from "@automapper/nestjs";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
+
+import * as Joi from "joi";
 import databaseConfig from "./config/database.config";
+
 import { OtpModule } from "./modules/otp/otp.module";
-import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
+import { ChatModule } from "./modules/chat/chat.module";
+import { AuthModule } from "./modules/auth/auth.module";
+import { UsersModule } from "./modules/users/users.module";
 import { SettingsModule } from "./modules/settings/settings.module";
+import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 import { AdminsModule } from "./modules/admins/admins.module";
@@ -56,6 +59,7 @@ import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
     AdminsModule,
     UserLocationsModule,
     CloudinaryModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

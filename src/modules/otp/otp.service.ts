@@ -69,7 +69,7 @@ export class OtpService implements IOtpService {
   async confirmOtp(
     phoneNumber: string,
     verificationCode: string
-  ): Promise<ResponseDto<string>> {
+  ): Promise<ResponseDto<string | boolean | null>> {
     const isValid = isValidPhoneNumber(phoneNumber, "VN");
     if (!isValid)
       return responseData(
@@ -147,6 +147,6 @@ export class OtpService implements IOtpService {
       ) as ResponseDto<string>;
     }
 
-    return responseData(true, "", "Verify OTP success") as ResponseDto<string>;
+    return responseData(true, "", "Verify OTP success");
   }
 }

@@ -1,10 +1,18 @@
-import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+
 import { UserRolesEnum } from "../constants/enum";
-import { JwtPayload } from "../modules/auth/interfaces/jwt-payload.interfact";
+
+import { JwtPayload } from "../modules/auth/interfaces/jwt-payload.interface";
 import { ResponseToken } from "../modules/auth/interfaces/response-token.interface";
 
-export function responseData(data: any, message = null, error_code?: string) {
+import { ResponseDto } from "./response.dto";
+
+export function responseData<T>(
+  data: T,
+  message = null,
+  error_code?: string | number
+): ResponseDto<T> {
   return {
     status: error_code ? false : true,
     message,
