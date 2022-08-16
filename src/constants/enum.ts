@@ -40,3 +40,9 @@ export enum EducationEnum {
   UNIVERSITY = "university",
   OTHER = "other",
 }
+
+export enum MaritalStatusEnum {
+  SINGLE = "single",
+  MARRIED = "married",
+  DIVORCED = "divorced",
+}

@@ -15,10 +15,16 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import { DeleteUserDto, PhoneUserDto, UpdateUserDto } from "./dto";
+import {
+  DeleteUserDto,
+  PhoneUserDto,
+  UpdateUserDto,
+  UserProfileDto,
+} from "./dto";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
 import { UsersService } from "./users.service";
+import { ResponseDto } from "../../common/response.dto";
 
 @Controller("users")
 @ApiTags("users")
@@ -89,5 +95,10 @@ export class UsersController {
   @ApiOkResponse({ description: "Matching friends list." })
   getListFriends(@GetUser("userId") userId: string) {
     return this.usersService.getListFriends(userId);
+  }
+
+  @Get("/private/user-profile")
+  getUserProfile(@GetUser("userId") userId: string) {
+    return this.usersService.getUserProfile(userId);
   }
 }

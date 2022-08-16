@@ -13,6 +13,8 @@ import { SettingsModule } from "./modules/settings/settings.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 import { AdminsModule } from "./modules/admins/admins.module";
+import { UserImagesModule } from "./modules/user-images/user-images.module";
+import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
 
 @Module({
   providers: [Logger],
@@ -22,6 +24,9 @@ import { AdminsModule } from "./modules/admins/admins.module";
     OtpModule,
     AuthModule,
     MatchingUsersModule,
+    AdminsModule,
+    UserImagesModule,
+    UserHobbiesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],

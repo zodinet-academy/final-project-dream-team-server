@@ -19,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: IJwtServicePayload) {
     try {
-      return { payload };
+      return payload;
     } catch (error: unknown) {
       console.log(error);
     }

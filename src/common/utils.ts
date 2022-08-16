@@ -18,7 +18,7 @@ export async function signToken(
   phone: string,
   role: UserRolesEnum
 ): Promise<ResponseToken> {
-  const payload: JwtPayload = {
+  const payload = {
     userId,
     phone,
     role,
