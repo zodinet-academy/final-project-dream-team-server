@@ -6,6 +6,7 @@ import {
   AlcoholEnum,
   EducationEnum,
   GenderEnum,
+  MaritalStatusEnum,
   ReligionEnum,
 } from "../../../constants/enum";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
@@ -37,6 +38,11 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   birthday: Date;
 
+  @Column({ name: "purpose_id", type: "varchar" })
+  @IsNotEmpty()
+  @AutoMap()
+  purposeId: string;
+
   @Column({ type: "varchar", length: 10 })
   @IsEnum(GenderEnum)
   @AutoMap()
@@ -62,22 +68,31 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   religion: ReligionEnum;
 
+  @Column({ type: "bigint", default: 0 })
+  @AutoMap()
+  height: number;
+
+  @Column({ type: "varchar" })
+  @IsEnum(MaritalStatusEnum)
+  @AutoMap()
+  maritalStatus: MaritalStatusEnum;
+
   @Column({ type: "varchar", length: 10 })
   @IsEnum(EducationEnum)
   @AutoMap()
   education: EducationEnum;
 
-  @Column({ type: "boolean", default: false })
+  @Column({ name: "is_block", type: "boolean", default: false })
   @IsNotEmpty()
   @AutoMap()
   isBlock: boolean;
 
-  @Column({ type: "boolean", default: false })
+  @Column({ name: "is_verify", type: "boolean", default: false })
   @IsNotEmpty()
   @AutoMap()
   isVerify: boolean;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
   @AutoMap()
   updatedAt: Date;
 }

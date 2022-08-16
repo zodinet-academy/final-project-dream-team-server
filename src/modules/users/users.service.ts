@@ -5,13 +5,15 @@ import { responseData, signToken } from "../../common/utils";
 
 import {
   CHECK_PHONE_GET_OTP,
+  ERROR_CAN_NOT_GET_USER_ALBUM,
+  ERROR_CAN_NOT_GET_USER_HOBBIES,
   ERROR_UNKNOW,
   ERROR_USER_EXISTED,
+  ERROR_USER_NOT_FOUND,
 } from "../../constants/code-response.constant";
 
 import { UserEntity } from "./entities/user.entity";
 import { UsersRepository } from "./users.repository";
-import { UserRolesEnum } from "../../constants/enum";
 
 import { ResponsePublicUserInterface } from "./interfaces";
 import { IUserService } from "./interfaces/user-service.interface";
@@ -23,11 +25,15 @@ import {
   UpdateUserDto,
   DeleteUserDto,
   FriendDto,
+  UserProfileDto,
 } from "./dto";
 import { ResponseDto } from "../../common/response.dto";
 
 import { OtpService } from "../otp/otp.service";
 import { MatchingUsersService } from "../matching-users/matching-users.service";
+import { UserRolesEnum } from "../../constants/enum";
+import { UserImagesService } from "../user-images/user-images.service";
+import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -35,7 +41,9 @@ export class UsersService implements IUserService {
     private readonly usersRepository: UsersRepository,
     private readonly otpService: OtpService,
     @InjectMapper() private readonly mapper: Mapper,
-    private readonly matchingUsersService: MatchingUsersService
+    private readonly matchingUsersService: MatchingUsersService,
+    private readonly userImagesService: UserImagesService,
+    private readonly userHobbiesServies: UserHobbiesService
   ) {}
 
   async signUp(
@@ -108,7 +116,6 @@ export class UsersService implements IUserService {
   async getUserByPhone(phone: string): Promise<UserEntity> {
     try {
       const user = await this.usersRepository.findOne({ phone: phone });
-
       if (!user) throw responseData(null, null, "ERROR_USER_NOT_FOUND");
       return user;
     } catch (error) {
@@ -200,5 +207,46 @@ export class UsersService implements IUserService {
       console.log(error);
       return responseData(null, null, "ERROR_UNKNOWN");
     }
+  }
+
+  async getUserById(userId: string): Promise<UserProfileDto | undefined> {
+    const user = await this.usersRepository.findOne({ id: userId });
+
+    if (!user) return undefined;
+
+    const userProfile = this.mapper.map(user, UserEntity, UserProfileDto);
+
+    return userProfile;
+  }
+
+  async getUserProfile(
+    userId: string
+  ): Promise<ResponseDto<UserProfileDto | string>> {
+    const user = await this.getUserById(userId);
+
+    if (!user)
+      return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
+
+    const album = await this.userImagesService.getUserAlbum(user.id);
+    if (!album)
+      responseData(
+        null,
+        "Can not get user album",
+        ERROR_CAN_NOT_GET_USER_ALBUM
+      );
+
+    user.album = album;
+
+    const hobbies = await this.userHobbiesServies.getUserHobbies(user.id);
+    if (!hobbies)
+      responseData(
+        null,
+        "Can not get user hobbies",
+        ERROR_CAN_NOT_GET_USER_HOBBIES
+      );
+
+    user.hobbies = hobbies;
+
+    return responseData(user);
   }
 }
