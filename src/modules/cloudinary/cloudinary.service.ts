@@ -17,15 +17,19 @@ export class CloudinaryService implements ICloudinaryService {
         },
         (error, result) => {
           if (error) return reject(error);
+          if (idFileOld) {
+            v2.uploader.destroy(idFileOld);
+          }
           resolve(result);
         }
       );
-
-      if (idFileOld) {
-        v2.uploader.destroy(idFileOld);
-      }
-
+      
       toStream(file.buffer).pipe(upload);
     });
+  }
+  
+  async getImageUrl(publicId: string): Promise<string> {
+    const url = v2.url(publicId);
+    return url;
   }
 }
