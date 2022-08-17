@@ -1,6 +1,6 @@
 export class ResponseDto<T> {
   status: boolean;
   message: string;
-  data?: T | T[];
-  error_code: string;
+  data?: T;
+  error_code?: string | number;
 }

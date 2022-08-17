@@ -1,9 +1,6 @@
 import { Point } from "geojson";
 import { Injectable } from "@nestjs/common";
-import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
-import { SettingEntity } from "../settings/entities/setting.entity";
-import { SettingsService } from "../settings/settings.service";
 import {
   ERROR_DATA_NOT_FOUND,
   ERROR_UNKNOW,
@@ -12,6 +9,9 @@ import { CreateUserLocationDto } from "./dto/create-user-location.dto";
 import { UserLocationEntity } from "./entities/user-location.entity";
 import { IFriendNearUser, IOrigin, IUserLocationsService } from "./interfaces";
 import { UserLocationsRepository } from "./user-locations.repository";
+import { ResponseDto } from "../../common/response.dto";
+import { SettingEntity } from "../settings/entities/setting.entity";
+import { SettingsService } from "../settings/settings.service";
 
 @Injectable()
 export class UserLocationsService implements IUserLocationsService {

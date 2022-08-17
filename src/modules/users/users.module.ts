@@ -7,12 +7,16 @@ import { UsersRepository } from "./users.repository";
 import { UsersService } from "./users.service";
 import { MatchingUsersModule } from "../matching-users/matching-users.module";
 import { UserProfile } from "./user.profile";
+import { UserImagesModule } from "../user-images/user-images.module";
+import { UserHobbiesModule } from "../user-hobbies/user-hobbies.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UsersRepository]),
     OtpModule,
     MatchingUsersModule,
+    UserImagesModule,
+    UserHobbiesModule,
   ],
   controllers: [PublicUsersController, UsersController],
   providers: [UsersService, UserProfile],

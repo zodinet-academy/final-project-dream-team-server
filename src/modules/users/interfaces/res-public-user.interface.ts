@@ -1,6 +1,7 @@
 export interface ResponsePublicUserInterface {
   id: string;
+  name: string;
   avatar: string;
-  birthday: Date;
+  phone: string;
   gender: string;
 }

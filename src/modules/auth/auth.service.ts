@@ -79,7 +79,7 @@ export class AuthService implements IAuthService {
 
     const user = await this.usersService.getUserByPhone(phone);
     const jwtToken = await signToken(user?.id, user?.phone, UserRolesEnum.USER);
-    return responseData(jwtToken) as ResponseDto<string>;
+    return responseData(jwtToken);
   }
 
   async checkUserExist(phone: string): Promise<boolean> {
@@ -110,7 +110,7 @@ export class AuthService implements IAuthService {
 
   async loginGoogle(
     googleLoginDto: GoogleLoginDto
-  ): Promise<ResponseDto<UserEntity | IGoogleResponse | string>> {
+  ): Promise<ResponseDto<any | IGoogleResponse | string>> {
     try {
       const verifiedData = await this.verifyGoogle(googleLoginDto.token);
 
