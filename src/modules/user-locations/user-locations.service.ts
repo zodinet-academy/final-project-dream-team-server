@@ -10,7 +10,7 @@ import {
 } from "./../../constants/code-response.constant";
 import { CreateUserLocationDto } from "./dto/create-user-location.dto";
 import { UserLocationEntity } from "./entities/user-location.entity";
-import { IUserLocationsService } from "./interfaces";
+import { IFriendNearUser, IOrigin, IUserLocationsService } from "./interfaces";
 import { UserLocationsRepository } from "./user-locations.repository";
 
 @Injectable()
@@ -36,7 +36,10 @@ export class UserLocationsService implements IUserLocationsService {
 
       const pointObject: Point = {
         type: "Point",
-        coordinates: [createUserLocationDto.long, createUserLocationDto.lat],
+        coordinates: [
+          createUserLocationDto.longtitude,
+          createUserLocationDto.latitude,
+        ],
       };
 
       if (!findData)
@@ -62,11 +65,40 @@ export class UserLocationsService implements IUserLocationsService {
     }
   }
 
-  async findAllByDistance(userId: string) {
+  /**
+   * Get current user location
+   * @param userId
+   * @returns ResponseDto<UserLocationEntity | string>
+   */
+  async getUserLocation(
+    userId: string
+  ): Promise<ResponseDto<string | UserLocationEntity>> {
     try {
-      const findData = await this.userLocationsRepository.findOne({
-        userId: userId,
-      });
+      const findData: UserLocationEntity = await this.userLocationsRepository.findOne(
+        {
+          userId: userId,
+        }
+      );
+      if (!findData) return responseData(null, null, ERROR_DATA_NOT_FOUND);
+      return responseData(findData, "Get user location success");
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOW);
+    }
+  }
+  /**
+   * Get all friend near user within 3km radius
+   * @param userId
+   * @returns response dto with list friend near user
+   */
+  async getFriendNearUser(
+    userId: string
+  ): Promise<ResponseDto<IFriendNearUser[] | string | SettingEntity>> {
+    try {
+      const findData: UserLocationEntity = await this.userLocationsRepository.findOne(
+        {
+          userId: userId,
+        }
+      );
       if (!findData) return responseData(null, null, ERROR_DATA_NOT_FOUND);
 
       const findSetting: ResponseDto<
@@ -75,29 +107,15 @@ export class UserLocationsService implements IUserLocationsService {
       if (!findSetting.status) return findSetting;
       const { radius } = findSetting.data as SettingEntity;
 
-      const origin = {
+      const origin: IOrigin = {
         type: "Point",
-        coordinates: [findData.long, findData.lat],
+        coordinates: [findData.longtitude, findData.latitude],
       };
-      const locations = await this.userLocationsRepository
-        .createQueryBuilder("user_locations")
-        .select([
-          "user_locations.userId",
-          "user_locations.lat",
-          "user_locations.long",
-          "ST_Distance(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)))/1000 AS distance",
-        ])
-        .where(
-          "ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)"
-        )
-        .orderBy("distance", "ASC")
-        .setParameters({
-          // stringify GeoJSON
-          origin: JSON.stringify(origin),
-          range: radius * 1000, //KM conversion
-        })
-        .getRawMany();
-      return locations;
+      const result: IFriendNearUser[] = await this.userLocationsRepository.getFriendNearUser(
+        radius,
+        origin
+      );
+      return responseData(result, "Get friend near user success");
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOW);
     }

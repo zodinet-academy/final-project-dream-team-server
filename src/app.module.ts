@@ -17,11 +17,6 @@ import { AdminsModule } from "./modules/admins/admins.module";
 @Module({
   providers: [Logger],
   imports: [
-    UsersModule,
-    AuthModule,
-    OtpModule,
-    AuthModule,
-    MatchingUsersModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
@@ -47,6 +42,11 @@ import { AdminsModule } from "./modules/admins/admins.module";
         config.get<TypeOrmModuleOptions>("database"),
       inject: [ConfigService],
     }),
+    UsersModule,
+    AuthModule,
+    OtpModule,
+    AuthModule,
+    MatchingUsersModule,
     SettingsModule,
     AdminsModule,
     UserLocationsModule,

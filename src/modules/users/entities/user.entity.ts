@@ -67,17 +67,17 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   education: EducationEnum;
 
-  @Column({ type: "boolean", default: false })
+  @Column({ name: "is_block", type: "boolean", default: false })
   @IsNotEmpty()
   @AutoMap()
   isBlock: boolean;
 
-  @Column({ type: "boolean", default: false })
+  @Column({ name: "is_verify", type: "boolean", default: false })
   @IsNotEmpty()
   @AutoMap()
   isVerify: boolean;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
   @AutoMap()
   updatedAt: Date;
 }

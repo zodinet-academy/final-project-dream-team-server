@@ -31,7 +31,6 @@ export class CreateAdminsDto implements IAdminEntity {
     description: "name",
     default: "Nguyen Van A",
   })
-  @IsEmail()
   @IsNotEmpty()
   name: string;
 }

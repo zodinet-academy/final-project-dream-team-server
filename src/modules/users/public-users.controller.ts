@@ -61,7 +61,7 @@ export class PublicUsersController {
   }
 
   @Get(":userId")
-  @ApiOperation({ summary: "Get public user by user-id (all)" })
+  @ApiOperation({ summary: "Get public user by user-id" })
   @ApiOkResponse({ description: "Matching user." })
   @ApiNotFoundResponse({
     description: "User id not found.",

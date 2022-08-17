@@ -17,27 +17,23 @@ import { IUserLocationEntity } from "../interfaces/user-location-entity.interfac
 export class UserLocationEntity
   extends DefaultEntity
   implements IUserLocationEntity {
-  @Column({ type: "varchar", nullable: false })
+  @Column({ name: "user_id", type: "varchar", nullable: false })
   @IsNotEmpty()
   userId: string;
 
   @Column({ type: "double precision", default: 0 })
   @IsNotEmpty()
   @AutoMap()
-  lat: number;
+  latitude: number;
 
   @Column({ type: "double precision", default: 0 })
   @IsNotEmpty()
   @AutoMap()
-  long: number;
-
-  @UpdateDateColumn({ name: "updatedAt", type: "timestamp" })
-  @AutoMap()
-  updatedAt: Date;
+  longtitude: number;
 
   @OneToOne(() => UserEntity, (entity) => entity.id)
   @JoinColumn({
-    name: "userId",
+    name: "user_id",
     referencedColumnName: "id",
   })
   userEntity: UserEntity;
@@ -50,4 +46,8 @@ export class UserLocationEntity
     nullable: true,
   })
   location: Point;
+
+  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
+  @AutoMap()
+  updatedAt: Date;
 }

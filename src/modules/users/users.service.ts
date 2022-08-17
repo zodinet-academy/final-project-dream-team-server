@@ -75,16 +75,14 @@ export class UsersService implements IUserService {
     }
   }
 
-  async getPublicById(id: string): Promise<ResponseDto<UserEntity>> {
+  async getPublicById(
+    id: string
+  ): Promise<ResponseDto<ResponsePublicUserInterface | string>> {
     try {
       const user = await this.usersRepository.findOne(id);
       if (!user) return responseData(null, null, "ERROR_USER_NOT_FOUND");
-      const userPublic: ResponsePublicUserInterface = {
-        id: user.id,
-        avatar: user.avatar,
-        phone: user.phone,
-        gender: user.gender,
-      };
+      const userPublic: ResponsePublicUserInterface = user;
+
       return responseData(userPublic);
     } catch (error) {
       return responseData(null, null, "error_unknow");
@@ -98,6 +96,8 @@ export class UsersService implements IUserService {
       if (!user) throw responseData(null, null, "ERROR_USER_NOT_FOUND");
       return user;
     } catch (error) {
+      console.log(error);
+
       return null;
     }
   }

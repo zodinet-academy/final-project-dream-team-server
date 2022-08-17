@@ -21,7 +21,7 @@ import { JwtAuthGuard, RolesGuard } from "../auth/guards";
 import { CreateUserLocationDto } from "./dto/create-user-location.dto";
 import { UserLocationsService } from "./user-locations.service";
 
-@Controller("user-locations")
+@Controller("secure/user-locations")
 @ApiTags("user_locations")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
@@ -49,7 +49,20 @@ export class UserLocationsController {
   }
 
   @Get()
-  @ApiOperation({ summary: "find user locations near user" })
+  @ApiOperation({ summary: "Get last user's location" })
+  @ApiOkResponse({ description: "User location" })
+  @ApiNotAcceptableResponse({
+    description: "Request is not in correct form.",
+  })
+  @ApiNotFoundResponse({
+    description: "User id not found.",
+  })
+  getUserLocation(@GetUser("userId") userId: string) {
+    return this.userLocationsService.getUserLocation(userId);
+  }
+
+  @Get("friend-near-user")
+  @ApiOperation({ summary: "find friend locate near user" })
   @ApiOkResponse({ description: "list user locations" })
   @ApiNotAcceptableResponse({
     description: "Request is not in correct form.",
@@ -57,8 +70,8 @@ export class UserLocationsController {
   @ApiNotFoundResponse({
     description: "User id not found.",
   })
-  findAllByDistance(@GetUser("userId") userId: string) {
-    return this.userLocationsService.findAllByDistance(userId);
+  getFriendNearUser(@GetUser("userId") userId: string) {
+    return this.userLocationsService.getFriendNearUser(userId);
   }
 
   @Get(":id")
