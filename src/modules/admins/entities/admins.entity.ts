@@ -1,5 +1,5 @@
-import { IsNotEmpty } from "class-validator";
 import { AutoMap } from "@automapper/classes";
+import { IsNotEmpty, IsOptional } from "class-validator";
 import { Column, Entity, UpdateDateColumn } from "typeorm";
 
 import { IAdminEntity } from "../interfaces";
@@ -16,8 +16,8 @@ export class AdminEntity extends DefaultEntity implements IAdminEntity {
   @IsNotEmpty()
   email: string;
 
-  @Column({ type: "varchar" })
-  @IsNotEmpty()
+  @Column({ type: "varchar", nullable: true })
+  @IsOptional()
   @AutoMap()
   avatar: string;
 

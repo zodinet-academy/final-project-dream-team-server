@@ -109,7 +109,7 @@ export class AuthService implements IAuthService {
       };
       return responseData(googleResponse);
     } catch (error) {
-      return responseData(null, null, "ERROR_UNKNOW");
+      return responseData(null, null, "ERROR_UNKNOWN");
     }
   }
 

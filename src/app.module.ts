@@ -19,6 +19,7 @@ import { UserFriendsModule } from "./modules/user-friends/userFriends.module";
 import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
+import { PurposeSettingsModule } from "./modules/purpose-settings/purpose-settings.module";
 
 @Module({
   providers: [Logger],
@@ -61,6 +62,7 @@ import { MatchingUsersModule } from "./modules/matching-users/matching-users.mod
     UserLocationsModule,
     CloudinaryModule,
     ChatModule,
+    PurposeSettingsModule,
     UserFriendsModule,
   ],
 })
