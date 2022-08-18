@@ -1,6 +1,6 @@
 import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty, IsUUID } from "class-validator";
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 
 import { IConversationsEntity } from "../interfaces";
 
@@ -30,4 +30,7 @@ export class ConversationEntity
     referencedColumnName: "id",
   })
   infoFriend: UserEntity;
+
+  @OneToMany(() => MessageEntity, (messages) => messages.conversation)
+  messages: MessageEntity[];
 }
