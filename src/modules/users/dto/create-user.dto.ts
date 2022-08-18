@@ -35,5 +35,5 @@ export class CreateUserDto implements IUserEntity {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  birthday: string;
+  birthday: Date;
 }
