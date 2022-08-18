@@ -18,6 +18,7 @@ import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 import { AdminsModule } from "./modules/admins/admins.module";
 import { UserImagesModule } from "./modules/user-images/user-images.module";
 import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
+import { PurposeSettingsModule } from "./modules/purpose-settings/purpose-settings.module";
 
 @Module({
   providers: [Logger],
@@ -60,6 +61,7 @@ import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
     UserLocationsModule,
     CloudinaryModule,
     ChatModule,
+    PurposeSettingsModule,
   ],
 })
 export class AppModule {}
