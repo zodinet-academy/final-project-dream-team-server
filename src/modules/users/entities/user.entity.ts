@@ -6,6 +6,7 @@ import {
   AlcoholEnum,
   EducationEnum,
   GenderEnum,
+  MaritalStatusEnum,
   ReligionEnum,
   UserRolesEnum,
 } from "../../../constants/enum";
@@ -38,7 +39,12 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   birthday: Date;
 
-  @Column({ type: "varchar", length: 10, nullable: true })
+  @Column({ name: "purpose_id", type: "varchar" })
+  @IsNotEmpty()
+  @AutoMap()
+  purposeId: string;
+
+  @Column({ type: "varchar", length: 10 })
   @IsEnum(GenderEnum)
   @AutoMap()
   gender: GenderEnum;
@@ -63,7 +69,16 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   religion: ReligionEnum;
 
-  @Column({ type: "varchar", length: 10, nullable: true })
+  @Column({ type: "bigint", default: 0 })
+  @AutoMap()
+  height: number;
+
+  @Column({ type: "varchar" })
+  @IsEnum(MaritalStatusEnum)
+  @AutoMap()
+  maritalStatus: MaritalStatusEnum;
+
+  @Column({ type: "varchar", length: 10 })
   @IsEnum(EducationEnum)
   @AutoMap()
   education: EducationEnum;
@@ -73,7 +88,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   isBlock: boolean;
 
-  @Column({ type: "varchar", default: UserRolesEnum.USER })
+  @Column({ name: "is_verify", type: "varchar", default: UserRolesEnum.USER })
   @IsEnum(UserRolesEnum)
   @AutoMap()
   role: UserRolesEnum;
@@ -83,7 +98,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   isVerify: boolean;
 
-  @UpdateDateColumn({ name: "update_at", type: "timestamp" })
+  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
   @AutoMap()
   updatedAt: Date;
 }
