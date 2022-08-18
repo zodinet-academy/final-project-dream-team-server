@@ -1,7 +1,7 @@
 export interface IMessageEntity {
   id?: string;
-  sender_id: string;
-  conversation_id: string;
+  senderId: string;
+  conversationId: string;
   content: string;
   image: string;
   createAt?: Date;

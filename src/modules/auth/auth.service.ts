@@ -12,7 +12,7 @@ import { IAuthService } from "./interfaces/auth-service.interface";
 import IGoogleResponse from "./interfaces/auth.interface";
 import { AdminLoginDto } from "./dto/admin-login.dto";
 import {
-  ERROR_UNKNOW,
+  ERROR_UNKNOWN,
   ERROR_WRONG_USERNAME_OR_PASSWORD,
 } from "../../constants/code-response.constant";
 import { UserRolesEnum } from "../../constants/enum";
@@ -79,7 +79,11 @@ export class AuthService implements IAuthService {
     }
 
     const user = await this.usersService.getUserByPhone(phone);
-    const jwtToken = await signToken(user?.id, user?.phone, UserRolesEnum.USER);
+    const jwtToken = await signToken(
+      user?.data.id,
+      user?.data.phone,
+      UserRolesEnum.USER
+    );
     return responseData(jwtToken);
   }
 
@@ -105,7 +109,7 @@ export class AuthService implements IAuthService {
       };
       return responseData(googleResponse);
     } catch (error) {
-      return responseData(null, null, "ERROR_UNKNOW");
+      return responseData(null, null, "ERROR_UNKNOWN");
     }
   }
 
@@ -127,7 +131,7 @@ export class AuthService implements IAuthService {
       // const jwtToken = await signToken(findData.id, null, UserRolesEnum.ADMIN);
       return responseData("jwtToken") as ResponseDto<string>;
     } catch (error) {
-      return responseData(null, null, ERROR_UNKNOW);
+      return responseData(null, null, ERROR_UNKNOWN);
     }
   }
   getProfileUser(id: string) {

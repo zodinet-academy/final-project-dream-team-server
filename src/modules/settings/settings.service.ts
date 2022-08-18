@@ -8,7 +8,7 @@ import { responseData } from "../../common/utils";
 import {
   ERROR_DATA_EXISTED_PLEASE_USING_UPDATE,
   ERROR_DATA_NOT_FOUND,
-  ERROR_UNKNOW,
+  ERROR_UNKNOWN,
 } from "../../constants/code-response.constant";
 import { ISettingService } from "./interfaces";
 
@@ -33,7 +33,7 @@ export class SettingsService implements ISettingService {
       );
       return responseData(result);
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -45,7 +45,7 @@ export class SettingsService implements ISettingService {
     try {
       return responseData(await this.settingsRepository.findOne({}));
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -67,7 +67,7 @@ export class SettingsService implements ISettingService {
         })
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 }

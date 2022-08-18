@@ -5,12 +5,12 @@ import { responseData, signToken } from "../../common/utils";
 
 import {
   CHECK_PHONE_GET_OTP,
+  ERROR_UNKNOWN,
+  ERROR_USER_EXISTED,
+  ERROR_USER_NOT_FOUND,
   ERROR_DATA_NOT_FOUND,
   ERROR_CAN_NOT_GET_USER_ALBUM,
   ERROR_CAN_NOT_GET_USER_HOBBIES,
-  ERROR_UNKNOW,
-  ERROR_USER_EXISTED,
-  ERROR_USER_NOT_FOUND,
 } from "../../constants/code-response.constant";
 
 import { UserEntity } from "./entities/user.entity";
@@ -107,28 +107,31 @@ export class UsersService implements IUserService {
     }
   }
 
-  async verifyUser(dto: VerifyUserDto) {
+  async verifyUser(dto: VerifyUserDto): Promise<ResponseDto<null>> {
     try {
       const userExisted = await this.usersRepository.findOne({
         phone: dto.phone,
       });
+
       if (userExisted) {
         return responseData(null, "", ERROR_USER_EXISTED);
       }
+
       const result = await this.otpService.sendSmsOtp(dto.phone);
-      if (!result.status) return responseData(null, null, ERROR_UNKNOW);
-      return responseData(CHECK_PHONE_GET_OTP);
+      if (!result.status) return responseData(null, null, ERROR_UNKNOWN);
+
+      return responseData(null, "", CHECK_PHONE_GET_OTP);
     } catch (error) {
-      return responseData(null, null, ERROR_UNKNOW);
+      return responseData(null, null, ERROR_UNKNOWN);
     }
   }
 
-  async getAllUser(): Promise<UserEntity[]> {
+  async getAllUser(): Promise<ResponseDto<UserEntity[]>> {
     try {
       const users = await this.usersRepository.find();
-      return users;
+      return responseData(users);
     } catch (error) {
-      return [];
+      return responseData([]);
     }
   }
 
@@ -147,17 +150,17 @@ export class UsersService implements IUserService {
       };
       return responseData(userPublic);
     } catch (error) {
-      return responseData(null, null, "error_unknow");
+      return responseData(null, null, ERROR_UNKNOWN);
     }
   }
 
-  async getUserByPhone(phone: string): Promise<UserEntity> {
+  async getUserByPhone(phone: string): Promise<ResponseDto<UserEntity | null>> {
     try {
       const user = await this.usersRepository.findOne({ phone: phone });
       if (!user) throw responseData(null, null, "ERROR_USER_NOT_FOUND");
-      return user;
+      return responseData(user);
     } catch (error) {
-      return null;
+      return responseData(null, null, ERROR_UNKNOWN);
     }
   }
 
@@ -173,25 +176,25 @@ export class UsersService implements IUserService {
     }
   }
 
-  // async updateUserProfileById(
-  //   userId: string,
-  //   dto: UpdateUserDto
-  // ): Promise<ResponseDto<UserEntity>> {
-  //   try {
-  //     const userInfo: UserEntity = await this.usersRepository.findOne(userId);
+  async updateUserProfileById(
+    userId: string,
+    dto: UpdateUserDto
+  ): Promise<ResponseDto<UserEntity>> {
+    try {
+      const userInfo: UserEntity = await this.usersRepository.findOne(userId);
 
-  //     if (userInfo) {
-  //       await this.usersRepository.update(userId, {
-  //         ...(dto.name && { name: dto.name }),
-  //         ...(dto.gender && { gender: dto.gender }),
-  //       });
-  //     }
+      if (userInfo) {
+        await this.usersRepository.update(userId, {
+          ...(dto.name && { name: dto.name }),
+          ...(dto.gender && { gender: dto.gender }),
+        });
+      }
 
-  //     return responseData(null, "Your profile has been updated!");
-  //   } catch (error) {
-  //     return responseData(null, null, "ERROR_USER_NOT_FOUND");
-  //   }
-  // }
+      return responseData(null, "Your profile has been updated!");
+    } catch (error) {
+      return responseData(null, null, "ERROR_USER_NOT_FOUND");
+    }
+  }
 
   async deleteUserProfileById(
     userId: string,

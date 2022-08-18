@@ -4,26 +4,35 @@ import { ResponsePublicUserInterface } from "./res-public-user.interface";
 import { ResponseToken } from "../../auth/interfaces/response-token.interface";
 
 import { ResponseDto } from "../../../common/response.dto";
-import { CreateUserDto, DeleteUserDto, UpdateUserDto, FriendDto } from "../dto";
 import { SocialDTO } from "../../auth/dto/social-login.dto";
+import {
+  CreateUserDto,
+  DeleteUserDto,
+  UpdateUserDto,
+  FriendDto,
+  VerifyUserDto,
+} from "../dto";
 
 export interface IUserService {
-  getAllUser(): Promise<Array<UserEntity>>;
+  getAllUser(): Promise<ResponseDto<UserEntity[]>>;
   getPublicById(
     userId: string
   ): Promise<ResponseDto<ResponsePublicUserInterface | null>>;
-  getUserByPhone(phone: string): Promise<UserEntity>;
-  getUserByEmail(email: string): Promise<ResponseDto<UserEntity>>;
+  getUserByPhone(phone: string): Promise<ResponseDto<UserEntity | null>>;
+  getUserByEmail(email: string): Promise<ResponseDto<UserEntity | null>>;
+  getListFriends(id: string): Promise<ResponseDto<FriendDto[]>>;
+
+  verifyUser(dto: VerifyUserDto): Promise<ResponseDto<null>>;
+  verifyUserByEmail(email: string): Promise<ResponseDto<boolean | null>>;
   signUp(
     user: SocialDTO
   ): Promise<ResponseDto<ResponseToken | string | boolean | null>>;
-  // updateUserProfileById(
-  //   userId: string,
-  //   user: UpdateUserDto
-  // ): Promise<ResponseDto<UserEntity>>;
+  updateUserProfileById(
+    userId: string,
+    user: UpdateUserDto
+  ): Promise<ResponseDto<UserEntity>>;
   deleteUserProfileById(
     userId: string,
     user: DeleteUserDto
-  ): Promise<ResponseDto<UserEntity>>;
-  getListFriends(id: string): Promise<ResponseDto<FriendDto[]>>;
+  ): Promise<ResponseDto<UserEntity | null>>;
 }

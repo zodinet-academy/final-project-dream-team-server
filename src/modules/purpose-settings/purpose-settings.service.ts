@@ -8,7 +8,7 @@ import { responseData } from "../../common/utils";
 import {
   DATA_DELETED,
   ERROR_DATA_NOT_FOUND,
-  ERROR_UNKNOW,
+  ERROR_UNKNOWN,
 } from "../../constants/code-response.constant";
 import { ResponseDto } from "../../common/response.dto";
 
@@ -28,7 +28,7 @@ export class PurposeSettingsService implements IPurposeSettingsService {
         )
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -36,7 +36,7 @@ export class PurposeSettingsService implements IPurposeSettingsService {
     try {
       return responseData(await this.purposeSettingsRepository.find({}));
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -49,7 +49,7 @@ export class PurposeSettingsService implements IPurposeSettingsService {
         return responseData(null, "find one error", ERROR_DATA_NOT_FOUND);
       return responseData(purpose, "find one success");
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -68,7 +68,7 @@ export class PurposeSettingsService implements IPurposeSettingsService {
         })
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -77,7 +77,7 @@ export class PurposeSettingsService implements IPurposeSettingsService {
       await this.purposeSettingsRepository.softDelete(id);
       return responseData(DATA_DELETED);
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 }

@@ -3,7 +3,7 @@ import { Socket } from "socket.io";
 import { ResponseDto } from "../../../common/response.dto";
 
 import { ConversationEntity } from "../entities/conversations.entity";
-import { SocketDeviceEntity } from "../entities/socket-devices.entity";
+import { SocketDeviceEntity } from "../entities/socketDevices.entity";
 
 export interface IChatGateway {
   createConversation(
