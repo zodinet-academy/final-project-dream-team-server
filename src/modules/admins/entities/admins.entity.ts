@@ -1,8 +1,9 @@
-import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty } from "class-validator";
+import { AutoMap } from "@automapper/classes";
 import { Column, Entity, UpdateDateColumn } from "typeorm";
-import { DefaultEntity } from "../../../common/entity";
+
 import { IAdminEntity } from "../interfaces";
+import { DefaultEntity } from "../../../common/entity";
 
 @Entity({ name: "admins", synchronize: true }) // bat buoc co, false: migration bo qua,
 export class AdminEntity extends DefaultEntity implements IAdminEntity {

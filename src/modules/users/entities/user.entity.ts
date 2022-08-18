@@ -52,32 +52,32 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   children: number;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 15 })
   @IsEnum(AlcoholEnum)
   @AutoMap()
   alcohol: AlcoholEnum;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 15 })
   @IsEnum(ReligionEnum)
   @AutoMap()
   religion: ReligionEnum;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 15 })
   @IsEnum(EducationEnum)
   @AutoMap()
   education: EducationEnum;
 
-  @Column({ type: "boolean", default: false })
+  @Column({ name: "is_block", type: "boolean", default: false })
   @IsNotEmpty()
   @AutoMap()
   isBlock: boolean;
 
-  @Column({ type: "boolean", default: false })
+  @Column({ name: "is_verify", type: "boolean", default: false })
   @IsNotEmpty()
   @AutoMap()
   isVerify: boolean;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
   @AutoMap()
   updatedAt: Date;
 }

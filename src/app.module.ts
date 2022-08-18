@@ -14,6 +14,7 @@ import { UsersModule } from "./modules/users/users.module";
 import { AdminsModule } from "./modules/admins/admins.module";
 import { SettingsModule } from "./modules/settings/settings.module";
 import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
+import { UserFriendsModule } from "./modules/user-friends/userFriends.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 
@@ -55,6 +56,7 @@ import { UserLocationsModule } from "./modules/user-locations/user-locations.mod
     UserLocationsModule,
     CloudinaryModule,
     ChatModule,
+    UserFriendsModule,
   ],
 })
 export class AppModule {}

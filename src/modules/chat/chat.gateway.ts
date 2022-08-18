@@ -10,16 +10,15 @@ import { Server, Socket } from "socket.io";
 
 import { IChatGateway } from "./interfaces";
 import { responseData } from "../../common/utils";
-import { ERROR_UNKNOW } from "../../constants/code-response.constant";
+import { ERROR_UNKNOWN } from "../../constants/code-response.constant";
 
 import { SendMessageDto } from "./dto";
 import { ResponseDto } from "../../common/response.dto";
 
 import { ConversationEntity } from "./entities/conversations.entity";
-import { SocketDeviceEntity } from "./entities/socket-devices.entity";
+import { SocketDeviceEntity } from "./entities/socketDevices.entity";
 
 import { ChatService } from "./chat.service";
-import { UsersService } from "../users/users.service";
 
 @WebSocketGateway(3006, { cors: true })
 export class ChatGateway
@@ -29,10 +28,7 @@ export class ChatGateway
     OnGatewayDisconnect,
     IChatGateway {
   @WebSocketServer() server: Server;
-  constructor(
-    private readonly chatService: ChatService,
-    private readonly usersService: UsersService
-  ) {}
+  constructor(private readonly chatService: ChatService) {}
 
   afterInit(): void {
     console.log("Init Server Socket - Port 3006");
@@ -44,8 +40,19 @@ export class ChatGateway
   }
 
   // Handle Disconnect Chat
-  async handleDisconnect() {
+  async handleDisconnect(client: Socket) {
     console.log("Disconnect Success Websocket - Port 3006");
+
+    try {
+      const socketId: string = client.id;
+      const deleteSocketDevice = await this.chatService.deleteSocketDevice(
+        socketId
+      );
+
+      return deleteSocketDevice;
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
   }
 
   // Handle Send & Receive Message
@@ -56,50 +63,59 @@ export class ChatGateway
         ...payload,
       };
 
-      const message = await this.chatService.createMessage(messageEntity);
+      if (!payload.conversationId) {
+        const conversation = await this.createConversation(client);
 
-      if (message) {
-        const user = await this.usersService.getPublicById(
-          message.data.sender_id
-        );
-        const devices = await this.chatService.getSocketDeviceByConversationId(
-          payload.conversation_id
-        );
-
-        const messageReceived = {
-          name: user.data.name,
-          avatar: user.data.avatar,
-          content: payload.content,
-          image: payload.image,
-          sender_id: payload.sender_id,
-        };
-
-        const emit = this.server;
-        devices.data.map((device) => {
-          emit.to(device.socket_id).emit("message-received", messageReceived);
-        });
+        if (conversation.status) {
+          messageEntity.conversationId = conversation.data.id;
+        }
       }
-    } catch (error: unknown) {
-      console.log(error);
+
+      if (messageEntity.conversationId) {
+        const device = await this.createDevice(
+          client,
+          messageEntity.conversationId
+        );
+        const message = await this.chatService.createMessage(messageEntity);
+
+        if (message.status && device.status) {
+          const devices = await this.chatService.getSocketDeviceByConversationId(
+            messageEntity.conversationId
+          );
+
+          const messageReceived = {
+            content: messageEntity.content,
+            image: messageEntity.image ?? "",
+            senderId: messageEntity.senderId,
+          };
+
+          const emit = this.server;
+          devices.data.map((device) => {
+            emit.to(device.socketId).emit("message-received", messageReceived);
+          });
+        }
+      }
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
   // Handle Create New Conversation
   async createConversation(
     client: Socket
-  ): Promise<ResponseDto<ConversationEntity | string | null>> {
+  ): Promise<ResponseDto<ConversationEntity | null>> {
     const { userId, friendId }: any = client.handshake?.query;
 
     try {
-      const conversation = await this.chatService.getConversationById(
+      const conversation = await this.chatService.getConversationByUserIdAndFriendId(
         userId,
         friendId
       );
 
-      if (!conversation) {
+      if (!conversation.status) {
         const conversationEntity = {
-          user_id: userId,
-          friend_id: friendId,
+          userId,
+          friendId,
         };
 
         const createConversation = await this.chatService.createConversation(
@@ -111,7 +127,7 @@ export class ChatGateway
 
       return conversation;
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -119,21 +135,31 @@ export class ChatGateway
   async createDevice(
     client: Socket,
     conversationId: string
-  ): Promise<ResponseDto<SocketDeviceEntity | string | null>> {
+  ): Promise<ResponseDto<SocketDeviceEntity | null>> {
     const { userId }: any = client.handshake?.query;
     const socketId: string = client.id;
 
     try {
       const deviceEntity = {
-        user_id: userId,
-        conversation_id: conversationId,
-        socket_id: socketId,
+        userId,
+        conversationId,
+        socketId,
       };
-      const device = await this.chatService.createDevice(deviceEntity);
 
-      return device;
+      const socketDevice = await this.chatService.getSocketDeviceByConversationIdAndUserId(
+        conversationId,
+        userId
+      );
+
+      if (!socketDevice.status) {
+        const device = await this.chatService.createSocketDevice(deviceEntity);
+
+        return device;
+      }
+
+      return socketDevice;
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 }

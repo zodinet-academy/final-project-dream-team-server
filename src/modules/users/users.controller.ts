@@ -84,6 +84,7 @@ export class UsersController {
   ) {
     return this.usersService.deleteUserProfileById(userId, dto);
   }
+
   @Get("friends")
   @ApiOperation({ summary: "Get friends list (user)" })
   @ApiOkResponse({ description: "Matching friends list." })
