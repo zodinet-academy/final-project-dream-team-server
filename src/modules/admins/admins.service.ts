@@ -7,7 +7,7 @@ import { responseData } from "../../common/utils";
 import {
   DATA_DELETED,
   ERROR_DATA_NOT_FOUND,
-  ERROR_UNKNOW,
+  ERROR_UNKNOWN,
 } from "../../constants/code-response.constant";
 
 import { ResponseDto } from "../../common/response.dto";
@@ -31,7 +31,7 @@ export class AdminsService implements IAdminsService {
       );
       return responseData(result);
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -39,7 +39,7 @@ export class AdminsService implements IAdminsService {
     try {
       return responseData(await this.adminsRepository.find({}));
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -50,7 +50,7 @@ export class AdminsService implements IAdminsService {
       const adminData = await this.adminsRepository.findOne(id);
       return responseData(adminData);
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -70,7 +70,7 @@ export class AdminsService implements IAdminsService {
         })
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -79,7 +79,7 @@ export class AdminsService implements IAdminsService {
       await this.adminsRepository.softDelete(id);
       return responseData(DATA_DELETED);
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 

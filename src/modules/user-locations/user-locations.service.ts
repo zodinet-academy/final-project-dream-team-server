@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
 import {
   ERROR_DATA_NOT_FOUND,
-  ERROR_UNKNOW,
+  ERROR_UNKNOWN,
 } from "./../../constants/code-response.constant";
 import { CreateUserLocationDto } from "./dto/create-user-location.dto";
 import { UserLocationEntity } from "./entities/user-location.entity";
@@ -63,7 +63,7 @@ export class UserLocationsService implements IUserLocationsService {
         })
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -84,7 +84,7 @@ export class UserLocationsService implements IUserLocationsService {
       if (!findData) return responseData(null, null, ERROR_DATA_NOT_FOUND);
       return responseData(findData, "Get user location success");
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
   /**
@@ -127,7 +127,7 @@ export class UserLocationsService implements IUserLocationsService {
 
       return responseData(result, "Get friend near user success");
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 

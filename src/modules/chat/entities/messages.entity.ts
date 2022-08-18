@@ -1,33 +1,24 @@
+import { ConversationEntity } from "./conversations.entity";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty, IsString, IsUrl, IsUUID } from "class-validator";
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Generated,
-  PrimaryColumn,
-} from "typeorm";
 
 import { IMessageEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 
-@Entity({ name: "messages", synchronize: true }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "messages", synchronize: true })
 export class MessageEntity extends DefaultEntity implements IMessageEntity {
-  @PrimaryColumn()
-  @Generated("uuid")
-  id: string;
-
-  @Column({ type: "varchar", length: 150 })
+  @Column({ name: "sender_id", type: "uuid" })
   @IsNotEmpty()
   @IsUUID()
   @AutoMap()
-  sender_id: string;
+  senderId: string;
 
-  @Column({ type: "varchar", length: 150 })
+  @Column({ name: "conversation_id", type: "uuid" })
   @IsNotEmpty()
   @IsUUID()
   @AutoMap()
-  conversation_id: string;
+  conversationId: string;
 
   @Column({ type: "varchar", length: 150 })
   @IsNotEmpty()
@@ -35,13 +26,16 @@ export class MessageEntity extends DefaultEntity implements IMessageEntity {
   @AutoMap()
   content: string;
 
-  @Column({ type: "varchar", length: 150 })
+  @Column({ type: "varchar", length: 150, nullable: true })
   @IsNotEmpty()
   @IsUrl()
   @AutoMap()
   image: string;
 
-  @CreateDateColumn({ name: "created_at", type: "timestamp" })
-  @AutoMap()
-  createdAt: Date;
+  @OneToOne(() => ConversationEntity, (conversation) => conversation.id)
+  @JoinColumn({
+    name: "conversation_id",
+    referencedColumnName: "id",
+  })
+  message: MessageEntity;
 }

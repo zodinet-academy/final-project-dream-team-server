@@ -3,17 +3,17 @@ import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 export class SendMessageDto {
   @IsNotEmpty()
   @IsString()
-  socket_id: string;
+  socketId: string;
 
   @IsNotEmpty()
   @IsUUID()
   @IsString()
-  sender_id: string;
+  senderId: string;
 
   @IsNotEmpty()
   @IsUUID()
   @IsString()
-  conversation_id: string;
+  conversationId: string;
 
   @IsNotEmpty()
   @IsString()
@@ -26,8 +26,6 @@ export class SendMessageDto {
 }
 
 export class MessageReceived {
-  name: string;
-  avatar: string;
   content: string;
   image: string;
 }

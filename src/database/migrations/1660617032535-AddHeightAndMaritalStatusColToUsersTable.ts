@@ -9,7 +9,7 @@ export class AddHeightAndMaritalStatusColToUsersTable1660617032535
       `ALTER TABLE "users" ADD "height" bigint NOT NULL DEFAULT '0'`
     );
     await queryRunner.query(
-      `ALTER TABLE "users" ADD "marital_status" character varying NOT NULL`
+      `ALTER TABLE "users" ADD "marital_status" character varying`
     );
   }
 

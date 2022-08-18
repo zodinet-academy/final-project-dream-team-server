@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  UseGuards,
-} from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiNotAcceptableResponse,
@@ -15,20 +7,13 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import {
-  DeleteUserDto,
-  PhoneUserDto,
-  UpdateUserDto,
-  UserProfileDto,
-} from "./dto";
 import { GetUser } from "../auth/decorator";
-import { JwtAuthGuard } from "../auth/guards";
+import { CreateUserDto, PhoneUserDto } from "./dto";
 import { UsersService } from "./users.service";
-import { ResponseDto } from "../../common/response.dto";
 
 @Controller("users")
 @ApiTags("users")
-@UseGuards(JwtAuthGuard)
+//@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -68,28 +53,10 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: "User id not found.",
   })
-  updateUserProfileById(
-    @GetUser("userId") userId: string,
-    @Body() dto: UpdateUserDto
-  ) {
-    return this.usersService.updateUserProfileById(userId, dto);
+  updateUserProfileById() {
+    return " this.usersService.updateUserProfileById(userId, dto);";
   }
 
-  @Delete(":userId")
-  @ApiOperation({ summary: "Delete user data (admin)" })
-  @ApiOkResponse({ description: "User has been deleted." })
-  @ApiNotAcceptableResponse({
-    description: "Request is not in correct form.",
-  })
-  @ApiNotFoundResponse({
-    description: "User id not found.",
-  })
-  deleteUserProfileById(
-    @Param("userId") userId: string,
-    @Body() dto: DeleteUserDto
-  ) {
-    return this.usersService.deleteUserProfileById(userId, dto);
-  }
   @Get("friends")
   @ApiOperation({ summary: "Get friends list (user)" })
   @ApiOkResponse({ description: "Matching friends list." })
@@ -97,8 +64,8 @@ export class UsersController {
     return this.usersService.getListFriends(userId);
   }
 
-  @Get("/private/user-profile")
-  getUserProfile(@GetUser("userId") userId: string) {
-    return this.usersService.getUserProfile(userId);
+  @Post("update-dream-team")
+  async updateUserAfterVerifyPhone(@Body() data: CreateUserDto) {
+    return await this.usersService.updateUserAfterVerifyOTP(data);
   }
 }

@@ -4,7 +4,7 @@ import { Column, Entity, UpdateDateColumn } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
 import { IUserImageEntity } from "../interfaces";
 
-@Entity({ name: "user_images", synchronize: false }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "user_images", synchronize: true }) // bat buoc co, false: migration bo qua,
 export class UserImageEntity extends DefaultEntity implements IUserImageEntity {
   @Column({ name: "user_id", type: "varchar" })
   @IsNotEmpty()

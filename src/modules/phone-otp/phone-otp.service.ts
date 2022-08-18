@@ -26,7 +26,7 @@ export class PhoneOtpService implements IPhoneOtpService {
     }
     await this.phoneOtpRepository.update(
       { phone: phone },
-      { times: phoneOtp.times + 1, updatedAt: new Date() }
+      { times: phoneOtp.times + 1 }
     );
   }
 
@@ -54,9 +54,6 @@ export class PhoneOtpService implements IPhoneOtpService {
   }
 
   async resetWrongTimes(phone: string) {
-    await this.phoneOtpRepository.update(
-      { phone: phone },
-      { times: 0, updatedAt: new Date() }
-    );
+    await this.phoneOtpRepository.update({ phone: phone }, { times: 0 });
   }
 }
