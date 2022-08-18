@@ -11,7 +11,7 @@ import {
 import { IMessageEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 
-@Entity({ name: "messages", synchronize: false }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "messages", synchronize: true }) // bat buoc co, false: migration bo qua,
 export class MessageEntity extends DefaultEntity implements IMessageEntity {
   @PrimaryColumn()
   @Generated("uuid")

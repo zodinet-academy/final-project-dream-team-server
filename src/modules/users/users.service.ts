@@ -94,7 +94,7 @@ export class UsersService implements IUserService {
       const payload: IJwtPayloadDreamtem = {
         id: newUser.id,
         phone: newUser.phone,
-        role: newUser.role,
+        role: UserRolesEnum.USER,
       };
       const token = this.jwtService.sign(payload);
       const respone = {

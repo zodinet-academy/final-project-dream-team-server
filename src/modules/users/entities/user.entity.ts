@@ -88,11 +88,6 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   isBlock: boolean;
 
-  @Column({ name: "is_verify", type: "varchar", default: UserRolesEnum.USER })
-  @IsEnum(UserRolesEnum)
-  @AutoMap()
-  role: UserRolesEnum;
-
   @Column({ name: "is_verify", type: "boolean", default: false })
   @IsNotEmpty()
   @AutoMap()

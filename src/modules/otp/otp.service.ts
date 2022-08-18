@@ -6,7 +6,7 @@ import { Twilio } from "twilio";
 import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
 import { ERROR_USER_EXISTED } from "../../constants/code-response.constant";
-import { OtpStatusEnum } from "../../constants/enum";
+import { OtpStatusEnum, UserRolesEnum } from "../../constants/enum";
 import { SocialDTO } from "../auth/dto/social-login.dto";
 import { IJwtPayloadDreamtem } from "../auth/interfaces/jwt-payload.interface";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
@@ -52,9 +52,9 @@ export class OtpService implements IOtpService {
         "NOT_ALLOW_TO_CREATE_OTP"
       ) as ResponseDto<string>;
 
-    // if (process.env.NODE_ENV === "local") {
-    //   return responseData("Please fill otp default") as ResponseDto<string>;
-    // }
+    if (process.env.NODE_ENV === "local") {
+      return responseData("Please fill otp default") as ResponseDto<string>;
+    }
 
     const serviceSid = this.configService.get(
       "TWILIO_VERIFICATION_SERVICE_SID"
@@ -68,7 +68,7 @@ export class OtpService implements IOtpService {
         });
 
       if (response && response.status === OtpStatusEnum.PENDING) {
-        return responseData("0" + phone.nationalNumber) as ResponseDto<string>;
+        return responseData(null, "Send OTP Successful") as ResponseDto<string>;
       }
     } catch (error) {
       console.log(error);
@@ -94,31 +94,31 @@ export class OtpService implements IOtpService {
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
-    // if (process.env.NODE_ENV === "local") {
-    //   if (process.env.OTP_DEFAULT === verificationCode)
-    //     return responseData("Verify OTP success") as ResponseDto<string>;
+    if (process.env.NODE_ENV === "local") {
+      if (process.env.OTP_DEFAULT === verificationCode)
+        return responseData("Verify OTP success") as ResponseDto<string>;
 
-    //   const timesLimit = this.configService.get("TIME_LIMIT");
-    //   const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
-    //     "0" + phone.nationalNumber
-    //   );
+      const timesLimit = this.configService.get("TIME_LIMIT");
+      const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
+        "0" + phone.nationalNumber
+      );
 
-    //   if (countTimesWrongOtp + 1 >= timesLimit) {
-    //     return responseData(
-    //       null,
-    //       "Exceed times wrong otp",
-    //       "EXCEED_TIMES_WRONG_OTP"
-    //     );
-    //   }
+      if (countTimesWrongOtp + 1 >= timesLimit) {
+        return responseData(
+          null,
+          "Exceed times wrong otp",
+          "EXCEED_TIMES_WRONG_OTP"
+        );
+      }
 
-    //   await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
+      await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
 
-    //   return responseData(
-    //     null,
-    //     "OTP not valid",
-    //     "OTP_NOT_VALID"
-    //   ) as ResponseDto<string>;
-    // }
+      return responseData(
+        null,
+        "OTP not valid",
+        "OTP_NOT_VALID"
+      ) as ResponseDto<string>;
+    }
     const serviceSid = this.configService.get(
       "TWILIO_VERIFICATION_SERVICE_SID"
     );
@@ -171,7 +171,7 @@ export class OtpService implements IOtpService {
     if (isExistWithPhone.name) {
       const payLoad: IJwtPayloadDreamtem = {
         id: isExistWithPhone.id,
-        role: isExistWithPhone.role,
+        role: UserRolesEnum.USER,
         phone: isExistWithPhone.phone,
       };
 

@@ -12,7 +12,7 @@ import {
 import { ISocketDevicesEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 
-@Entity({ name: "socket_devices", synchronize: false }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "socket_devices", synchronize: true }) // bat buoc co, false: migration bo qua,
 export class SocketDeviceEntity
   extends DefaultEntity
   implements ISocketDevicesEntity {
