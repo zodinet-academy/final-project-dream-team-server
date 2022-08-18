@@ -3,8 +3,7 @@ import { GenderEnum } from "../../../constants/enum";
 export interface IUserEntity {
   id?: string;
   avatar?: string;
-  nickname?: string;
-  fullname?: string;
+  name?: string;
   email?: string;
   phone?: string;
   gender?: GenderEnum;

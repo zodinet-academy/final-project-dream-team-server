@@ -56,6 +56,7 @@
     "googleapis": "^105.0.0",
     "joi": "^17.6.0",
     "libphonenumber-js": "^1.10.11",
+    "nestjs-rate-limiter": "^3.1.0",
     "passport": "^0.5.2",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.0",

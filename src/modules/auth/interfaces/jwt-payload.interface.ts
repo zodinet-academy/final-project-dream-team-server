@@ -11,3 +11,8 @@ export interface IJwtServicePayload {
   email: string;
   phone: string;
 }
+export interface IJwtPayloadDreamtem {
+  id: string;
+  phone: string;
+  role: UserRolesEnum;
+}
