@@ -6,4 +6,5 @@ export interface ICloudinaryService {
     nameFolder: string,
     idFileOld?: string
   ): Promise<UploadApiResponse | UploadApiErrorResponse>;
+  getImageUrl(publicId: string): Promise<string>;
 }

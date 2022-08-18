@@ -18,6 +18,7 @@ import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 import { AdminsModule } from "./modules/admins/admins.module";
 import { UserImagesModule } from "./modules/user-images/user-images.module";
 import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
+import { UserBlocksModule } from "./modules/user-blocks/user-blocks.module";
 
 @Module({
   providers: [Logger],
@@ -58,6 +59,7 @@ import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
     ChatModule,
     UserImagesModule,
     UserHobbiesModule,
+    UserBlocksModule,
   ],
 })
 export class AppModule {}

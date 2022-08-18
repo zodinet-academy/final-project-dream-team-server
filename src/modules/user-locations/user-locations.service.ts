@@ -12,12 +12,14 @@ import { UserLocationsRepository } from "./user-locations.repository";
 import { ResponseDto } from "../../common/response.dto";
 import { SettingEntity } from "../settings/entities/setting.entity";
 import { SettingsService } from "../settings/settings.service";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @Injectable()
 export class UserLocationsService implements IUserLocationsService {
   constructor(
     private readonly userLocationsRepository: UserLocationsRepository,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly cloudinaryService: CloudinaryService
   ) {}
 
   /**
@@ -115,6 +117,14 @@ export class UserLocationsService implements IUserLocationsService {
         radius,
         origin
       );
+      result.map(async (el) => {
+        el.friendAvatar = await this.cloudinaryService.getImageUrl(
+          el.friendAvatar
+        );
+        el.distance = +el.distance.toFixed();
+        return el;
+      });
+
       return responseData(result, "Get friend near user success");
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOW);

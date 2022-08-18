@@ -1,3 +1,4 @@
+import { CloudinaryModule } from "./../cloudinary/cloudinary.module";
 import { SettingsModule } from "./../settings/settings.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Module } from "@nestjs/common";
@@ -9,6 +10,7 @@ import { UserLocationsRepository } from "./user-locations.repository";
   imports: [
     TypeOrmModule.forFeature([UserLocationsRepository]),
     SettingsModule,
+    CloudinaryModule,
   ],
   controllers: [UserLocationsController],
   providers: [UserLocationsService],

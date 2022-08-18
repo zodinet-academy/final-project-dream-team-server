@@ -8,6 +8,9 @@ export interface IUserLocationEntity {
 }
 export interface IFriendNearUser {
   friendId: string;
+  friendName: string;
+  friendBirthday: Date;
+  friendAvatar: string;
   latitude: number;
   longtitude: number;
   distance: number;
