@@ -7,6 +7,8 @@ import { UsersRepository } from "./users.repository";
 import { UsersService } from "./users.service";
 import { MatchingUsersModule } from "../matching-users/matching-users.module";
 import { UserProfile } from "./user.profile";
+import { JwtModule } from "@nestjs/jwt";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UserImagesModule } from "../user-images/user-images.module";
 import { UserHobbiesModule } from "../user-hobbies/user-hobbies.module";
 
@@ -17,6 +19,14 @@ import { UserHobbiesModule } from "../user-hobbies/user-hobbies.module";
     MatchingUsersModule,
     UserImagesModule,
     UserHobbiesModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get("JWT_SECRET"),
+        signOptions: { expiresIn: configService.get("JWT_EXPIRATION_TIME") },
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [PublicUsersController, UsersController],
   providers: [UsersService, UserProfile],

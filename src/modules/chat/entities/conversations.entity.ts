@@ -11,7 +11,7 @@ import {
 import { IConversationsEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 
-@Entity({ name: "conversations", synchronize: true }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "conversations", synchronize: false }) // bat buoc co, false: migration bo qua,
 export class ConversationEntity
   extends DefaultEntity
   implements IConversationsEntity {

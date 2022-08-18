@@ -8,6 +8,7 @@ import {
   GenderEnum,
   MaritalStatusEnum,
   ReligionEnum,
+  UserRolesEnum,
 } from "../../../constants/enum";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
@@ -16,17 +17,17 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   avatar: string;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ type: "varchar", length: 255, nullable: true })
   @IsNotEmpty()
   @AutoMap()
   name: string;
 
-  @Column({ type: "varchar", length: 100, unique: true })
+  @Column({ type: "varchar", length: 100, unique: true, nullable: true })
   @IsNotEmpty()
   @AutoMap()
   email: string;
 
-  @Column({ type: "varchar", length: 50, unique: true })
+  @Column({ type: "varchar", length: 50, unique: true, nullable: true })
   @IsNotEmpty()
   @AutoMap()
   phone: string;
@@ -48,22 +49,22 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   gender: GenderEnum;
 
-  @Column({ type: "varchar" })
+  @Column({ type: "varchar", nullable: true })
   @IsOptional()
   @AutoMap()
   description: string;
 
-  @Column({ type: "bigint", default: 0 })
+  @Column({ type: "bigint", default: 0, nullable: true })
   @IsNotEmpty()
   @AutoMap()
   children: number;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 10, nullable: true })
   @IsEnum(AlcoholEnum)
   @AutoMap()
   alcohol: AlcoholEnum;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 10, nullable: true })
   @IsEnum(ReligionEnum)
   @AutoMap()
   religion: ReligionEnum;
@@ -86,6 +87,11 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @IsNotEmpty()
   @AutoMap()
   isBlock: boolean;
+
+  @Column({ name: "is_verify", type: "varchar", default: UserRolesEnum.USER })
+  @IsEnum(UserRolesEnum)
+  @AutoMap()
+  role: UserRolesEnum;
 
   @Column({ name: "is_verify", type: "boolean", default: false })
   @IsNotEmpty()

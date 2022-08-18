@@ -23,11 +23,11 @@ export class CloudinaryService implements ICloudinaryService {
           resolve(result);
         }
       );
-      
+
       toStream(file.buffer).pipe(upload);
     });
   }
-  
+
   async getImageUrl(publicId: string): Promise<string> {
     const url = v2.url(publicId);
     return url;

@@ -7,12 +7,15 @@ import { AuthService } from "./auth.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { AdminsModule } from "../admins/admins.module";
+import { SocialGuard } from "./guards/social.guard";
+import { HttpModule } from "@nestjs/common";
 
 @Module({
   imports: [
     OtpModule,
     UsersModule,
     AdminsModule,
+    HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -22,7 +25,7 @@ import { AdminsModule } from "../admins/admins.module";
       inject: [ConfigService],
     }),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, SocialGuard],
   controllers: [AuthController],
 })
 export class AuthModule {}

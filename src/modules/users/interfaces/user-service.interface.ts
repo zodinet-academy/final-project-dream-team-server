@@ -5,6 +5,7 @@ import { ResponseToken } from "../../auth/interfaces/response-token.interface";
 
 import { ResponseDto } from "../../../common/response.dto";
 import { CreateUserDto, DeleteUserDto, UpdateUserDto, FriendDto } from "../dto";
+import { SocialDTO } from "../../auth/dto/social-login.dto";
 
 export interface IUserService {
   getAllUser(): Promise<Array<UserEntity>>;
@@ -14,12 +15,12 @@ export interface IUserService {
   getUserByPhone(phone: string): Promise<UserEntity>;
   getUserByEmail(email: string): Promise<ResponseDto<UserEntity>>;
   signUp(
-    user: CreateUserDto
+    user: SocialDTO
   ): Promise<ResponseDto<ResponseToken | string | boolean | null>>;
-  updateUserProfileById(
-    userId: string,
-    user: UpdateUserDto
-  ): Promise<ResponseDto<UserEntity>>;
+  // updateUserProfileById(
+  //   userId: string,
+  //   user: UpdateUserDto
+  // ): Promise<ResponseDto<UserEntity>>;
   deleteUserProfileById(
     userId: string,
     user: DeleteUserDto
