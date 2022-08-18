@@ -20,12 +20,12 @@ export class ConversationRepository
   ): Promise<IConversationMessage[]> {
     const conversations = await this.createQueryBuilder("C")
       .leftJoinAndSelect("C.infoFriend", "infoFriend")
-      .leftJoinAndSelect("C.message", "message")
+      .leftJoinAndSelect("C.messages", "messages")
       .andWhere(`C.user_id = '${userId}' OR C.friend_id = '${userId}'`)
       .select([
-        `C.id as "conversationId", C.friend_id as "friendId", infoFriend.name as name, infoFriend.avatar as avatar, message.content as content, message.created_at as "createAt"`,
+        `C.id as "conversationId", C.friend_id as "friendId", infoFriend.name as name, infoFriend.avatar as avatar, messages.content as content, messages.created_at as "createAt"`,
       ])
-      .orderBy("message.created_at", "DESC")
+      .orderBy("messages.created_at", "DESC")
       .limit(1)
       .getRawMany<IConversationMessage>();
 
@@ -50,12 +50,12 @@ export class ConversationRepository
     conversationId: string
   ): Promise<IMessage[]> {
     const messages = await this.createQueryBuilder("C")
-      .leftJoinAndSelect("C.message", "message")
+      .leftJoinAndSelect("C.messages", "messages")
       .andWhere(`C.id = '${conversationId}'`)
       .select([
-        `message.id as "messageId", message.sender_id as "senderId", message.content as content, message.image as image, message.created_at as "createAt"`,
+        `messages.id as "messageId", messages.sender_id as "senderId", messages.content as content, messages.image as image, messages.created_at as "createAt"`,
       ])
-      .orderBy("message.created_at", "DESC")
+      .orderBy("messages.created_at", "DESC")
       .getRawMany<IMessage>();
 
     return messages;

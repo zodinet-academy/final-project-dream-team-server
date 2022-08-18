@@ -1,10 +1,10 @@
-import { ConversationEntity } from "./conversations.entity";
-import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { AutoMap } from "@automapper/classes";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { IsNotEmpty, IsString, IsUrl, IsUUID } from "class-validator";
 
 import { IMessageEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
+import { ConversationEntity } from "./conversations.entity";
 
 @Entity({ name: "messages", synchronize: true })
 export class MessageEntity extends DefaultEntity implements IMessageEntity {
@@ -32,10 +32,10 @@ export class MessageEntity extends DefaultEntity implements IMessageEntity {
   @AutoMap()
   image: string;
 
-  @OneToOne(() => ConversationEntity, (conversation) => conversation.id)
+  @ManyToOne(() => ConversationEntity, (conversation) => conversation.messages)
   @JoinColumn({
     name: "conversation_id",
     referencedColumnName: "id",
   })
-  message: MessageEntity;
+  conversation: ConversationEntity;
 }
