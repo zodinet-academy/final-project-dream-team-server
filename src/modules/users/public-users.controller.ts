@@ -25,7 +25,7 @@ export class PublicUsersController {
     description: "User is existed.",
   })
   signupUser(@Body() dto: CreateUserDto) {
-    return this.usersService.signUp(dto);
+    return "";
   }
 
   @Post("verify-user-by-email")

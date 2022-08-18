@@ -14,19 +14,24 @@ export class SocialGuard implements CanActivate {
     try {
       const request = context.switchToHttp().getRequest();
       const { accessToken, typeSocial } = request.body;
-
       if (typeSocial === SocialEnum.FACEBOOK) {
-        const isLogin: boolean = await this.httpService.axiosRef.get(
+        const isLogin = await this.httpService.axiosRef.get(
           `${this.configService.get("URL_CHECK_FB")}${accessToken}`
         );
+        if (isLogin?.data) {
+          return true;
+        }
 
-        return isLogin;
+        return false;
       } else {
-        const isLogin: boolean = await this.httpService.axiosRef.get(
-          `${this.configService.get("URL_CHECK_GG")}${accessToken}`
+        const isLogin = await this.httpService.axiosRef.get(
+          `${this.configService.get("URL_CHECK_GOOGLE")}${accessToken}`
         );
+        if (isLogin?.data) {
+          return true;
+        }
 
-        return isLogin;
+        return false;
       }
     } catch (error: unknown) {
       return false;

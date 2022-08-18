@@ -1,6 +1,6 @@
 export enum GenderEnum {
-  MALE = "male",
-  FEMALE = "female",
+  MALE = "Nam",
+  FEMALE = "Nữ",
   OTHER = "other",
 }
 export enum UserRolesEnum {
@@ -39,4 +39,10 @@ export enum EducationEnum {
   COLLEGE = "college",
   UNIVERSITY = "university",
   OTHER = "other",
+}
+
+export enum MaritalStatusEnum {
+  SINGLE = "single",
+  MARRIED = "married",
+  DIVORCED = "divorced",
 }

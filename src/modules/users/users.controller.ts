@@ -15,14 +15,19 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import { DeleteUserDto, PhoneUserDto, UpdateUserDto } from "./dto";
+import {
+  CreateUserDto,
+  DeleteUserDto,
+  PhoneUserDto,
+  UpdateUserDto,
+} from "./dto";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
 import { UsersService } from "./users.service";
 
 @Controller("users")
 @ApiTags("users")
-@UseGuards(JwtAuthGuard)
+//@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -66,7 +71,7 @@ export class UsersController {
     @GetUser("userId") userId: string,
     @Body() dto: UpdateUserDto
   ) {
-    return this.usersService.updateUserProfileById(userId, dto);
+    return " this.usersService.updateUserProfileById(userId, dto);";
   }
 
   @Delete(":userId")
@@ -90,5 +95,10 @@ export class UsersController {
   @ApiOkResponse({ description: "Matching friends list." })
   getListFriends(@GetUser("userId") userId: string) {
     return this.usersService.getListFriends(userId);
+  }
+
+  @Post("update-dream-team")
+  async updateUserAfterVerifyPhone(@Body() data: CreateUserDto) {
+    return await this.usersService.updateUserAfterVerifyOTP(data);
   }
 }

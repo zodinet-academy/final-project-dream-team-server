@@ -4,6 +4,7 @@ import { ResponsePublicUserInterface } from "./res-public-user.interface";
 import { ResponseToken } from "../../auth/interfaces/response-token.interface";
 
 import { ResponseDto } from "../../../common/response.dto";
+import { SocialDTO } from "../../auth/dto/social-login.dto";
 import {
   CreateUserDto,
   DeleteUserDto,
@@ -24,13 +25,12 @@ export interface IUserService {
   verifyUser(dto: VerifyUserDto): Promise<ResponseDto<null>>;
   verifyUserByEmail(email: string): Promise<ResponseDto<boolean | null>>;
   signUp(
-    user: CreateUserDto
+    user: SocialDTO
   ): Promise<ResponseDto<ResponseToken | string | boolean | null>>;
   updateUserProfileById(
     userId: string,
     user: UpdateUserDto
-  ): Promise<ResponseDto<UserEntity | null>>;
-
+  ): Promise<ResponseDto<UserEntity>>;
   deleteUserProfileById(
     userId: string,
     user: DeleteUserDto
