@@ -30,11 +30,4 @@ export class ConversationEntity
     referencedColumnName: "id",
   })
   infoFriend: UserEntity;
-
-  @OneToOne(() => MessageEntity, (message) => message.conversationId)
-  @JoinColumn({
-    name: "id",
-    referencedColumnName: "conversationId",
-  })
-  message: MessageEntity;
 }

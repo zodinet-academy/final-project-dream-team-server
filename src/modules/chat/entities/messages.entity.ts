@@ -1,4 +1,5 @@
-import { Column, Entity } from "typeorm";
+import { ConversationEntity } from "./conversations.entity";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty, IsString, IsUrl, IsUUID } from "class-validator";
 
@@ -30,4 +31,11 @@ export class MessageEntity extends DefaultEntity implements IMessageEntity {
   @IsUrl()
   @AutoMap()
   image: string;
+
+  @OneToOne(() => ConversationEntity, (conversation) => conversation.id)
+  @JoinColumn({
+    name: "conversation_id",
+    referencedColumnName: "id",
+  })
+  message: MessageEntity;
 }

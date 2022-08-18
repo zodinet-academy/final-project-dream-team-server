@@ -1,6 +1,5 @@
 import { PurposeSettingEntity } from "./entities/purpose-setting.entity";
 import { PurposeSettingsRepository } from "./purpose-settings.repository";
-import { IPurposeSettingsService } from "./../../../dist/src/modules/purpose-settings/interfaces/user-service.interface.d";
 import { Injectable } from "@nestjs/common";
 import { CreatePurposeSettingDto } from "./dto/create-purpose-setting.dto";
 import { UpdatePurposeSettingDto } from "./dto/update-purpose-setting.dto";
@@ -11,6 +10,7 @@ import {
   ERROR_UNKNOWN,
 } from "../../constants/code-response.constant";
 import { ResponseDto } from "../../common/response.dto";
+import { IPurposeSettingsService } from "./interfaces";
 
 @Injectable()
 export class PurposeSettingsService implements IPurposeSettingsService {
