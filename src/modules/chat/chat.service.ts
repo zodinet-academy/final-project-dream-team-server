@@ -7,16 +7,21 @@ import {
 } from "./chat.repository";
 
 import { responseData } from "../../common/utils";
-import { ERROR_UNKNOW } from "./../../constants/code-response.constant";
+import {
+  ERROR_DATA_NOT_FOUND,
+  ERROR_INTERNAL_SERVER,
+  ERROR_UNKNOWN,
+} from "./../../constants/code-response.constant";
+import { IConversationMessage } from "./interfaces";
 
 import { MessageEntity } from "./entities/messages.entity";
 import { ConversationEntity } from "./entities/conversations.entity";
-import { SocketDeviceEntity } from "./entities/socket-devices.entity";
+import { SocketDeviceEntity } from "./entities/socketDevices.entity";
 
 import { ResponseDto } from "../../common/response.dto";
 import { ConnectChatDto, SendMessageDto, CreateDeviceDto } from "./dto";
 
-import { IChatService } from "./interfaces";
+import { IChatService, IUserFriend, IMessage } from "./interfaces";
 
 @Injectable()
 export class ChatService implements IChatService {
@@ -26,21 +31,91 @@ export class ChatService implements IChatService {
     private readonly socketDeviceRepository: SocketDeviceRepository
   ) {}
 
-  async getConversationById(
+  async getConversationByUserIdAndFriendId(
     userId: string,
     friendId: string
   ): Promise<ResponseDto<ConversationEntity | null>> {
     try {
       const conversationEntity = await this.conversationRepository.findOne({
         where: [
-          { user_id: userId, friend_id: friendId },
-          { user_id: friendId, friend_id: userId },
+          { userId: userId, friendId: friendId },
+          { userId: friendId, friendId: userId },
         ],
       });
 
+      if (!conversationEntity) {
+        return responseData(
+          null,
+          "Conversation Not Found",
+          ERROR_DATA_NOT_FOUND
+        );
+      }
+
       return responseData(conversationEntity);
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+
+  async getConversationByUserId(
+    userId: string
+  ): Promise<ResponseDto<IConversationMessage[] | null>> {
+    try {
+      const conversations = await this.conversationRepository.getConversationsByUserId(
+        userId
+      );
+
+      if (conversations.length === 0) {
+        return responseData([], "Not Found Conversation", ERROR_DATA_NOT_FOUND);
+      }
+
+      return responseData(conversations);
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+
+  async getFriendByConversationId(
+    conversationId: string
+  ): Promise<ResponseDto<IUserFriend | null>> {
+    try {
+      const infoFriend = await this.conversationRepository.getFriendByConversationId(
+        conversationId
+      );
+
+      if (!infoFriend) {
+        return responseData(
+          null,
+          "Not Found Conversation",
+          ERROR_DATA_NOT_FOUND
+        );
+      }
+
+      return responseData(infoFriend);
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+
+  async getMessagesByConversationId(
+    conversationId: string
+  ): Promise<ResponseDto<IMessage[] | null>> {
+    try {
+      const messages = await this.conversationRepository.getMessagesByConversationId(
+        conversationId
+      );
+
+      if (messages.length === 0) {
+        return responseData(
+          null,
+          "Not Found Conversation",
+          ERROR_DATA_NOT_FOUND
+        );
+      }
+
+      return responseData(messages);
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -49,12 +124,44 @@ export class ChatService implements IChatService {
   ): Promise<ResponseDto<SocketDeviceEntity[] | null>> {
     try {
       const socketDeviceEntity = await this.socketDeviceRepository.find({
-        conversation_id: conversationId,
+        conversationId,
       });
+
+      if (socketDeviceEntity.length === 0) {
+        return responseData(
+          null,
+          "Not Found Conversation",
+          ERROR_DATA_NOT_FOUND
+        );
+      }
 
       return responseData(socketDeviceEntity);
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+
+  async getSocketDeviceByConversationIdAndUserId(
+    conversationId: string,
+    userId: string
+  ): Promise<ResponseDto<SocketDeviceEntity | null>> {
+    try {
+      const socketDeviceEntity = await this.socketDeviceRepository.findOne({
+        conversationId,
+        userId,
+      });
+
+      if (socketDeviceEntity) {
+        return responseData(socketDeviceEntity);
+      }
+
+      return responseData(
+        null,
+        "Not Found Socket Device",
+        ERROR_DATA_NOT_FOUND
+      );
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -76,7 +183,7 @@ export class ChatService implements IChatService {
         HttpStatus.BAD_REQUEST
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -96,11 +203,11 @@ export class ChatService implements IChatService {
         HttpStatus.BAD_REQUEST
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
-  async createDevice(
+  async createSocketDevice(
     device: CreateDeviceDto
   ): Promise<ResponseDto<SocketDeviceEntity | null>> {
     try {
@@ -110,33 +217,74 @@ export class ChatService implements IChatService {
         return responseData(deviceEntity);
       }
 
+      return responseData(null, "Created Device Failed", ERROR_INTERNAL_SERVER);
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+
+  async updateSocketDevice(
+    device: CreateDeviceDto
+  ): Promise<ResponseDto<boolean | null>> {
+    try {
+      const deviceEntity = await this.socketDeviceRepository.update(
+        { userId: device.userId, conversationId: device.conversationId },
+        { socketId: device.socketId }
+      );
+
+      if (deviceEntity.affected > 0) {
+        return responseData(true, "Update Socket Device Success");
+      }
+
       return responseData(
-        null,
-        "Created Device Failed",
-        HttpStatus.BAD_REQUEST
+        false,
+        "Update Socket Device Failed",
+        ERROR_INTERNAL_SERVER
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+
+  async deleteSocketDevice(
+    socketId: string
+  ): Promise<ResponseDto<boolean | null>> {
+    try {
+      const device = await this.socketDeviceRepository.delete({
+        socketId,
+      });
+
+      if (device.affected > 0) {
+        return responseData(true, "Delete Socket Device Success");
+      }
+
+      return responseData(
+        false,
+        "Delete Socket Device Failed",
+        ERROR_INTERNAL_SERVER
+      );
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
   async deleteConversation(
-    user_id: string,
-    friend_id: string
+    userId: string,
+    friendId: string
   ): Promise<ResponseDto<boolean | null>> {
     try {
       const deleteConversation = await this.conversationRepository.delete({
-        user_id,
-        friend_id,
+        userId,
+        friendId,
       });
 
       if (deleteConversation.affected > 0) {
         return responseData(true);
       }
 
-      return responseData(false);
+      return responseData(null, "Delete Conversation Failed", ERROR_UNKNOWN);
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 }

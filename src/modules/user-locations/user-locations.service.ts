@@ -4,7 +4,7 @@ import { responseData } from "../../common/utils";
 
 import {
   ERROR_DATA_NOT_FOUND,
-  ERROR_UNKNOW,
+  ERROR_UNKNOWN,
 } from "./../../constants/code-response.constant";
 import { IUserLocationsService } from "./interfaces";
 
@@ -62,7 +62,7 @@ export class UserLocationsService implements IUserLocationsService {
         })
       );
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 
@@ -103,7 +103,7 @@ export class UserLocationsService implements IUserLocationsService {
         .getRawMany();
       return locations;
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOW);
+      return responseData(null, error.message, ERROR_UNKNOWN);
     }
   }
 

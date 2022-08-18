@@ -6,8 +6,8 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { VerifyUserByEmailDto, VerifyUserDto } from "./dto/verify-user.dto";
+
+import { CreateUserDto, VerifyUserByEmailDto, VerifyUserDto } from "./dto";
 import { UsersService } from "./users.service";
 
 @Controller("users")

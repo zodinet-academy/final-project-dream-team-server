@@ -11,13 +11,14 @@ import { OtpModule } from "./modules/otp/otp.module";
 import { ChatModule } from "./modules/chat/chat.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { UsersModule } from "./modules/users/users.module";
-import { SettingsModule } from "./modules/settings/settings.module";
-import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
-import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
-import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 import { AdminsModule } from "./modules/admins/admins.module";
+import { SettingsModule } from "./modules/settings/settings.module";
+import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 import { UserImagesModule } from "./modules/user-images/user-images.module";
+import { UserFriendsModule } from "./modules/user-friends/userFriends.module";
 import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
+import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
+import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
 
 @Module({
   providers: [Logger],
@@ -60,6 +61,7 @@ import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
     UserLocationsModule,
     CloudinaryModule,
     ChatModule,
+    UserFriendsModule,
   ],
 })
 export class AppModule {}
