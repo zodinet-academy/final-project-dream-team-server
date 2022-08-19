@@ -1,2 +1,1 @@
-export * from "./getUserFriends.dto";
-export * from "./getFriendByUserIdAndFriendId.dto";
+export * from "./get-friend-by-user-id-and-friend-id.dto";

@@ -15,7 +15,7 @@ import { AdminsModule } from "./modules/admins/admins.module";
 import { SettingsModule } from "./modules/settings/settings.module";
 import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 import { UserImagesModule } from "./modules/user-images/user-images.module";
-import { UserFriendsModule } from "./modules/user-friends/userFriends.module";
+import { UserFriendsModule } from "./modules/user-friends/user-friends.module";
 import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
