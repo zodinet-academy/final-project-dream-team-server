@@ -122,6 +122,7 @@ export class UserLocationsService implements IUserLocationsService {
           el.friendAvatar
         );
         el.distance = +el.distance.toFixed();
+        el.unit = "met";
         return el;
       });
 

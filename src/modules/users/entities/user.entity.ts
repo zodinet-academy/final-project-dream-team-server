@@ -74,7 +74,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   height: number;
 
-  @Column({ type: "varchar" })
+  @Column({ name: "marital_status", type: "varchar", nullable: true })
   @IsEnum(MaritalStatusEnum)
   @AutoMap()
   maritalStatus: MaritalStatusEnum;

@@ -14,6 +14,7 @@ export interface IFriendNearUser {
   latitude: number;
   longtitude: number;
   distance: number;
+  unit: string;
 }
 export interface IOrigin {
   type: string;

@@ -1,10 +1,10 @@
 import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty, IsUUID } from "class-validator";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
-
 import { IConversationsEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 import { UserEntity } from "../../users/entities/user.entity";
+import { MessageEntity } from "./messages.entity";
 
 @Entity({ name: "conversations", synchronize: true })
 export class ConversationEntity
