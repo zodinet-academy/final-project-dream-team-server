@@ -3,15 +3,7 @@ import { IsNotEmpty, IsUUID } from "class-validator";
 
 export class GetFriendByUserIdAndFriendIdDto {
   @ApiProperty({
-    example: "33734a5e-596d-44f3-9fb8-84800ac4b9c8",
-    description: "The id of the user",
-  })
-  @IsNotEmpty()
-  @IsUUID()
-  userId: string;
-
-  @ApiProperty({
-    example: "92c00939-c312-4302-bd46-13e1628a015c",
+    example: "995dcb6d-ac35-44a8-8823-0f98fb8341f2",
     description: "The id of the user",
   })
   @IsNotEmpty()

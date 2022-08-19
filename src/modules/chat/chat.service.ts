@@ -16,7 +16,7 @@ import { IConversationMessage } from "./interfaces";
 
 import { MessageEntity } from "./entities/messages.entity";
 import { ConversationEntity } from "./entities/conversations.entity";
-import { SocketDeviceEntity } from "./entities/socketDevices.entity";
+import { SocketDeviceEntity } from "./entities/socket-devices.entity";
 
 import { ResponseDto } from "../../common/response.dto";
 import { ConnectChatDto, SendMessageDto, CreateDeviceDto } from "./dto";

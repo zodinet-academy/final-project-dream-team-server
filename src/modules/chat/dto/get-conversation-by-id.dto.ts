@@ -3,7 +3,7 @@ import { IsNotEmpty, IsUUID } from "class-validator";
 
 export class GetByConversationIdDto {
   @ApiProperty({
-    example: "ed53cc01-b203-4abc-b4fa-694f6d77e5f6",
+    example: "c1c9ef56-a418-420e-82e0-cd28293e0b56",
     description: "The id of the conversation",
   })
   @IsNotEmpty()

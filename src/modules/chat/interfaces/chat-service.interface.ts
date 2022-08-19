@@ -1,17 +1,17 @@
 import { MessageEntity } from "../entities/messages.entity";
 import { ConversationEntity } from "../entities/conversations.entity";
-import { SocketDeviceEntity } from "../entities/socketDevices.entity";
+import { SocketDeviceEntity } from "../entities/socket-devices.entity";
 
-import { ConnectChatDto } from "../dto/connectChat.dto";
-import { SendMessageDto } from "../dto/sendMessage.dto";
-import { CreateDeviceDto } from "../dto/createDevice.dto";
+import { ConnectChatDto } from "../dto/connect-chat.dto";
+import { SendMessageDto } from "../dto/send-message.dto";
+import { CreateDeviceDto } from "../dto/create-device.dto";
 import { ResponseDto } from "../../../common/response.dto";
 
 import {
   IConversationMessage,
   IUserFriend,
   IMessage,
-} from "./chatRepository.interface";
+} from "./chat-repository.interface";
 
 export interface IChatService {
   getConversationByUserIdAndFriendId(

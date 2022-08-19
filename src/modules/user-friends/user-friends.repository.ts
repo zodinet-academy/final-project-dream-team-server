@@ -5,7 +5,7 @@ import {
   IInfoFriendUser,
   IInfoFriend,
 } from "./interfaces";
-import { UserFriendsEntity } from "./entities/userFriends.entity";
+import { UserFriendsEntity } from "./entities/user-friends.entity";
 
 @EntityRepository(UserFriendsEntity)
 export class UserFriendsRepository
