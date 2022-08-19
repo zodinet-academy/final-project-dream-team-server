@@ -3,10 +3,8 @@ import { Logger, Module } from "@nestjs/common";
 import { AutomapperModule } from "@automapper/nestjs";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
-
 import * as Joi from "joi";
 import databaseConfig from "./config/database.config";
-
 import { OtpModule } from "./modules/otp/otp.module";
 import { ChatModule } from "./modules/chat/chat.module";
 import { AuthModule } from "./modules/auth/auth.module";
@@ -15,6 +13,7 @@ import { AdminsModule } from "./modules/admins/admins.module";
 import { SettingsModule } from "./modules/settings/settings.module";
 import { CloudinaryModule } from "./modules/cloudinary/cloudinary.module";
 import { UserImagesModule } from "./modules/user-images/user-images.module";
+import { UserFriendsModule } from "./modules/user-friends/user-friends.module";
 import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
@@ -62,7 +61,7 @@ import { UserBlocksModule } from "./modules/user-blocks/user-blocks.module";
     UserHobbiesModule,
     UserBlocksModule,
     PurposeSettingsModule,
-    // UserFriendsModule,
+    UserFriendsModule,
   ],
 })
 export class AppModule {}

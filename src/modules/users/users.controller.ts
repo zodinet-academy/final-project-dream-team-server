@@ -1,6 +1,19 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -8,7 +21,10 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { GetUser } from "../auth/decorator";
-import { CreateUserDto, PhoneUserDto } from "./dto";
+import { JwtAuthGuard } from "../auth/guards";
+import { CreateUserHobbiesDto } from "../user-hobbies/dto/create-user-hobbies.dto";
+import { DeleteUserHobbiesDto } from "../user-hobbies/dto/delete-user-hobbies.dto";
+import { CreateUserDto, PhoneUserDto, UpdateUserDto } from "./dto";
 import { UsersService } from "./users.service";
 
 @Controller("users")
@@ -44,7 +60,8 @@ export class UsersController {
     return this.usersService.getUserByEmail(email);
   }
 
-  @Post("update")
+  @Put("update")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Update user profile by user-id (user)" })
   @ApiOkResponse({ description: "User has been updated." })
   @ApiNotAcceptableResponse({
@@ -53,14 +70,83 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: "User id not found.",
   })
-  updateUserProfileById() {
-    return " this.usersService.updateUserProfileById(userId, dto);";
+  @UseInterceptors(FileInterceptor("file"))
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        file: {
+          type: "string",
+          format: "binary",
+        },
+        name: { type: "string", nullable: true },
+        birthday: { type: "string", nullable: true },
+        gender: { type: "string", nullable: true },
+        description: { type: "string", nullable: true },
+        children: { type: "integer", minimum: 0, nullable: true },
+        alcohol: { type: "string", nullable: true },
+        religion: { type: "string", nullable: true },
+        height: { type: "integer", minimum: 0, nullable: true },
+        maritalStatus: { type: "string", nullable: true },
+        education: { type: "string", nullable: true },
+        purposeId: { type: "string", format: "uuid", nullable: true },
+        type: { type: "string" },
+      },
+    },
+  })
+  updateUserProfileById(
+    @GetUser("id") userId: string,
+    @Body() dto: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    return this.usersService.updateUserProfileById(userId, dto, file);
   }
+
+  @Get("private/user-profile")
+  @UseGuards(JwtAuthGuard)
+  getUserProfile(@GetUser("id") userId: string) {
+    return this.usersService.getUserProfile(userId);
+  }
+
+  @Post("hobbies")
+  @UseGuards(JwtAuthGuard)
+  createUserHobby(
+    @GetUser("id") userId: string,
+    @Body() dto: CreateUserHobbiesDto
+  ) {
+    return this.usersService.createUserHobby(userId, dto.name);
+  }
+
+  @Delete("hobbies")
+  @UseGuards(JwtAuthGuard)
+  deleteUserHobby(
+    @GetUser("id") userId: string,
+    @Body() dto: DeleteUserHobbiesDto
+  ) {
+    return this.usersService.deleteUserHobby(userId, dto.id);
+  }
+
+  // @Delete(":userId")
+  // @ApiOperation({ summary: "Delete user data (admin)" })
+  // @ApiOkResponse({ description: "User has been deleted." })
+  // @ApiNotAcceptableResponse({
+  //   description: "Request is not in correct form.",
+  // })
+  // @ApiNotFoundResponse({
+  //   description: "User id not found.",
+  // })
+  // deleteUserProfileById(
+  //   @Param("userId") userId: string,
+  //   @Body() dto: DeleteUserDto
+  // ) {
+  //   return this.usersService.deleteUserProfileById(userId, dto);
+  // }
 
   @Get("friends")
   @ApiOperation({ summary: "Get friends list (user)" })
   @ApiOkResponse({ description: "Matching friends list." })
-  getListFriends(@GetUser("userId") userId: string) {
+  getListFriends(@GetUser("id") userId: string) {
     return this.usersService.getListFriends(userId);
   }
 

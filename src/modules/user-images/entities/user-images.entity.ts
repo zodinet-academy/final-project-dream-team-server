@@ -11,11 +11,6 @@ export class UserImageEntity extends DefaultEntity implements IUserImageEntity {
   @AutoMap()
   userId: string;
 
-  @Column({ type: "varchar" })
-  @IsNotEmpty()
-  @AutoMap()
-  url: string;
-
   @Column({ name: "cloud_id", type: "varchar" })
   @IsNotEmpty()
   @AutoMap()

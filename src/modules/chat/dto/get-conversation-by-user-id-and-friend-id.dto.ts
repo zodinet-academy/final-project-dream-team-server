@@ -1,12 +1,12 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsUUID } from "class-validator";
 
-export class GetConversationsByUserId {
+export class GetConversationByUserIdAndFriendIdDto {
   @ApiProperty({
-    example: "33734a5e-596d-44f3-9fb8-84800ac4b9c8",
+    example: "995dcb6d-ac35-44a8-8823-0f98fb8341f2",
     description: "The id of the user",
   })
   @IsNotEmpty()
   @IsUUID()
-  userId: string;
+  friendId: string;
 }

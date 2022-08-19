@@ -8,7 +8,7 @@ import { responseData } from "../../common/utils";
 import { ERROR_USER_EXISTED } from "../../constants/code-response.constant";
 import { OtpStatusEnum, UserRolesEnum } from "../../constants/enum";
 import { SocialDTO } from "../auth/dto/social-login.dto";
-import { IJwtPayloadDreamtem } from "../auth/interfaces/jwt-payload.interface";
+import { IJwtPayloadDreamteam } from "../auth/interfaces/jwt-payload.interface";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
 import { UserEntity } from "../users/entities/user.entity";
 import { UsersRepository } from "../users/users.repository";
@@ -82,7 +82,7 @@ export class OtpService implements IOtpService {
 
   async confirmOtp(
     phoneNumber: string,
-    verificationCode: string
+    code: string
   ): Promise<ResponseDto<string | boolean | null>> {
     const isValid = isValidPhoneNumber(phoneNumber, "VN");
     if (!isValid)
@@ -95,8 +95,29 @@ export class OtpService implements IOtpService {
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
     if (process.env.NODE_ENV === "local") {
-      if (process.env.OTP_DEFAULT === verificationCode)
-        return responseData("Verify OTP success") as ResponseDto<string>;
+      if (process.env.OTP_DEFAULT === code) {
+        const isExistWithPhone = await this.userExistedByPhone(
+          "0" + phone.nationalNumber
+        );
+
+        // If DB Have User Return Token
+        if (isExistWithPhone?.name) {
+          const payLoad: IJwtPayloadDreamteam = {
+            id: isExistWithPhone.id,
+            role: UserRolesEnum.USER,
+            phone: isExistWithPhone.phone,
+          };
+
+          const token = this.jwtService.sign(payLoad);
+          return responseData(token, "Verify OTP success");
+        }
+
+        await this.usersRepository.save({
+          phone: "0" + phone.nationalNumber,
+          isVerify: true,
+        });
+        return responseData(null, "Verify OTP success") as ResponseDto<string>;
+      }
 
       const timesLimit = this.configService.get("TIME_LIMIT");
       const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
@@ -122,12 +143,13 @@ export class OtpService implements IOtpService {
     const serviceSid = this.configService.get(
       "TWILIO_VERIFICATION_SERVICE_SID"
     );
+
     try {
       const result = await this.twilioClient.verify.v2
         .services(serviceSid)
         .verificationChecks.create({
           to: phone.number,
-          code: verificationCode,
+          code: code,
         });
 
       if (!result.valid || result.status !== OtpStatusEnum.APPROVED) {
@@ -168,8 +190,8 @@ export class OtpService implements IOtpService {
     );
 
     // If DB Have User Return Token
-    if (isExistWithPhone.name) {
-      const payLoad: IJwtPayloadDreamtem = {
+    if (isExistWithPhone?.name) {
+      const payLoad: IJwtPayloadDreamteam = {
         id: isExistWithPhone.id,
         role: UserRolesEnum.USER,
         phone: isExistWithPhone.phone,

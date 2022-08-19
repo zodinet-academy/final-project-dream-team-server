@@ -39,7 +39,7 @@ export class UserLocationsController {
     description: "User id not found.",
   })
   create(
-    @GetUser("userId") userId: string,
+    @GetUser("id") userId: string,
     @Body() createUserLocationDto: CreateUserLocationDto
   ) {
     return this.userLocationsService.createOrUpdate(
@@ -57,7 +57,7 @@ export class UserLocationsController {
   @ApiNotFoundResponse({
     description: "User id not found.",
   })
-  getUserLocation(@GetUser("userId") userId: string) {
+  getUserLocation(@GetUser("id") userId: string) {
     return this.userLocationsService.getUserLocation(userId);
   }
 
@@ -70,7 +70,7 @@ export class UserLocationsController {
   @ApiNotFoundResponse({
     description: "User id not found.",
   })
-  getFriendNearUser(@GetUser("userId") userId: string) {
+  getFriendNearUser(@GetUser("id") userId: string) {
     return this.userLocationsService.getFriendNearUser(userId);
   }
 

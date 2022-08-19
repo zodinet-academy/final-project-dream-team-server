@@ -2,7 +2,7 @@ import { ResponseDto } from "../../../common/response.dto";
 import {
   IInfoFriend,
   IInfoFriendUser,
-} from "./userFriendsRepository.interface";
+} from "./user-friends-repository.interface";
 
 export interface IUserFriendsService {
   getUserFriendsByUserId(

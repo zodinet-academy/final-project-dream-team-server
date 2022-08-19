@@ -125,7 +125,6 @@ export class UserLocationsService implements IUserLocationsService {
         el.unit = "met";
         return el;
       });
-
       return responseData(result, "Get friend near user success");
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);

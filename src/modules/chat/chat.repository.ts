@@ -2,7 +2,7 @@ import { EntityRepository, Repository } from "typeorm";
 
 import { MessageEntity } from "./entities/messages.entity";
 import { ConversationEntity } from "./entities/conversations.entity";
-import { SocketDeviceEntity } from "./entities/socketDevices.entity";
+import { SocketDeviceEntity } from "./entities/socket-devices.entity";
 
 import {
   IConversationMessage,

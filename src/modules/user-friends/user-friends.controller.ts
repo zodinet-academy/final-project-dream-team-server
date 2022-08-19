@@ -1,34 +1,38 @@
-import { Controller, Get, Param, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 
+import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
-import { UserFriendsService } from "./userFriends.service";
-import { GetUserFriendsDto, GetFriendByUserIdAndFriendIdDto } from "./dto";
+import { GetFriendByUserIdAndFriendIdDto } from "./dto";
+import { UserFriendsService } from "./user-friends.service";
 
-@Controller("user-friends")
+@Controller("secure/user-friends")
 @ApiTags("user-friends")
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UserFriendsController {
   constructor(private readonly userFriendsService: UserFriendsService) {}
 
-  @Get("/:userId")
+  @Get("")
   @ApiResponse({ status: 200, description: "List User Friend" })
   @ApiResponse({ status: 204, description: "User Not Found" })
   @ApiResponse({ status: 400, description: "Bad Requests" })
   @ApiResponse({ status: 500, description: "Server Error" })
-  async getUserFriends(@Param() dto: GetUserFriendsDto) {
-    return await this.userFriendsService.getUserFriendsByUserId(dto.userId);
+  async getUserFriends(@GetUser("id") userId: string) {
+    return await this.userFriendsService.getUserFriendsByUserId(userId);
   }
 
-  @Get("/")
+  @Get("/:friendId")
   @ApiResponse({ status: 200, description: "Info Friend" })
   @ApiResponse({ status: 204, description: "Friend Not Found" })
   @ApiResponse({ status: 400, description: "Bad Requests" })
   @ApiResponse({ status: 500, description: "Server Error" })
-  async getFriend(@Query() dto: GetFriendByUserIdAndFriendIdDto) {
+  async getFriend(
+    @GetUser("id") userId: string,
+    @Param() dto: GetFriendByUserIdAndFriendIdDto
+  ) {
     return await this.userFriendsService.getFriendByFriendIdAndFriendId(
-      dto.userId,
+      userId,
       dto.friendId
     );
   }

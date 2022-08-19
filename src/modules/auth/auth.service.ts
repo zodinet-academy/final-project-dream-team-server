@@ -64,27 +64,28 @@ export class AuthService implements IAuthService {
   }
 
   async loginNormal(phone: string, code: string) {
-    const isExist = await this.checkUserExist(phone);
-    if (!isExist)
-      return responseData(
-        null,
-        "Phone not found.",
-        "PHONE_NOT_FOUND"
-      ) as ResponseDto<string>;
+    return this.otpService.confirmOtp(phone, code);
+    // const isExist = await this.checkUserExist(phone);
+    // if (!isExist)
+    //   return responseData(
+    //     null,
+    //     "Phone not found.",
+    //     "PHONE_NOT_FOUND"
+    //   ) as ResponseDto<string>;
 
-    const respone = await this.otpService.confirmOtp(phone, code);
+    // const respone = await this.otpService.confirmOtp(phone, code);
 
-    if (!respone.status) {
-      return respone;
-    }
+    // if (!respone.status) {
+    //   return respone;
+    // }
 
-    const user = await this.usersService.getUserByPhone(phone);
-    const jwtToken = await signToken(
-      user?.data.id,
-      user?.data.phone,
-      UserRolesEnum.USER
-    );
-    return responseData(jwtToken);
+    // const user = await this.usersService.getUserByPhone(phone);
+    // const jwtToken = await signToken(
+    //   user?.data.id,
+    //   user?.data.phone,
+    //   UserRolesEnum.USER
+    // );
+    // return responseData(jwtToken);
   }
 
   async checkUserExist(phone: string): Promise<boolean> {

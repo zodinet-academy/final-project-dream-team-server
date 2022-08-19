@@ -45,7 +45,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   birthday: Date;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ default: GenderEnum.OTHER, type: "varchar", length: 10 })
   @IsEnum(GenderEnum)
   @AutoMap()
   gender: GenderEnum;
@@ -98,7 +98,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   updatedAt: Date;
 
-  @Column({ name: "purpose_id", type: "varchar" })
+  @Column({ name: "purpose_id", type: "varchar", nullable: true })
   @IsNotEmpty()
   @AutoMap()
   purposeId: string;
