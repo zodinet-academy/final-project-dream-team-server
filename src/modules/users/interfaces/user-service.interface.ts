@@ -4,14 +4,15 @@ import { ResponsePublicUserInterface } from "./res-public-user.interface";
 import { ResponseToken } from "../../auth/interfaces/response-token.interface";
 
 import { ResponseDto } from "../../../common/response.dto";
-import { SocialDTO } from "../../auth/dto/social-login.dto";
 import {
   CreateUserDto,
   DeleteUserDto,
   UpdateUserDto,
   FriendDto,
+  UserProfileDto,
   VerifyUserDto,
 } from "../dto";
+import { SocialDTO } from "../../auth/dto/social-login.dto";
 
 export interface IUserService {
   getAllUser(): Promise<ResponseDto<UserEntity[]>>;
@@ -29,8 +30,9 @@ export interface IUserService {
   ): Promise<ResponseDto<ResponseToken | string | boolean | null>>;
   updateUserProfileById(
     userId: string,
-    user: UpdateUserDto
-  ): Promise<ResponseDto<UserEntity>>;
+    user: UpdateUserDto,
+    file: Express.Multer.File
+  ): Promise<ResponseDto<string | UserProfileDto>>;
   deleteUserProfileById(
     userId: string,
     user: DeleteUserDto

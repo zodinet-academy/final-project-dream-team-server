@@ -9,7 +9,7 @@ import {
 } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
 import { IPhoneOtpEntity } from "../interfaces/phone-otp.interface";
-@Entity({ name: "phone_otp", synchronize: true }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "phone_otp", synchronize: false }) // bat buoc co, false: migration bo qua,
 @Unique(["phone"])
 export class PhoneOtpEntity extends DefaultEntity implements IPhoneOtpEntity {
   @Column({ type: "varchar", nullable: false })
