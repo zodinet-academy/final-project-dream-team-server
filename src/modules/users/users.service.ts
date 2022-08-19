@@ -38,7 +38,7 @@ import { MatchingUsersService } from "../matching-users/matching-users.service";
 import { SocialDTO } from "../auth/dto/social-login.dto";
 import { UserResponeDTO } from "./dto/user-respone.dto";
 import { JwtService } from "@nestjs/jwt";
-import { IJwtPayloadDreamtem } from "../auth/interfaces/jwt-payload.interface";
+import { IJwtPayloadDreamteam } from "../auth/interfaces/jwt-payload.interface";
 
 import { UpdateUserProfileEnum, UserRolesEnum } from "../../constants/enum";
 import { UserImagesService } from "../user-images/user-images.service";
@@ -96,7 +96,7 @@ export class UsersService implements IUserService {
         birthday: newDate,
       });
       const userRes = this.mapper.map(newUser, UserEntity, UserResponeDTO);
-      const payload: IJwtPayloadDreamtem = {
+      const payload: IJwtPayloadDreamteam = {
         id: newUser.id,
         phone: newUser.phone,
         role: UserRolesEnum.USER,
@@ -165,6 +165,8 @@ export class UsersService implements IUserService {
       if (!user) throw responseData(null, null, "ERROR_USER_NOT_FOUND");
       return responseData(user);
     } catch (error) {
+      console.log(error);
+
       return responseData(null, null, ERROR_UNKNOWN);
     }
   }
@@ -283,10 +285,7 @@ export class UsersService implements IUserService {
     }
   }
 
-  async deleteUserProfileById(
-    userId: string,
-    dto: DeleteUserDto
-  ): Promise<ResponseDto<UserEntity>> {
+  async deleteUserProfileById(): Promise<ResponseDto<UserEntity>> {
     return null;
   }
 

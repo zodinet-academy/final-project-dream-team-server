@@ -14,9 +14,8 @@ import {
   GenderEnum,
   MaritalStatusEnum,
   ReligionEnum,
-  UserRolesEnum,
 } from "../../../constants/enum";
-import { PurposeSettingEntity } from "../../purpose-settings/entities/purpose-setting.entity";
+import { PurposeSettingEntity } from "./../../purpose-settings/entities/purpose-setting.entity";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
 export class UserEntity extends DefaultEntity implements IUserEntity {
@@ -75,12 +74,12 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   height: number;
 
-  @Column({ name: "marital_status", type: "varchar" })
+  @Column({ name: "marital_status", type: "varchar", nullable: true })
   @IsEnum(MaritalStatusEnum)
   @AutoMap()
   maritalStatus: MaritalStatusEnum;
 
-  @Column({ type: "varchar", length: 20 })
+  @Column({ type: "varchar", length: 15, nullable: true })
   @IsEnum(EducationEnum)
   @AutoMap()
   education: EducationEnum;

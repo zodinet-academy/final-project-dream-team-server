@@ -18,7 +18,7 @@ export class UserFriendsController {
   @ApiResponse({ status: 204, description: "User Not Found" })
   @ApiResponse({ status: 400, description: "Bad Requests" })
   @ApiResponse({ status: 500, description: "Server Error" })
-  async getUserFriends(@GetUser("userId") userId: string) {
+  async getUserFriends(@GetUser("id") userId: string) {
     return await this.userFriendsService.getUserFriendsByUserId(userId);
   }
 
@@ -28,7 +28,7 @@ export class UserFriendsController {
   @ApiResponse({ status: 400, description: "Bad Requests" })
   @ApiResponse({ status: 500, description: "Server Error" })
   async getFriend(
-    @GetUser("userId") userId: string,
+    @GetUser("id") userId: string,
     @Param() dto: GetFriendByUserIdAndFriendIdDto
   ) {
     return await this.userFriendsService.getFriendByFriendIdAndFriendId(

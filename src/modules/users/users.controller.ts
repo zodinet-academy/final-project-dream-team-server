@@ -3,13 +3,13 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Post,
   Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,19 +20,12 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
-import {
-  CreateUserDto,
-  DeleteUserDto,
-  PhoneUserDto,
-  UpdateUserDto,
-} from "./dto";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
-import { UsersService } from "./users.service";
-import { ResponseDto } from "../../common/response.dto";
-import { FileInterceptor } from "@nestjs/platform-express";
 import { CreateUserHobbiesDto } from "../user-hobbies/dto/create-user-hobbies.dto";
 import { DeleteUserHobbiesDto } from "../user-hobbies/dto/delete-user-hobbies.dto";
+import { CreateUserDto, PhoneUserDto, UpdateUserDto } from "./dto";
+import { UsersService } from "./users.service";
 
 @Controller("users")
 @ApiTags("users")
@@ -103,24 +96,23 @@ export class UsersController {
     },
   })
   updateUserProfileById(
-    @GetUser("userId") userId: string,
+    @GetUser("id") userId: string,
     @Body() dto: UpdateUserDto,
     @UploadedFile() file: Express.Multer.File
   ) {
-    console.log(dto);
     return this.usersService.updateUserProfileById(userId, dto, file);
   }
 
-  @Get("/private/user-profile")
+  @Get("private/user-profile")
   @UseGuards(JwtAuthGuard)
-  getUserProfile(@GetUser("userId") userId: string) {
+  getUserProfile(@GetUser("id") userId: string) {
     return this.usersService.getUserProfile(userId);
   }
 
   @Post("hobbies")
   @UseGuards(JwtAuthGuard)
   createUserHobby(
-    @GetUser("userId") userId: string,
+    @GetUser("id") userId: string,
     @Body() dto: CreateUserHobbiesDto
   ) {
     return this.usersService.createUserHobby(userId, dto.name);
@@ -129,32 +121,32 @@ export class UsersController {
   @Delete("hobbies")
   @UseGuards(JwtAuthGuard)
   deleteUserHobby(
-    @GetUser("userId") userId: string,
+    @GetUser("id") userId: string,
     @Body() dto: DeleteUserHobbiesDto
   ) {
     return this.usersService.deleteUserHobby(userId, dto.id);
   }
 
-  @Delete(":userId")
-  @ApiOperation({ summary: "Delete user data (admin)" })
-  @ApiOkResponse({ description: "User has been deleted." })
-  @ApiNotAcceptableResponse({
-    description: "Request is not in correct form.",
-  })
-  @ApiNotFoundResponse({
-    description: "User id not found.",
-  })
-  deleteUserProfileById(
-    @Param("userId") userId: string,
-    @Body() dto: DeleteUserDto
-  ) {
-    return this.usersService.deleteUserProfileById(userId, dto);
-  }
+  // @Delete(":userId")
+  // @ApiOperation({ summary: "Delete user data (admin)" })
+  // @ApiOkResponse({ description: "User has been deleted." })
+  // @ApiNotAcceptableResponse({
+  //   description: "Request is not in correct form.",
+  // })
+  // @ApiNotFoundResponse({
+  //   description: "User id not found.",
+  // })
+  // deleteUserProfileById(
+  //   @Param("userId") userId: string,
+  //   @Body() dto: DeleteUserDto
+  // ) {
+  //   return this.usersService.deleteUserProfileById(userId, dto);
+  // }
 
   @Get("friends")
   @ApiOperation({ summary: "Get friends list (user)" })
   @ApiOkResponse({ description: "Matching friends list." })
-  getListFriends(@GetUser("userId") userId: string) {
+  getListFriends(@GetUser("id") userId: string) {
     return this.usersService.getListFriends(userId);
   }
 

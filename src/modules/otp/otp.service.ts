@@ -8,7 +8,7 @@ import { responseData } from "../../common/utils";
 import { ERROR_USER_EXISTED } from "../../constants/code-response.constant";
 import { OtpStatusEnum, UserRolesEnum } from "../../constants/enum";
 import { SocialDTO } from "../auth/dto/social-login.dto";
-import { IJwtPayloadDreamtem } from "../auth/interfaces/jwt-payload.interface";
+import { IJwtPayloadDreamteam } from "../auth/interfaces/jwt-payload.interface";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
 import { UserEntity } from "../users/entities/user.entity";
 import { UsersRepository } from "../users/users.repository";
@@ -102,7 +102,7 @@ export class OtpService implements IOtpService {
 
         // If DB Have User Return Token
         if (isExistWithPhone?.name) {
-          const payLoad: IJwtPayloadDreamtem = {
+          const payLoad: IJwtPayloadDreamteam = {
             id: isExistWithPhone.id,
             role: UserRolesEnum.USER,
             phone: isExistWithPhone.phone,
@@ -191,7 +191,7 @@ export class OtpService implements IOtpService {
 
     // If DB Have User Return Token
     if (isExistWithPhone?.name) {
-      const payLoad: IJwtPayloadDreamtem = {
+      const payLoad: IJwtPayloadDreamteam = {
         id: isExistWithPhone.id,
         role: UserRolesEnum.USER,
         phone: isExistWithPhone.phone,

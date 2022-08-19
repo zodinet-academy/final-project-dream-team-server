@@ -1,9 +1,8 @@
-import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
 
 import { UserRolesEnum } from "../constants/enum";
 
-import { JwtPayload } from "../modules/auth/interfaces/jwt-payload.interface";
 import { ResponseToken } from "../modules/auth/interfaces/response-token.interface";
 
 import { ResponseDto } from "./response.dto";

@@ -3,10 +3,8 @@ import { Logger, Module } from "@nestjs/common";
 import { AutomapperModule } from "@automapper/nestjs";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
-
 import * as Joi from "joi";
 import databaseConfig from "./config/database.config";
-
 import { OtpModule } from "./modules/otp/otp.module";
 import { ChatModule } from "./modules/chat/chat.module";
 import { AuthModule } from "./modules/auth/auth.module";
@@ -20,18 +18,11 @@ import { UserHobbiesModule } from "./modules/user-hobbies/user-hobbies.module";
 import { UserLocationsModule } from "./modules/user-locations/user-locations.module";
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
 import { PurposeSettingsModule } from "./modules/purpose-settings/purpose-settings.module";
+import { UserBlocksModule } from "./modules/user-blocks/user-blocks.module";
 
 @Module({
   providers: [Logger],
   imports: [
-    UsersModule,
-    AuthModule,
-    OtpModule,
-    AuthModule,
-    MatchingUsersModule,
-    AdminsModule,
-    UserImagesModule,
-    UserHobbiesModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [databaseConfig],
@@ -57,11 +48,18 @@ import { PurposeSettingsModule } from "./modules/purpose-settings/purpose-settin
         config.get<TypeOrmModuleOptions>("database"),
       inject: [ConfigService],
     }),
+    UsersModule,
+    AuthModule,
+    OtpModule,
+    MatchingUsersModule,
     SettingsModule,
     AdminsModule,
     UserLocationsModule,
     CloudinaryModule,
     ChatModule,
+    UserImagesModule,
+    UserHobbiesModule,
+    UserBlocksModule,
     PurposeSettingsModule,
     UserFriendsModule,
   ],

@@ -1,27 +1,25 @@
 import { Point } from "geojson";
 import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
-
 import {
   ERROR_DATA_NOT_FOUND,
   ERROR_UNKNOWN,
 } from "./../../constants/code-response.constant";
-import { IUserLocationsService } from "./interfaces";
-
-import { SettingEntity } from "../settings/entities/setting.entity";
-import { UserLocationEntity } from "./entities/user-location.entity";
-
-import { ResponseDto } from "../../common/response.dto";
 import { CreateUserLocationDto } from "./dto/create-user-location.dto";
-
-import { SettingsService } from "../settings/settings.service";
+import { UserLocationEntity } from "./entities/user-location.entity";
+import { IFriendNearUser, IOrigin, IUserLocationsService } from "./interfaces";
 import { UserLocationsRepository } from "./user-locations.repository";
+import { ResponseDto } from "../../common/response.dto";
+import { SettingEntity } from "../settings/entities/setting.entity";
+import { SettingsService } from "../settings/settings.service";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @Injectable()
 export class UserLocationsService implements IUserLocationsService {
   constructor(
     private readonly userLocationsRepository: UserLocationsRepository,
-    private readonly settingsService: SettingsService
+    private readonly settingsService: SettingsService,
+    private readonly cloudinaryService: CloudinaryService
   ) {}
 
   /**
@@ -40,7 +38,10 @@ export class UserLocationsService implements IUserLocationsService {
 
       const pointObject: Point = {
         type: "Point",
-        coordinates: [createUserLocationDto.long, createUserLocationDto.lat],
+        coordinates: [
+          createUserLocationDto.longtitude,
+          createUserLocationDto.latitude,
+        ],
       };
 
       if (!findData)
@@ -66,11 +67,40 @@ export class UserLocationsService implements IUserLocationsService {
     }
   }
 
-  async findAllByDistance(userId: string) {
+  /**
+   * Get current user location
+   * @param userId
+   * @returns ResponseDto<UserLocationEntity | string>
+   */
+  async getUserLocation(
+    userId: string
+  ): Promise<ResponseDto<string | UserLocationEntity>> {
     try {
-      const findData = await this.userLocationsRepository.findOne({
-        userId: userId,
-      });
+      const findData: UserLocationEntity = await this.userLocationsRepository.findOne(
+        {
+          userId: userId,
+        }
+      );
+      if (!findData) return responseData(null, null, ERROR_DATA_NOT_FOUND);
+      return responseData(findData, "Get user location success");
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+  /**
+   * Get all friend near user within 3km radius
+   * @param userId
+   * @returns response dto with list friend near user
+   */
+  async getFriendNearUser(
+    userId: string
+  ): Promise<ResponseDto<IFriendNearUser[] | string | SettingEntity>> {
+    try {
+      const findData: UserLocationEntity = await this.userLocationsRepository.findOne(
+        {
+          userId: userId,
+        }
+      );
       if (!findData) return responseData(null, null, ERROR_DATA_NOT_FOUND);
 
       const findSetting: ResponseDto<
@@ -79,29 +109,23 @@ export class UserLocationsService implements IUserLocationsService {
       if (!findSetting.status) return findSetting;
       const { radius } = findSetting.data as SettingEntity;
 
-      const origin = {
+      const origin: IOrigin = {
         type: "Point",
-        coordinates: [findData.long, findData.lat],
+        coordinates: [findData.longtitude, findData.latitude],
       };
-      const locations = await this.userLocationsRepository
-        .createQueryBuilder("user_locations")
-        .select([
-          "user_locations.userId",
-          "user_locations.lat",
-          "user_locations.long",
-          "ST_Distance(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)))/1000 AS distance",
-        ])
-        .where(
-          "ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)"
-        )
-        .orderBy("distance", "ASC")
-        .setParameters({
-          // stringify GeoJSON
-          origin: JSON.stringify(origin),
-          range: radius * 1000, //KM conversion
-        })
-        .getRawMany();
-      return locations;
+      const result: IFriendNearUser[] = await this.userLocationsRepository.getFriendNearUser(
+        radius,
+        origin
+      );
+      result.map(async (el) => {
+        el.friendAvatar = await this.cloudinaryService.getImageUrl(
+          el.friendAvatar
+        );
+        el.distance = +el.distance.toFixed();
+        el.unit = "met";
+        return el;
+      });
+      return responseData(result, "Get friend near user success");
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);
     }

@@ -19,6 +19,7 @@ export class AdminEntity extends DefaultEntity implements IAdminEntity {
   @Column({ type: "varchar", nullable: true })
   @IsOptional()
   @AutoMap()
+  @IsOptional()
   avatar: string;
 
   @Column({ type: "varchar", length: 150 })

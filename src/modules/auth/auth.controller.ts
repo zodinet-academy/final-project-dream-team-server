@@ -1,6 +1,4 @@
-import { Get, UseGuards } from "@nestjs/common";
-import { Req } from "@nestjs/common";
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiNotAcceptableResponse,
@@ -11,7 +9,6 @@ import {
 } from "@nestjs/swagger";
 import { ResponseDto } from "../../common/response.dto";
 import { SendOtpDto, VerifyOtpDto } from "../otp/dto";
-import { UserEntity } from "../users/entities/user.entity";
 import { AuthService } from "./auth.service";
 import { AdminLoginDto } from "./dto/admin-login.dto";
 import { SocialDTO } from "./dto/social-login.dto";

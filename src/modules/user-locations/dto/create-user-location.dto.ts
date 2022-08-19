@@ -9,7 +9,7 @@ export class CreateUserLocationDto implements IUserLocationEntity {
   })
   @IsNumber()
   @IsNotEmpty()
-  lat: number;
+  latitude: number;
 
   @ApiProperty({
     description: "longtitute",
@@ -17,5 +17,5 @@ export class CreateUserLocationDto implements IUserLocationEntity {
   })
   @IsNumber()
   @IsNotEmpty()
-  long: number;
+  longtitude: number;
 }
