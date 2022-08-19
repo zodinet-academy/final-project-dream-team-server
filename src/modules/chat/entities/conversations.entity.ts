@@ -8,7 +8,7 @@ import { MessageEntity } from "./messages.entity";
 import { DefaultEntity } from "../../../common/entity";
 import { UserEntity } from "../../users/entities/user.entity";
 
-@Entity({ name: "conversations", synchronize: true })
+@Entity({ name: "conversations", synchronize: false })
 export class ConversationEntity
   extends DefaultEntity
   implements IConversationsEntity {

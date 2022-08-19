@@ -16,7 +16,7 @@ import { SendMessageDto } from "./dto";
 import { ResponseDto } from "../../common/response.dto";
 
 import { ConversationEntity } from "./entities/conversations.entity";
-import { SocketDeviceEntity } from "./entities/socketDevices.entity";
+import { SocketDeviceEntity } from "./entities/socket-devices.entity";
 
 import { ChatService } from "./chat.service";
 
@@ -146,13 +146,19 @@ export class ChatGateway
         socketId,
       };
 
+      console.log("device: ", deviceEntity);
+
       const socketDevice = await this.chatService.getSocketDeviceByConversationIdAndUserId(
         conversationId,
         userId
       );
 
+      console.log("device: ", socketDevice);
+
       if (!socketDevice.status) {
         const device = await this.chatService.createSocketDevice(deviceEntity);
+
+        console.log("device old: ", device);
 
         return device;
       }

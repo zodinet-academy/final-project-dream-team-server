@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { responseData } from "../../common/utils";
-import { UserFriendsRepository } from "./userFriends.repository";
+import { UserFriendsRepository } from "./user-friends.repository";
 import {
   ERROR_INTERNAL_SERVER,
   ERROR_DATA_NOT_FOUND,

@@ -5,10 +5,15 @@ import {
   Get,
   Param,
   Post,
+  Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -24,6 +29,10 @@ import {
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
 import { UsersService } from "./users.service";
+import { ResponseDto } from "../../common/response.dto";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { CreateUserHobbiesDto } from "../user-hobbies/dto/create-user-hobbies.dto";
+import { DeleteUserHobbiesDto } from "../user-hobbies/dto/delete-user-hobbies.dto";
 
 @Controller("users")
 @ApiTags("users")
@@ -58,7 +67,8 @@ export class UsersController {
     return this.usersService.getUserByEmail(email);
   }
 
-  @Post("update")
+  @Put("update")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Update user profile by user-id (user)" })
   @ApiOkResponse({ description: "User has been updated." })
   @ApiNotAcceptableResponse({
@@ -67,11 +77,62 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: "User id not found.",
   })
+  @UseInterceptors(FileInterceptor("file"))
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        file: {
+          type: "string",
+          format: "binary",
+        },
+        name: { type: "string", nullable: true },
+        birthday: { type: "string", nullable: true },
+        gender: { type: "string", nullable: true },
+        description: { type: "string", nullable: true },
+        children: { type: "integer", minimum: 0, nullable: true },
+        alcohol: { type: "string", nullable: true },
+        religion: { type: "string", nullable: true },
+        height: { type: "integer", minimum: 0, nullable: true },
+        maritalStatus: { type: "string", nullable: true },
+        education: { type: "string", nullable: true },
+        purposeId: { type: "string", format: "uuid", nullable: true },
+        type: { type: "string" },
+      },
+    },
+  })
   updateUserProfileById(
     @GetUser("userId") userId: string,
-    @Body() dto: UpdateUserDto
+    @Body() dto: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File
   ) {
-    return " this.usersService.updateUserProfileById(userId, dto);";
+    console.log(dto);
+    return this.usersService.updateUserProfileById(userId, dto, file);
+  }
+
+  @Get("/private/user-profile")
+  @UseGuards(JwtAuthGuard)
+  getUserProfile(@GetUser("userId") userId: string) {
+    return this.usersService.getUserProfile(userId);
+  }
+
+  @Post("hobbies")
+  @UseGuards(JwtAuthGuard)
+  createUserHobby(
+    @GetUser("userId") userId: string,
+    @Body() dto: CreateUserHobbiesDto
+  ) {
+    return this.usersService.createUserHobby(userId, dto.name);
+  }
+
+  @Delete("hobbies")
+  @UseGuards(JwtAuthGuard)
+  deleteUserHobby(
+    @GetUser("userId") userId: string,
+    @Body() dto: DeleteUserHobbiesDto
+  ) {
+    return this.usersService.deleteUserHobby(userId, dto.id);
   }
 
   @Delete(":userId")

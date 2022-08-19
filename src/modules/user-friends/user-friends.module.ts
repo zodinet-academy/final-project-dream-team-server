@@ -1,9 +1,9 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { UserFriendsRepository } from "./userFriends.repository";
-import { UserFriendsController } from "./userFriends.controller";
-import { UserFriendsService } from "./userFriends.service";
+import { UserFriendsRepository } from "./user-friends.repository";
+import { UserFriendsController } from "./user-friends.controller";
+import { UserFriendsService } from "./user-friends.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserFriendsRepository])],

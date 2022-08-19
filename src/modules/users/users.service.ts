@@ -1,16 +1,19 @@
 import { Mapper } from "@automapper/core";
 import { Injectable } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
-import { responseData, signToken } from "../../common/utils";
+import { responseData } from "../../common/utils";
 
 import {
   CHECK_PHONE_GET_OTP,
   ERROR_UNKNOWN,
-  ERROR_USER_EXISTED,
-  ERROR_USER_NOT_FOUND,
   ERROR_DATA_NOT_FOUND,
   ERROR_CAN_NOT_GET_USER_ALBUM,
   ERROR_CAN_NOT_GET_USER_HOBBIES,
+  ERROR_CAN_NOT_UPDATE_USER_PROFILE,
+  ERROR_CHANGE_USER_AVATAR,
+  ERROR_MISSING_FIELD,
+  ERROR_USER_EXISTED,
+  ERROR_USER_NOT_FOUND,
 } from "../../constants/code-response.constant";
 
 import { UserEntity } from "./entities/user.entity";
@@ -18,7 +21,6 @@ import { UsersRepository } from "./users.repository";
 
 import { ResponsePublicUserInterface } from "./interfaces";
 import { IUserService } from "./interfaces/user-service.interface";
-import { ResponseToken } from "../auth/interfaces/response-token.interface";
 
 import {
   CreateUserDto,
@@ -38,9 +40,11 @@ import { UserResponeDTO } from "./dto/user-respone.dto";
 import { JwtService } from "@nestjs/jwt";
 import { IJwtPayloadDreamtem } from "../auth/interfaces/jwt-payload.interface";
 
-import { UserRolesEnum } from "../../constants/enum";
+import { UpdateUserProfileEnum, UserRolesEnum } from "../../constants/enum";
 import { UserImagesService } from "../user-images/user-images.service";
 import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { GetUserHobbiesDto } from "../user-hobbies/dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -51,7 +55,8 @@ export class UsersService implements IUserService {
     @InjectMapper() private readonly mapper: Mapper,
     private readonly matchingUsersService: MatchingUsersService,
     private readonly userImagesService: UserImagesService,
-    private readonly userHobbiesServies: UserHobbiesService
+    private readonly userHobbiesServies: UserHobbiesService,
+    private readonly cloudinaryService: CloudinaryService
   ) {}
 
   async signUp(dto: SocialDTO) {
@@ -178,21 +183,103 @@ export class UsersService implements IUserService {
 
   async updateUserProfileById(
     userId: string,
-    dto: UpdateUserDto
-  ): Promise<ResponseDto<UserEntity>> {
+    dto: UpdateUserDto,
+    file: Express.Multer.File
+  ): Promise<ResponseDto<string | UserProfileDto>> {
     try {
-      const userInfo: UserEntity = await this.usersRepository.findOne(userId);
+      const user = await this.usersRepository.findOne({ id: userId });
+      if (!user)
+        return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
 
-      if (userInfo) {
-        await this.usersRepository.update(userId, {
-          ...(dto.name && { name: dto.name }),
-          ...(dto.gender && { gender: dto.gender }),
-        });
+      const query = this.usersRepository
+        .createQueryBuilder()
+        .update(UserEntity);
+
+      switch (dto.type) {
+        case UpdateUserProfileEnum.ALCOHOL:
+          if (dto.alcohol)
+            responseData(null, "Missing file alcohol", ERROR_MISSING_FIELD);
+          query.set({ alcohol: dto.alcohol });
+          break;
+        case UpdateUserProfileEnum.CHILDREN:
+          if (dto.children)
+            responseData(null, "Missing file children", ERROR_MISSING_FIELD);
+          query.set({ children: dto.children });
+          break;
+        case UpdateUserProfileEnum.DESCRIPTION:
+          if (dto.description)
+            responseData(null, "Missing file description", ERROR_MISSING_FIELD);
+          query.set({ description: dto.description });
+          break;
+        case UpdateUserProfileEnum.EDUCATION:
+          if (dto.education)
+            responseData(null, "Missing file education", ERROR_MISSING_FIELD);
+          query.set({ education: dto.education });
+          break;
+        case UpdateUserProfileEnum.GENDER:
+          if (dto.gender)
+            responseData(null, "Missing file gender", ERROR_MISSING_FIELD);
+          query.set({ gender: dto.gender });
+          break;
+        case UpdateUserProfileEnum.HEIGHT:
+          if (dto.height)
+            responseData(null, "Missing file height", ERROR_MISSING_FIELD);
+          query.set({ height: dto.height });
+          break;
+        case UpdateUserProfileEnum.MARITAL_STATUS:
+          if (dto.maritalStatus)
+            responseData(
+              null,
+              "Missing file maritalStatus",
+              ERROR_MISSING_FIELD
+            );
+          query.set({ maritalStatus: dto.maritalStatus });
+          break;
+        case UpdateUserProfileEnum.PURPOSEID:
+          if (dto.purposeId)
+            responseData(null, "Missing file purposeId", ERROR_MISSING_FIELD);
+          query.set({ purposeId: dto.purposeId });
+          break;
+        case UpdateUserProfileEnum.RELIGION:
+          if (dto.religion)
+            responseData(null, "Missing file religion", ERROR_MISSING_FIELD);
+          query.set({ religion: dto.religion });
+          break;
+        case UpdateUserProfileEnum.OTHER:
+          {
+            const newImage = await this.changeAvatar(user.avatar, file);
+            console.log(newImage);
+            if (!newImage)
+              responseData(
+                null,
+                "Error change user avatar",
+                ERROR_CHANGE_USER_AVATAR
+              );
+
+            query.set({
+              avatar: newImage ? newImage : user.avatar,
+              name: dto.name ? dto.name : user.name,
+              birthday: dto.birthday ? dto.birthday : user.birthday,
+            });
+          }
+          break;
+        default:
+          break;
       }
 
-      return responseData(null, "Your profile has been updated!");
+      query.where("id = :id", { id: userId });
+
+      const { affected } = await query.execute();
+
+      console.log(query.getSql());
+      if (affected > 0) return this.getUserProfile(user.id);
     } catch (error) {
-      return responseData(null, null, "ERROR_USER_NOT_FOUND");
+      console.log(error);
+      return responseData(
+        null,
+        "Can not update user profile",
+        ERROR_CAN_NOT_UPDATE_USER_PROFILE
+      );
     }
   }
 
@@ -280,6 +367,10 @@ export class UsersService implements IUserService {
     if (!user)
       return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
 
+    const urlAvatar = await this.cloudinaryService.getImageUrl(user.avatar);
+
+    user.avatar = urlAvatar;
+
     const album = await this.userImagesService.getUserAlbum(user.id);
     if (!album)
       responseData(
@@ -301,5 +392,41 @@ export class UsersService implements IUserService {
     user.hobbies = hobbies;
 
     return responseData(user);
+  }
+
+  async changeAvatar(
+    oldAvater: string,
+    newAvatar: Express.Multer.File
+  ): Promise<string> {
+    const response = await this.cloudinaryService.uploadImage(
+      newAvatar,
+      "avatar",
+      oldAvater
+    );
+
+    if (response.public_id) return response.public_id;
+    return undefined;
+  }
+
+  async createUserHobby(
+    userId: string,
+    name: string
+  ): Promise<ResponseDto<string | GetUserHobbiesDto>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const hobby = await this.userHobbiesServies.createUserHobby(userId, name);
+    return hobby;
+  }
+
+  async deleteUserHobby(
+    userId: string,
+    hobbyId: string
+  ): Promise<ResponseDto<string>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userHobbiesServies.deleteUserHobby(userId, hobbyId);
+    return res;
   }
 }
