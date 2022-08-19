@@ -20,7 +20,7 @@ import { SocialGuard } from "./guards/social.guard";
 
 @ApiBearerAuth()
 @ApiTags("auth")
-@Controller("auth")
+@Controller("secure/auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
