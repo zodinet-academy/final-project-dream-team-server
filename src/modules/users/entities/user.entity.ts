@@ -58,12 +58,12 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   children: number;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 20 })
   @IsEnum(AlcoholEnum)
   @AutoMap()
   alcohol: AlcoholEnum;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar" })
   @IsEnum(ReligionEnum)
   @AutoMap()
   religion: ReligionEnum;
@@ -72,12 +72,12 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   height: number;
 
-  @Column({ type: "varchar" })
+  @Column({ name: "marital_status", type: "varchar" })
   @IsEnum(MaritalStatusEnum)
   @AutoMap()
   maritalStatus: MaritalStatusEnum;
 
-  @Column({ type: "varchar", length: 10 })
+  @Column({ type: "varchar", length: 20 })
   @IsEnum(EducationEnum)
   @AutoMap()
   education: EducationEnum;

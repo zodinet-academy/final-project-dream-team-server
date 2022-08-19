@@ -9,6 +9,7 @@ import { MatchingUsersModule } from "../matching-users/matching-users.module";
 import { UserProfile } from "./user.profile";
 import { UserImagesModule } from "../user-images/user-images.module";
 import { UserHobbiesModule } from "../user-hobbies/user-hobbies.module";
+import { CloudinaryModule } from "../cloudinary/cloudinary.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserHobbiesModule } from "../user-hobbies/user-hobbies.module";
     MatchingUsersModule,
     UserImagesModule,
     UserHobbiesModule,
+    CloudinaryModule,
   ],
   controllers: [PublicUsersController, UsersController],
   providers: [UsersService, UserProfile],

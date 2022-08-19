@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { UploadApiErrorResponse, UploadApiResponse, v2 } from "cloudinary";
 import toStream = require("buffer-to-stream");
 import { ICloudinaryService } from "./interfaces/cloudinary.interface";
+import { url } from "inspector";
 
 @Injectable()
 export class CloudinaryService implements ICloudinaryService {
@@ -17,15 +18,19 @@ export class CloudinaryService implements ICloudinaryService {
         },
         (error, result) => {
           if (error) return reject(error);
+          if (idFileOld) {
+            v2.uploader.destroy(idFileOld);
+          }
           resolve(result);
         }
       );
 
-      if (idFileOld) {
-        v2.uploader.destroy(idFileOld);
-      }
-
       toStream(file.buffer).pipe(upload);
     });
+  }
+
+  async getImageUrl(publicId: string): Promise<string> {
+    const url = v2.url(publicId);
+    return url;
   }
 }

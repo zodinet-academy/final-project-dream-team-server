@@ -46,3 +46,16 @@ export enum MaritalStatusEnum {
   MARRIED = "married",
   DIVORCED = "divorced",
 }
+
+export enum UpdateUserProfileEnum {
+  OTHER = "other",
+  GENDER = "gender",
+  DESCRIPTION = "description",
+  CHILDREN = "children",
+  ALCOHOL = "alcohol",
+  RELIGION = "religion",
+  HEIGHT = "height",
+  MARITAL_STATUS = "maritalStatus",
+  EDUCATION = "education",
+  PURPOSEID = "purposeId",
+}
