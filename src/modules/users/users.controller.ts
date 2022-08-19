@@ -68,6 +68,7 @@ export class UsersController {
   }
 
   @Put("update")
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Update user profile by user-id (user)" })
   @ApiOkResponse({ description: "User has been updated." })
   @ApiNotAcceptableResponse({
@@ -111,11 +112,13 @@ export class UsersController {
   }
 
   @Get("/private/user-profile")
+  @UseGuards(JwtAuthGuard)
   getUserProfile(@GetUser("userId") userId: string) {
     return this.usersService.getUserProfile(userId);
   }
 
   @Post("hobbies")
+  @UseGuards(JwtAuthGuard)
   createUserHobby(
     @GetUser("userId") userId: string,
     @Body() dto: CreateUserHobbiesDto
@@ -124,6 +127,7 @@ export class UsersController {
   }
 
   @Delete("hobbies")
+  @UseGuards(JwtAuthGuard)
   deleteUserHobby(
     @GetUser("userId") userId: string,
     @Body() dto: DeleteUserHobbiesDto

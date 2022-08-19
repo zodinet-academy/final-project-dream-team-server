@@ -8,7 +8,7 @@ import {
   ERROR_CAN_NOT_GET_USER_HOBBIES,
   ERROR_HOBBY_NAME_ALREADY_EXISTED,
   ERROR_HOBBY_NOT_FOUND,
-  ERROR_UNKNOW,
+  ERROR_UNKNOWN,
   ERROR_USER_NOT_MATCH_WITH_HOBBY,
 } from "../../constants/code-response.constant";
 import { GetUserHobbiesDto } from "./dto";
@@ -73,7 +73,7 @@ export class UserHobbiesService implements IUserHobbiesService {
       return responseData(result, "");
     } catch (error) {
       console.log(error);
-      return responseData("", "error_unknown", ERROR_UNKNOW);
+      return responseData("", "error_unknown", ERROR_UNKNOWN);
     }
   }
 
@@ -99,7 +99,7 @@ export class UserHobbiesService implements IUserHobbiesService {
       return responseData(id, "Delete hobby success");
     } catch (error) {
       console.log(error);
-      return responseData("", "error_unknown", ERROR_UNKNOW);
+      return responseData("", "error_unknown", ERROR_UNKNOWN);
     }
   }
 }
