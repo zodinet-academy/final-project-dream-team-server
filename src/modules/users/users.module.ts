@@ -11,6 +11,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UserImagesModule } from "../user-images/user-images.module";
 import { UserHobbiesModule } from "../user-hobbies/user-hobbies.module";
+import { CloudinaryModule } from "../cloudinary/cloudinary.module";
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UserHobbiesModule } from "../user-hobbies/user-hobbies.module";
       }),
       inject: [ConfigService],
     }),
+    CloudinaryModule,
   ],
   controllers: [PublicUsersController, UsersController],
   providers: [UsersService, UserProfile],

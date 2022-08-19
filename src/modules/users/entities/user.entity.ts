@@ -71,7 +71,16 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @AutoMap()
   religion: ReligionEnum;
 
-  @Column({ type: "varchar", length: 15, nullable: true })
+  @Column({ type: "bigint", default: 0 })
+  @AutoMap()
+  height: number;
+
+  @Column({ name: "marital_status", type: "varchar" })
+  @IsEnum(MaritalStatusEnum)
+  @AutoMap()
+  maritalStatus: MaritalStatusEnum;
+
+  @Column({ type: "varchar", length: 20 })
   @IsEnum(EducationEnum)
   @AutoMap()
   education: EducationEnum;
