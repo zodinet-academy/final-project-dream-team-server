@@ -82,7 +82,7 @@ export class UsersService implements IUserService {
       });
       if (!userFound) return responseData(null, ERROR_DATA_NOT_FOUND);
       const bthdayFormart = birthday.toString();
-      const newDate = bthdayFormart.split("-").reverse().join("-");
+      const newDate = bthdayFormart.split("/").reverse().join("/");
       const newUser = await this.usersRepository.save({
         ...userFound,
         email,
