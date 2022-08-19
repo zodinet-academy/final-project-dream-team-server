@@ -1,5 +1,8 @@
+import { Get, UseGuards } from "@nestjs/common";
+import { Req } from "@nestjs/common";
 import { Body, Controller, Post } from "@nestjs/common";
 import {
+  ApiBearerAuth,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -8,10 +11,14 @@ import {
 } from "@nestjs/swagger";
 import { ResponseDto } from "../../common/response.dto";
 import { SendOtpDto, VerifyOtpDto } from "../otp/dto";
+import { UserEntity } from "../users/entities/user.entity";
 import { AuthService } from "./auth.service";
 import { AdminLoginDto } from "./dto/admin-login.dto";
-import { GoogleLoginDto } from "./dto/google-login.dto";
+import { SocialDTO } from "./dto/social-login.dto";
+import { JwtAuthGuard } from "./guards";
+import { SocialGuard } from "./guards/social.guard";
 
+@ApiBearerAuth()
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
@@ -50,9 +57,11 @@ export class AuthController {
   }
 
   @Post("login-google")
+  @UseGuards(SocialGuard)
   @ApiOperation({ summary: "Login with Google account (user)" })
-  async loginGoogle(@Body() googleLoginDto: GoogleLoginDto) {
-    return this.authService.loginGoogle(googleLoginDto);
+  async loginWithSocial(@Body() socialDTO: SocialDTO) {
+    //return req?.isLogin;
+    return await this.authService.loginWithSocial(socialDTO);
   }
 
   @Post("/admin/login")
@@ -74,5 +83,10 @@ export class AuthController {
     @Body() adminLoginDto: AdminLoginDto
   ): Promise<ResponseDto<string>> {
     return this.authService.adminLogin(adminLoginDto);
+  }
+  @Get("/profile")
+  @UseGuards(JwtAuthGuard)
+  getProfile(@Req() req): Promise<ResponseDto<string | any>> {
+    return this.authService.getProfileUser(req.user.id);
   }
 }

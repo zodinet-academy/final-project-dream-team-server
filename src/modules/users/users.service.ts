@@ -1,17 +1,17 @@
 import { Mapper } from "@automapper/core";
 import { Injectable } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
-import { responseData, signToken } from "../../common/utils";
+import { responseData } from "../../common/utils";
 
 import {
   CHECK_PHONE_GET_OTP,
-  ERROR_CAN_NOT_CREATE_USER_HOBBY,
+  ERROR_UNKNOWN,
+  ERROR_DATA_NOT_FOUND,
   ERROR_CAN_NOT_GET_USER_ALBUM,
   ERROR_CAN_NOT_GET_USER_HOBBIES,
   ERROR_CAN_NOT_UPDATE_USER_PROFILE,
   ERROR_CHANGE_USER_AVATAR,
   ERROR_MISSING_FIELD,
-  ERROR_UNKNOW,
   ERROR_USER_EXISTED,
   ERROR_USER_NOT_FOUND,
 } from "../../constants/code-response.constant";
@@ -21,7 +21,6 @@ import { UsersRepository } from "./users.repository";
 
 import { ResponsePublicUserInterface } from "./interfaces";
 import { IUserService } from "./interfaces/user-service.interface";
-import { ResponseToken } from "../auth/interfaces/response-token.interface";
 
 import {
   CreateUserDto,
@@ -35,11 +34,16 @@ import { ResponseDto } from "../../common/response.dto";
 
 import { OtpService } from "../otp/otp.service";
 import { MatchingUsersService } from "../matching-users/matching-users.service";
+
+import { SocialDTO } from "../auth/dto/social-login.dto";
+import { UserResponeDTO } from "./dto/user-respone.dto";
+import { JwtService } from "@nestjs/jwt";
+import { IJwtPayloadDreamtem } from "../auth/interfaces/jwt-payload.interface";
+
 import { UpdateUserProfileEnum, UserRolesEnum } from "../../constants/enum";
 import { UserImagesService } from "../user-images/user-images.service";
 import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { CreateUserHobbiesDto } from "../user-hobbies/dto/create-user-hobbies.dto";
 import { GetUserHobbiesDto } from "../user-hobbies/dto";
 
 @Injectable()
@@ -47,6 +51,7 @@ export class UsersService implements IUserService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly otpService: OtpService,
+    private readonly jwtService: JwtService,
     @InjectMapper() private readonly mapper: Mapper,
     private readonly matchingUsersService: MatchingUsersService,
     private readonly userImagesService: UserImagesService,
@@ -54,51 +59,84 @@ export class UsersService implements IUserService {
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
-  async signUp(
-    dto: CreateUserDto
-  ): Promise<ResponseDto<ResponseToken | string | boolean | null>> {
+  async signUp(dto: SocialDTO) {
+    const { email, name, url } = dto;
+
+    const isExist = await this.usersRepository.findOne({
+      where: { email: email },
+    });
+
+    if (isExist) return responseData(null, null, ERROR_USER_EXISTED);
+
+    const userCreated: UserEntity = await this.usersRepository.save({
+      email,
+      name,
+      avatar: url,
+    });
+    return responseData(
+      this.mapper.map(userCreated, UserEntity, UserResponeDTO),
+      ""
+    );
+  }
+
+  async updateUserAfterVerifyOTP(data: CreateUserDto) {
     try {
-      const verifyOtp = await this.otpService.confirmOtp(dto.phone, dto.otp);
-      if (!verifyOtp.status) return verifyOtp;
-
-      const result = await this.usersRepository.save(
-        this.usersRepository.create(dto)
-      );
-
-      const jwtToken = await signToken(
-        result.id,
-        result.phone,
-        UserRolesEnum.USER
-      );
-
-      return responseData(jwtToken, "Login luon");
-    } catch (error) {
-      return responseData(null, null, ERROR_UNKNOW);
+      const { email, gender, name, birthday } = data;
+      const userFound = await this.usersRepository.findOne({
+        where: { phone: data.phone },
+      });
+      if (!userFound) return responseData(null, ERROR_DATA_NOT_FOUND);
+      const bthdayFormart = birthday.toString();
+      const newDate = bthdayFormart.split("-").reverse().join("-");
+      const newUser = await this.usersRepository.save({
+        ...userFound,
+        email,
+        gender,
+        name,
+        birthday: newDate,
+      });
+      const userRes = this.mapper.map(newUser, UserEntity, UserResponeDTO);
+      const payload: IJwtPayloadDreamtem = {
+        id: newUser.id,
+        phone: newUser.phone,
+        role: UserRolesEnum.USER,
+      };
+      const token = this.jwtService.sign(payload);
+      const respone = {
+        userRes,
+        token,
+      };
+      return responseData(respone, "Create User Successfull");
+    } catch (err: unknown) {
+      return err as string;
     }
   }
 
-  async verifyUser(dto: VerifyUserDto) {
+  async verifyUser(dto: VerifyUserDto): Promise<ResponseDto<null>> {
     try {
       const userExisted = await this.usersRepository.findOne({
         phone: dto.phone,
       });
+
       if (userExisted) {
         return responseData(null, "", ERROR_USER_EXISTED);
       }
+
       const result = await this.otpService.sendSmsOtp(dto.phone);
-      if (!result.status) return responseData(null, null, ERROR_UNKNOW);
-      return responseData(CHECK_PHONE_GET_OTP);
+      if (!result.status) return responseData(null, null, ERROR_UNKNOWN);
+
+      return responseData(null, "", CHECK_PHONE_GET_OTP);
     } catch (error) {
-      return responseData(null, null, ERROR_UNKNOW);
+      return responseData(null, null, ERROR_UNKNOWN);
     }
   }
 
-  async getAllUser(): Promise<UserEntity[]> {
+  async getAllUser(): Promise<ResponseDto<UserEntity[]>> {
     try {
       const users = await this.usersRepository.find();
-      return users;
+      return responseData(users);
     } catch (error) {
-      return [];
+      return responseData([]);
     }
   }
 
@@ -117,20 +155,20 @@ export class UsersService implements IUserService {
       };
       return responseData(userPublic);
     } catch (error) {
-      return responseData(null, null, "error_unknow");
+      return responseData(null, null, ERROR_UNKNOWN);
     }
   }
 
-  async getUserByPhone(phone: string): Promise<UserEntity> {
+  async getUserByPhone(phone: string): Promise<ResponseDto<UserEntity | null>> {
     try {
       const user = await this.usersRepository.findOne({ phone: phone });
       if (!user) throw responseData(null, null, "ERROR_USER_NOT_FOUND");
-      return user;
+      return responseData(user);
     } catch (error) {
-      console.log(error);
-      return null;
+      return responseData(null, null, ERROR_UNKNOWN);
     }
   }
+
   async getUserByEmail(email: string): Promise<ResponseDto<UserEntity>> {
     try {
       const user = await this.usersRepository.findOne({
@@ -249,21 +287,7 @@ export class UsersService implements IUserService {
     userId: string,
     dto: DeleteUserDto
   ): Promise<ResponseDto<UserEntity>> {
-    try {
-      const userInfo: UserEntity = await this.usersRepository.findOne(userId);
-
-      if (
-        userInfo &&
-        userInfo.email === dto.email &&
-        userInfo.phone === dto.phone
-      ) {
-        await this.usersRepository.delete(userId);
-      }
-
-      return responseData(null, "Your profile has been deleted!");
-    } catch (error) {
-      return responseData(null, null, "ERROR_USER_NOT_FOUND");
-    }
+    return null;
   }
 
   async getListFriends(id: string): Promise<ResponseDto<FriendDto[]>> {
@@ -298,6 +322,31 @@ export class UsersService implements IUserService {
       console.log(error);
       return responseData(null, null, "ERROR_UNKNOWN");
     }
+  }
+
+  async getUserByGetProfile(id: string) {
+    try {
+      const userProfile = await this.usersRepository.findOne({ where: { id } });
+      const newDate = this.formartDate(userProfile.birthday);
+      const userPraseBirthday = { ...userProfile, birthday: newDate };
+      return responseData(userPraseBirthday);
+    } catch (err: unknown) {
+      return responseData(err as string);
+    }
+  }
+
+  private formartDate(newDate: Date) {
+    const objDate = {
+      d: null,
+      m: null,
+      y: null,
+    };
+    objDate.d = newDate.getDate();
+    objDate.m = newDate.getMonth() + 1;
+    objDate.y = newDate.getFullYear();
+    objDate.d = objDate.d.toString().padStart(2, "0");
+    objDate.m = objDate.m.toString().padStart(2, "0");
+    return `${objDate.d}/${objDate.m}/${objDate.y}`;
   }
 
   async getUserById(userId: string): Promise<UserProfileDto | undefined> {

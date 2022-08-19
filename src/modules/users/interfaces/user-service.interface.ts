@@ -10,17 +10,23 @@ import {
   UpdateUserDto,
   FriendDto,
   UserProfileDto,
+  VerifyUserDto,
 } from "../dto";
+import { SocialDTO } from "../../auth/dto/social-login.dto";
 
 export interface IUserService {
-  getAllUser(): Promise<Array<UserEntity>>;
+  getAllUser(): Promise<ResponseDto<UserEntity[]>>;
   getPublicById(
     userId: string
   ): Promise<ResponseDto<ResponsePublicUserInterface | null>>;
-  getUserByPhone(phone: string): Promise<UserEntity>;
-  getUserByEmail(email: string): Promise<ResponseDto<UserEntity>>;
+  getUserByPhone(phone: string): Promise<ResponseDto<UserEntity | null>>;
+  getUserByEmail(email: string): Promise<ResponseDto<UserEntity | null>>;
+  getListFriends(id: string): Promise<ResponseDto<FriendDto[]>>;
+
+  verifyUser(dto: VerifyUserDto): Promise<ResponseDto<null>>;
+  verifyUserByEmail(email: string): Promise<ResponseDto<boolean | null>>;
   signUp(
-    user: CreateUserDto
+    user: SocialDTO
   ): Promise<ResponseDto<ResponseToken | string | boolean | null>>;
   updateUserProfileById(
     userId: string,
@@ -30,6 +36,5 @@ export interface IUserService {
   deleteUserProfileById(
     userId: string,
     user: DeleteUserDto
-  ): Promise<ResponseDto<UserEntity>>;
-  getListFriends(id: string): Promise<ResponseDto<FriendDto[]>>;
+  ): Promise<ResponseDto<UserEntity | null>>;
 }

@@ -21,10 +21,10 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import {
+  CreateUserDto,
   DeleteUserDto,
   PhoneUserDto,
   UpdateUserDto,
-  UserProfileDto,
 } from "./dto";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
@@ -36,7 +36,7 @@ import { DeleteUserHobbiesDto } from "../user-hobbies/dto/delete-user-hobbies.dt
 
 @Controller("users")
 @ApiTags("users")
-@UseGuards(JwtAuthGuard)
+//@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -110,13 +110,6 @@ export class UsersController {
     return this.usersService.updateUserProfileById(userId, dto, file);
   }
 
-  @Get("friends")
-  @ApiOperation({ summary: "Get friends list (user)" })
-  @ApiOkResponse({ description: "Matching friends list." })
-  getListFriends(@GetUser("userId") userId: string) {
-    return this.usersService.getListFriends(userId);
-  }
-
   @Get("/private/user-profile")
   getUserProfile(@GetUser("userId") userId: string) {
     return this.usersService.getUserProfile(userId);
@@ -152,5 +145,17 @@ export class UsersController {
     @Body() dto: DeleteUserDto
   ) {
     return this.usersService.deleteUserProfileById(userId, dto);
+  }
+
+  @Get("friends")
+  @ApiOperation({ summary: "Get friends list (user)" })
+  @ApiOkResponse({ description: "Matching friends list." })
+  getListFriends(@GetUser("userId") userId: string) {
+    return this.usersService.getListFriends(userId);
+  }
+
+  @Post("update-dream-team")
+  async updateUserAfterVerifyPhone(@Body() data: CreateUserDto) {
+    return await this.usersService.updateUserAfterVerifyOTP(data);
   }
 }

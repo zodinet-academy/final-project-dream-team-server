@@ -1,8 +1,8 @@
 export interface ISocketDevicesEntity {
   id?: string;
-  user_id: string;
-  conversation_id: string;
-  socket_id: string;
+  userId: string;
+  conversationId: string;
+  socketId: string;
   createAt?: Date;
   updateAt?: Date;
 }

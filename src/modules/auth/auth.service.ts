@@ -8,16 +8,17 @@ import { responseData, signToken } from "../../common/utils";
 import { UsersService } from "../users/users.service";
 import { OtpService } from "./../otp/otp.service";
 import { UserEntity } from "./../users/entities/user.entity";
-import { GoogleLoginDto } from "./dto/google-login.dto";
 import { IAuthService } from "./interfaces/auth-service.interface";
 import IGoogleResponse from "./interfaces/auth.interface";
 import { AdminLoginDto } from "./dto/admin-login.dto";
 import {
-  ERROR_UNKNOW,
+  ERROR_UNKNOWN,
   ERROR_WRONG_USERNAME_OR_PASSWORD,
 } from "../../constants/code-response.constant";
 import { UserRolesEnum } from "../../constants/enum";
 import { AdminsService } from "../admins/admins.service";
+import { ResponseToken } from "./interfaces/response-token.interface";
+import { SocialDTO } from "./dto/social-login.dto";
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -78,7 +79,11 @@ export class AuthService implements IAuthService {
     }
 
     const user = await this.usersService.getUserByPhone(phone);
-    const jwtToken = await signToken(user?.id, user?.phone, UserRolesEnum.USER);
+    const jwtToken = await signToken(
+      user?.data.id,
+      user?.data.phone,
+      UserRolesEnum.USER
+    );
     return responseData(jwtToken);
   }
 
@@ -104,32 +109,15 @@ export class AuthService implements IAuthService {
       };
       return responseData(googleResponse);
     } catch (error) {
-      return responseData(null, null, "ERROR_UNKNOW");
+      return responseData(null, null, "ERROR_UNKNOWN");
     }
   }
 
-  async loginGoogle(
-    googleLoginDto: GoogleLoginDto
-  ): Promise<ResponseDto<any | IGoogleResponse | string>> {
+  async loginWithSocial(socialDTO: SocialDTO) {
     try {
-      const verifiedData = await this.verifyGoogle(googleLoginDto.token);
-
-      if (!verifiedData.status) return verifiedData;
-      const { email } = verifiedData.data as IGoogleResponse;
-
-      const findData = await this.usersService.getUserByEmail(email);
-      if (!findData.status) {
-        verifiedData.data["isNewUser"] = true;
-        return verifiedData;
-      }
-
-      const { phone } = findData.data as UserEntity;
-      return responseData({
-        isNewUsers: false,
-        sentOtp: await this.otpService.sendSmsOtp(phone),
-      });
-    } catch (error) {
-      return responseData(null, null, "ERROR_UNKNOW");
+      return await this.usersService.signUp(socialDTO);
+    } catch (err: unknown) {
+      return err;
     }
   }
 
@@ -143,7 +131,10 @@ export class AuthService implements IAuthService {
       // const jwtToken = await signToken(findData.id, null, UserRolesEnum.ADMIN);
       return responseData("jwtToken") as ResponseDto<string>;
     } catch (error) {
-      return responseData(null, null, ERROR_UNKNOW);
+      return responseData(null, null, ERROR_UNKNOWN);
     }
+  }
+  getProfileUser(id: string) {
+    return this.usersService.getUserByGetProfile(id);
   }
 }
