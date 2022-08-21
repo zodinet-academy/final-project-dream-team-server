@@ -11,16 +11,16 @@ export class UserLocationsRepository extends Repository<UserLocationEntity> {
   ): Promise<IFriendNearUser[]> {
     try {
       const query = this.createQueryBuilder("user_locations")
-        .select(`DISTINCT ON (u."friendId") u.*`)
+        .select(`DISTINCT ON (u."id") u.*`)
         .from((subQuery) => {
           return subQuery
             .select([
-              `ul.userId AS "friendId"`,
+              `ul.userId AS "id"`,
               "ul.latitude AS latitude",
               "ul.longtitude AS longtitude",
-              `users.name AS "friendName"`,
-              `users.birthday AS "friendBirthday"`,
-              `users.avatar AS "friendAvatar"`,
+              `users.name AS "name"`,
+              `users.birthday AS "birthday"`,
+              `users.avatar AS "avatar"`,
               "ST_Distance(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location))) AS distance",
             ])
             .from("user_locations", "ul")
