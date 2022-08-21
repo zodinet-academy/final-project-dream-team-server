@@ -12,7 +12,7 @@ import { JwtAuthGuard } from "../auth/guards";
 import { CreateUserBlockDto } from "./dto/create-user-block.dto";
 import { UserBlocksService } from "./user-blocks.service";
 
-@Controller("user-blocks")
+@Controller("secure/user-blocks")
 @ApiTags("user-blocks")
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
