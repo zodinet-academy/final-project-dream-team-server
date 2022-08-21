@@ -1,26 +1,54 @@
 import { Injectable } from "@nestjs/common";
+import { ResponseDto } from "../../common/response.dto";
+import { responseData } from "../../common/utils";
+import { ERROR_UNKNOWN } from "../../constants/code-response.constant";
 import { CreateUserBlockDto } from "./dto/create-user-block.dto";
-import { UpdateUserBlockDto } from "./dto/update-user-block.dto";
+import { UserBlockEntity } from "./entities/user-block.entity";
+import { IUserBlocksService } from "./interfaces/user-blocks-service.interface";
+import { UserBlocksRepository } from "./user-blocks.repository";
 
 @Injectable()
-export class UserBlocksService {
-  create(createUserBlockDto: CreateUserBlockDto) {
-    return "This action adds a new userBlock";
+export class UserBlocksService implements IUserBlocksService {
+  constructor(private readonly userBlocksRepository: UserBlocksRepository) {}
+
+  async create(
+    userId: string,
+    createUserBlockDto: CreateUserBlockDto
+  ): Promise<ResponseDto<UserBlockEntity>> {
+    try {
+      return responseData(
+        await this.userBlocksRepository.save(
+          this.userBlocksRepository.create({
+            userId,
+            ...createUserBlockDto,
+          })
+        )
+      );
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
   }
 
-  findAll() {
-    return `This action returns all userBlocks`;
+  async getAllIdBlockedUser(userId: string): Promise<string[]> {
+    try {
+      const blockedUsers = await this.userBlocksRepository.find({
+        where: { userId: userId },
+      });
+      return blockedUsers.map((user) => {
+        return user.blockedUserId;
+      });
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userBlock`;
-  }
-
-  update(id: number, updateUserBlockDto: UpdateUserBlockDto) {
-    return `This action updates a #${id} userBlock`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} userBlock`;
+  async getAllBlockedUser(userId: string): Promise<UserBlockEntity[]> {
+    try {
+      return await this.userBlocksRepository.find({
+        where: { userId: userId },
+      });
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }

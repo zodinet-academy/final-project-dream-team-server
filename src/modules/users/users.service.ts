@@ -1,17 +1,17 @@
 import { Mapper } from "@automapper/core";
-import { Injectable } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
+import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
 
 import {
   CHECK_PHONE_GET_OTP,
-  ERROR_UNKNOWN,
-  ERROR_DATA_NOT_FOUND,
   ERROR_CAN_NOT_GET_USER_ALBUM,
   ERROR_CAN_NOT_GET_USER_HOBBIES,
   ERROR_CAN_NOT_UPDATE_USER_PROFILE,
   ERROR_CHANGE_USER_AVATAR,
+  ERROR_DATA_NOT_FOUND,
   ERROR_MISSING_FIELD,
+  ERROR_UNKNOWN,
   ERROR_USER_EXISTED,
   ERROR_USER_NOT_FOUND,
 } from "../../constants/code-response.constant";
@@ -22,29 +22,28 @@ import { UsersRepository } from "./users.repository";
 import { ResponsePublicUserInterface } from "./interfaces";
 import { IUserService } from "./interfaces/user-service.interface";
 
+import { ResponseDto } from "../../common/response.dto";
 import {
   CreateUserDto,
-  VerifyUserDto,
-  UpdateUserDto,
-  DeleteUserDto,
   FriendDto,
+  UpdateUserDto,
   UserProfileDto,
+  VerifyUserDto,
 } from "./dto";
-import { ResponseDto } from "../../common/response.dto";
 
-import { OtpService } from "../otp/otp.service";
 import { MatchingUsersService } from "../matching-users/matching-users.service";
+import { OtpService } from "../otp/otp.service";
 
-import { SocialDTO } from "../auth/dto/social-login.dto";
-import { UserResponeDTO } from "./dto/user-respone.dto";
 import { JwtService } from "@nestjs/jwt";
+import { SocialDTO } from "../auth/dto/social-login.dto";
 import { IJwtPayloadDreamteam } from "../auth/interfaces/jwt-payload.interface";
+import { UserResponeDTO } from "./dto/user-respone.dto";
 
 import { UpdateUserProfileEnum, UserRolesEnum } from "../../constants/enum";
-import { UserImagesService } from "../user-images/user-images.service";
-import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { GetUserHobbiesDto } from "../user-hobbies/dto";
+import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
+import { UserImagesService } from "../user-images/user-images.service";
 
 @Injectable()
 export class UsersService implements IUserService {

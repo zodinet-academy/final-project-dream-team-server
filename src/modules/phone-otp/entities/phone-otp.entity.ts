@@ -1,12 +1,6 @@
 import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty } from "class-validator";
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  Unique,
-  UpdateDateColumn,
-} from "typeorm";
+import { Column, Entity, Unique, UpdateDateColumn } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
 import { IPhoneOtpEntity } from "../interfaces/phone-otp.interface";
 @Entity({ name: "phone_otp", synchronize: false }) // bat buoc co, false: migration bo qua,

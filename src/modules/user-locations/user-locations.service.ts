@@ -1,3 +1,4 @@
+import { UserBlocksService } from "./../user-blocks/user-blocks.service";
 import { Point } from "geojson";
 import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
@@ -19,7 +20,8 @@ export class UserLocationsService implements IUserLocationsService {
   constructor(
     private readonly userLocationsRepository: UserLocationsRepository,
     private readonly settingsService: SettingsService,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly userBlocksService: UserBlocksService
   ) {}
 
   /**
@@ -107,15 +109,22 @@ export class UserLocationsService implements IUserLocationsService {
         SettingEntity | string
       > = await this.settingsService.findSetting();
       if (!findSetting.status) return findSetting;
+
       const { radius } = findSetting.data as SettingEntity;
 
       const origin: IOrigin = {
         type: "Point",
         coordinates: [findData.longtitude, findData.latitude],
       };
+
+      const blockedUsers = await this.userBlocksService.getAllIdBlockedUser(
+        userId
+      );
+
       const result: IFriendNearUser[] = await this.userLocationsRepository.getFriendNearUser(
         radius,
-        origin
+        origin,
+        blockedUsers
       );
       result.map(async (el) => {
         el.friendAvatar = await this.cloudinaryService.getImageUrl(
