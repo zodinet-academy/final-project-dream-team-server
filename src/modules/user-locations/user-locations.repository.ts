@@ -16,7 +16,7 @@ export class UserLocationsRepository
       const query = this.createQueryBuilder("user_locations")
         .select(`DISTINCT ON (u."id") u.*`)
         .from((subQuery) => {
-          return subQuery
+          subQuery
             .select([
               `ul.userId AS "id"`,
               "ul.latitude AS latitude",
@@ -31,7 +31,6 @@ export class UserLocationsRepository
             .where(
               "ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)"
             )
-            .andWhere(`ul.userId NOT IN (:...blockedUsers)`)
             .orderBy("distance", "ASC")
             .setParameters({
               // stringify GeoJSON
@@ -39,6 +38,9 @@ export class UserLocationsRepository
               range: radius * 1000, //KM conversion
               blockedUsers: blockedUsers,
             });
+          if (blockedUsers.length)
+            subQuery.andWhere(`ul.userId NOT IN (:...blockedUsers)`);
+          return subQuery;
         }, "u")
         .where("u.distance > 0");
 

@@ -127,11 +127,14 @@ export class UserLocationsService implements IUserLocationsService {
         blockedUsers
       );
       result.map(async (el) => {
-        el.friendAvatar = await this.cloudinaryService.getImageUrl(
-          el.friendAvatar
-        );
-        el.distance = +el.distance.toFixed();
-        el.unit = "met";
+        el.avatar = await this.cloudinaryService.getImageUrl(el.avatar);
+        if (el.distance >= 1000) {
+          el.distance = +(el.distance / 1000).toFixed(1);
+          el.unit = "kilomet";
+        } else {
+          el.distance = +el.distance.toFixed(1);
+          el.unit = "met";
+        }
         return el;
       });
       return responseData(result, "Get friend near user success");
