@@ -21,3 +21,10 @@ export const ERROR_HOBBY_NAME_ALREADY_EXISTED = "hobby_already_existed";
 export const ERROR_HOBBY_NOT_FOUND = "hobby_not_found";
 export const ERROR_CAN_NOT_DELETE_HOBBY = "can_not_delete_hobby";
 export const ERROR_USER_NOT_MATCH_WITH_HOBBY = "user_not_match_with_hobby";
+export const ERROR_CAN_NOT_SAVE_USER_IMAGE = "can_not_save_user_image";
+export const ERROR_CAN_NOT_SAVE_USER_IMAGE_IN_CLOUD =
+  "can_not_save_user_image_in_cloud";
+export const ERROR_CAN_NOT_FIND_IMAGE = "can_not_find_image";
+export const ERROR_USER_NOT_MATCH_WITH_IMAGE = "user_not_match_with_image";
+export const ERROR_EXCEED_MAX_FAVORITE_IMAGE = "exceed_max_favorite_image";
+export const ERROR_IN_DELETE_IMAGE_CLOUD = "error_in_delete_image_cloud";

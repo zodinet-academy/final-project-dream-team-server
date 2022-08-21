@@ -45,6 +45,7 @@ import { UserImagesService } from "../user-images/user-images.service";
 import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { GetUserHobbiesDto } from "../user-hobbies/dto";
+import { ChangeFavoriteImageDto, UserImagesDto } from "../user-images/dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -390,6 +391,8 @@ export class UsersService implements IUserService {
 
     user.hobbies = hobbies;
 
+    console.log("user", user);
+
     return responseData(user);
   }
 
@@ -426,6 +429,44 @@ export class UsersService implements IUserService {
     if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
 
     const res = await this.userHobbiesServies.deleteUserHobby(userId, hobbyId);
+    return res;
+  }
+
+  async addImages(
+    userId: string,
+    images: Array<Express.Multer.File>
+  ): Promise<ResponseDto<string | UserImagesDto[]>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.addImages(userId, images);
+    if (!res.status) return res;
+
+    const album = await this.userImagesService.getUserAlbum(userId);
+    return responseData(album);
+  }
+
+  async changeImageFavorite(
+    imageId: string,
+    userId: string
+  ): Promise<ResponseDto<string | UserImagesDto>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.changeFavorite(imageId, userId);
+
+    return res;
+  }
+
+  async deleteImage(
+    userId: string,
+    imageId: string
+  ): Promise<ResponseDto<string>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.deleteImage(userId, imageId);
+
     return res;
   }
 }

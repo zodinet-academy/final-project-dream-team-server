@@ -2,6 +2,7 @@ import { ApiPropertyOptional, PickType } from "@nestjs/swagger";
 import {
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsNumberString,
   IsOptional,
   IsString,
