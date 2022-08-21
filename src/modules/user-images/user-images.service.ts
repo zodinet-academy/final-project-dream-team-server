@@ -1,10 +1,8 @@
 import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { Injectable } from "@nestjs/common";
-import { responseData } from "../../common/utils";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { UserImagesDto } from "./dto";
-import { UserImageEntity } from "./entities/user-images.entity";
 import { IUserImagesService } from "./interfaces/user-images-service.interface";
 import { UserImagesRepository } from "./user-images.repository";
 

@@ -1,14 +1,7 @@
-import { IUserEntity } from "./../interfaces/user-entity.interface";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { GenderEnum } from "../../../constants/enum";
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from "class-validator";
-import { UserEntity } from "../entities/user.entity";
+import { IUserEntity } from "./../interfaces/user-entity.interface";
 
 export class CreateUserDto implements IUserEntity {
   @IsOptional()

@@ -1,13 +1,16 @@
 import { EntityRepository, Repository } from "typeorm";
 import { UserLocationEntity } from "./entities/user-location.entity";
-import { IFriendNearUser } from "./interfaces";
+import { IFriendNearUser, IUserLocationsRepository } from "./interfaces";
 import { IOrigin } from "./interfaces/user-location-entity.interface";
 
 @EntityRepository(UserLocationEntity)
-export class UserLocationsRepository extends Repository<UserLocationEntity> {
+export class UserLocationsRepository
+  extends Repository<UserLocationEntity>
+  implements IUserLocationsRepository {
   async getFriendNearUser(
     radius: number,
-    origin: IOrigin
+    origin: IOrigin,
+    blockedUsers: string[]
   ): Promise<IFriendNearUser[]> {
     try {
       const query = this.createQueryBuilder("user_locations")
@@ -28,14 +31,17 @@ export class UserLocationsRepository extends Repository<UserLocationEntity> {
             .where(
               "ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)"
             )
+            .andWhere(`ul.userId NOT IN (:...blockedUsers)`)
             .orderBy("distance", "ASC")
             .setParameters({
               // stringify GeoJSON
               origin: JSON.stringify(origin),
               range: radius * 1000, //KM conversion
+              blockedUsers: blockedUsers,
             });
         }, "u")
         .where("u.distance > 0");
+
       const result = await query.getRawMany<IFriendNearUser>();
       return result;
     } catch (error) {

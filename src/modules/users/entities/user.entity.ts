@@ -1,3 +1,4 @@
+import { UserBlockEntity } from "./../../user-blocks/entities/user-block.entity";
 import { AutoMap } from "@automapper/classes";
 import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
 import {
@@ -5,6 +6,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   UpdateDateColumn,
 } from "typeorm";
 import { DefaultEntity } from "../../../common/entity";
@@ -109,4 +111,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
     referencedColumnName: "id",
   })
   purposeSetting: PurposeSettingEntity;
+
+  @OneToMany(() => UserBlockEntity, (entity) => entity.user)
+  blockedUsers: UserBlockEntity[];
 }
