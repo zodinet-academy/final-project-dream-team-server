@@ -3,13 +3,16 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Put,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,10 +23,16 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
+import { imageFileFilter } from "../../common/helper/imageFilter.helper";
+import { ResponseDto } from "../../common/response.dto";
+import { responseData } from "../../common/utils";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
-import { CreateUserHobbiesDto } from "../user-hobbies/dto/create-user-hobbies.dto";
-import { DeleteUserHobbiesDto } from "../user-hobbies/dto/delete-user-hobbies.dto";
+import {
+  CreateUserHobbiesDto,
+  DeleteUserHobbiesDto,
+} from "../user-hobbies/dto";
+import { ChangeFavoriteImageDto, UserImagesDto } from "../user-images/dto";
 import { CreateUserDto, PhoneUserDto, UpdateUserDto } from "./dto";
 import { UsersService } from "./users.service";
 
@@ -60,7 +69,7 @@ export class UsersController {
     return this.usersService.getUserByEmail(email);
   }
 
-  @Put("update")
+  @Put("secure/update")
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: "Update user profile by user-id (user)" })
   @ApiOkResponse({ description: "User has been updated." })
@@ -70,7 +79,11 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: "User id not found.",
   })
-  @UseInterceptors(FileInterceptor("file"))
+  @UseInterceptors(
+    FileInterceptor("file", {
+      fileFilter: imageFileFilter,
+    })
+  )
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     schema: {
@@ -103,13 +116,13 @@ export class UsersController {
     return this.usersService.updateUserProfileById(userId, dto, file);
   }
 
-  @Get("private/user-profile")
+  @Get("secure/user-profile")
   @UseGuards(JwtAuthGuard)
   getUserProfile(@GetUser("id") userId: string) {
     return this.usersService.getUserProfile(userId);
   }
 
-  @Post("hobbies")
+  @Post("secure/hobbies")
   @UseGuards(JwtAuthGuard)
   createUserHobby(
     @GetUser("id") userId: string,
@@ -118,7 +131,7 @@ export class UsersController {
     return this.usersService.createUserHobby(userId, dto.name);
   }
 
-  @Delete("hobbies")
+  @Delete("secure/hobbies")
   @UseGuards(JwtAuthGuard)
   deleteUserHobby(
     @GetUser("id") userId: string,
@@ -153,5 +166,59 @@ export class UsersController {
   @Post("update-dream-team")
   async updateUserAfterVerifyPhone(@Body() data: CreateUserDto) {
     return await this.usersService.updateUserAfterVerifyOTP(data);
+  }
+
+  @Post("secure/up-images")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Upload images for user" })
+  @ApiOkResponse({ description: "Save images successfully" })
+  @ApiConsumes("multipart/form-data")
+  @UseInterceptors(
+    FilesInterceptor("images", undefined, {
+      fileFilter: imageFileFilter,
+    })
+  )
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        images: {
+          type: "array",
+          items: {
+            type: "string",
+            format: "binary",
+          },
+        },
+      },
+    },
+  })
+  upImages(
+    @GetUser("id") userId: string,
+    @UploadedFiles()
+    images: Array<Express.Multer.File>
+  ): Promise<ResponseDto<string | UserImagesDto[]>> {
+    return this.usersService.addImages(userId, images);
+  }
+
+  @Post("secure/change-image-favorite")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Change image favorite" })
+  @ApiOkResponse({ description: "Change image favorite success" })
+  changeImageFavorie(
+    @GetUser("id") userId: string,
+    @Body() dto: ChangeFavoriteImageDto
+  ): Promise<ResponseDto<string | UserImagesDto>> {
+    return this.usersService.changeImageFavorite(dto.id, userId);
+  }
+
+  @Delete("secure/delete-image")
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: "Change image favorite" })
+  @ApiOkResponse({ description: "Change image favorite success" })
+  deleteImage(
+    @GetUser("id") userId: string,
+    @Body() dto: ChangeFavoriteImageDto
+  ): Promise<ResponseDto<string>> {
+    return this.usersService.deleteImage(userId, dto.id);
   }
 }

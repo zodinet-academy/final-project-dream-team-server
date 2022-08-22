@@ -11,11 +11,15 @@ import {
 } from "../../constants/code-response.constant";
 import { ResponseDto } from "../../common/response.dto";
 import { IPurposeSettingsService } from "./interfaces";
+import { InjectMapper } from "@automapper/nestjs";
+import { Mapper } from "@automapper/core";
+import { ResponsePurposeSettingDto } from "./dto/response-purpose-setting.dto";
 
 @Injectable()
 export class PurposeSettingsService implements IPurposeSettingsService {
   constructor(
-    private readonly purposeSettingsRepository: PurposeSettingsRepository
+    private readonly purposeSettingsRepository: PurposeSettingsRepository,
+    @InjectMapper() private readonly mapper: Mapper
   ) {}
 
   async create(
@@ -32,9 +36,17 @@ export class PurposeSettingsService implements IPurposeSettingsService {
     }
   }
 
-  async findAll(): Promise<ResponseDto<PurposeSettingEntity[] | string>> {
+  async findAll(): Promise<ResponseDto<ResponsePurposeSettingDto[] | string>> {
     try {
-      return responseData(await this.purposeSettingsRepository.find({}));
+      const purposes = await this.purposeSettingsRepository.find({});
+
+      const result = this.mapper.mapArray(
+        purposes,
+        PurposeSettingEntity,
+        ResponsePurposeSettingDto
+      );
+
+      return responseData(result);
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);
     }
