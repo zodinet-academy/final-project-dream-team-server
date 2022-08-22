@@ -1,45 +1,50 @@
+import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from "@nestjs/common";
-import { UserBlocksService } from "./user-blocks.service";
+  ApiBearerAuth,
+  ApiNotAcceptableResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
+import { GetUser } from "../auth/decorator";
+import { JwtAuthGuard } from "../auth/guards";
 import { CreateUserBlockDto } from "./dto/create-user-block.dto";
-import { UpdateUserBlockDto } from "./dto/update-user-block.dto";
+import { UserBlocksService } from "./user-blocks.service";
 
-@Controller("user-blocks")
+@Controller("secure/user-blocks")
+@ApiTags("user-blocks")
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class UserBlocksController {
   constructor(private readonly userBlocksService: UserBlocksService) {}
 
   @Post()
-  create(@Body() createUserBlockDto: CreateUserBlockDto) {
-    return this.userBlocksService.create(createUserBlockDto);
+  @ApiOperation({ summary: "Create user - blocked user" })
+  @ApiOkResponse({ description: "user blocked entity" })
+  @ApiNotAcceptableResponse({
+    description: "Request is not in correct form.",
+  })
+  @ApiNotFoundResponse({
+    description: "User id not found.",
+  })
+  create(
+    @GetUser("id") userId: string,
+    @Body() createUserBlockDto: CreateUserBlockDto
+  ) {
+    return this.userBlocksService.create(userId, createUserBlockDto);
   }
 
   @Get()
-  findAll() {
-    return this.userBlocksService.findAll();
-  }
-
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.userBlocksService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updateUserBlockDto: UpdateUserBlockDto
-  ) {
-    return this.userBlocksService.update(+id, updateUserBlockDto);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.userBlocksService.remove(+id);
+  @ApiOperation({ summary: "get list blocked users by user" })
+  @ApiOkResponse({ description: "list blocked user" })
+  @ApiNotAcceptableResponse({
+    description: "Request is not in correct form.",
+  })
+  @ApiNotFoundResponse({
+    description: "User id not found.",
+  })
+  findAll(@GetUser("id") userId: string) {
+    return this.userBlocksService.getAllBlockedUser(userId);
   }
 }

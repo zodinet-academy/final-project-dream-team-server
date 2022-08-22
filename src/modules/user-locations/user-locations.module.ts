@@ -1,3 +1,5 @@
+import { UserLikeStacksModule } from "./../user-like-stacks/user-like-stacks.module";
+import { UserBlocksModule } from "./../user-blocks/user-blocks.module";
 import { CloudinaryModule } from "./../cloudinary/cloudinary.module";
 import { SettingsModule } from "./../settings/settings.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -11,6 +13,8 @@ import { UserLocationsRepository } from "./user-locations.repository";
     TypeOrmModule.forFeature([UserLocationsRepository]),
     SettingsModule,
     CloudinaryModule,
+    UserBlocksModule,
+    UserLikeStacksModule,
   ],
   controllers: [UserLocationsController],
   providers: [UserLocationsService],

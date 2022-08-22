@@ -1,14 +1,13 @@
 import { UserEntity } from "../entities/user.entity";
 
-import { ResponsePublicUserInterface } from "./res-public-user.interface";
 import { ResponseToken } from "../../auth/interfaces/response-token.interface";
+import { ResponsePublicUserInterface } from "./res-public-user.interface";
 
 import { ResponseDto } from "../../../common/response.dto";
 import {
-  CreateUserDto,
   DeleteUserDto,
-  UpdateUserDto,
   FriendDto,
+  UpdateUserDto,
   UserProfileDto,
   VerifyUserDto,
 } from "../dto";

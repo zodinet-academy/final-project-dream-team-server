@@ -5,12 +5,8 @@ import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { Twilio } from "twilio";
 import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
-import {
-  ERROR_DATA_NOT_FOUND,
-  ERROR_USER_EXISTED,
-} from "../../constants/code-response.constant";
+import { ERROR_DATA_NOT_FOUND } from "../../constants/code-response.constant";
 import { OtpStatusEnum, UserRolesEnum } from "../../constants/enum";
-import { SocialDTO } from "../auth/dto/social-login.dto";
 import { IJwtPayloadDreamteam } from "../auth/interfaces/jwt-payload.interface";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
 import { UserEntity } from "../users/entities/user.entity";
