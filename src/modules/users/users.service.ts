@@ -58,19 +58,24 @@ export class UsersService implements IUserService {
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
-  async signUp(dto: SocialDTO) {
-    const { email, name, url } = dto;
+  async signUp(dto: SocialDTO): Promise<ResponseDto<UserResponeDTO>> {
+    const { birthday, email } = dto;
 
     const isExist = await this.usersRepository.findOne({
       where: { email: email },
     });
 
-    if (isExist) return responseData(null, null, ERROR_USER_EXISTED);
-
+    if (isExist)
+      return responseData(
+        this.mapper.map(isExist, UserEntity, UserResponeDTO),
+        ""
+      );
+    const bthdayFormart = birthday.toString();
+    const newDate = bthdayFormart.split("/").reverse().join("/");
     const userCreated: UserEntity = await this.usersRepository.save({
-      email,
-      name,
-      avatar: url,
+      ...dto,
+      birthday: new Date(newDate),
+      avatar: dto.url,
     });
     return responseData(
       this.mapper.map(userCreated, UserEntity, UserResponeDTO),
@@ -92,7 +97,7 @@ export class UsersService implements IUserService {
         email,
         gender,
         name,
-        birthday: newDate,
+        birthday: new Date(newDate),
       });
       const userRes = this.mapper.map(newUser, UserEntity, UserResponeDTO);
       const payload: IJwtPayloadDreamteam = {
