@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class VerifyOtpDto {
   @ApiProperty({ type: String, default: "0869287417" })
@@ -11,4 +11,6 @@ export class VerifyOtpDto {
   @IsString()
   @IsNotEmpty()
   code: string;
+  @IsOptional()
+  email?: string;
 }
