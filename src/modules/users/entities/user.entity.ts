@@ -19,6 +19,7 @@ import {
 } from "../../../constants/enum";
 import { PurposeSettingEntity } from "./../../purpose-settings/entities/purpose-setting.entity";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
+import { UserLikeStackEntity } from "../../user-like-stacks/entities/user-like-stack.entity";
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
 export class UserEntity extends DefaultEntity implements IUserEntity {
   @Column({ type: "varchar", nullable: true })
@@ -114,4 +115,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
 
   @OneToMany(() => UserBlockEntity, (entity) => entity.user)
   blockedUsers: UserBlockEntity[];
+
+  @OneToMany(() => UserLikeStackEntity, (entity) => entity.user)
+  userLikeStacks: UserLikeStackEntity[];
 }
