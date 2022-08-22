@@ -250,20 +250,26 @@ export class UsersService implements IUserService {
           break;
         case UpdateUserProfileEnum.OTHER:
           {
-            const newImage = await this.changeAvatar(user.avatar, file);
-            console.log(newImage);
-            if (!newImage)
-              responseData(
-                null,
-                "Error change user avatar",
-                ERROR_CHANGE_USER_AVATAR
-              );
+            if (file) {
+              const newImage = await this.changeAvatar(user.avatar, file);
+              if (!newImage)
+                responseData(
+                  null,
+                  "Error change user avatar",
+                  ERROR_CHANGE_USER_AVATAR
+                );
 
-            query.set({
-              avatar: newImage ? newImage : user.avatar,
-              name: dto.name ? dto.name : user.name,
-              birthday: dto.birthday ? dto.birthday : user.birthday,
-            });
+              query.set({
+                avatar: newImage ? newImage : user.avatar,
+                name: dto.name ? dto.name : user.name,
+                birthday: dto.birthday ? dto.birthday : user.birthday,
+              });
+            } else {
+              query.set({
+                name: dto.name ? dto.name : user.name,
+                birthday: dto.birthday ? dto.birthday : user.birthday,
+              });
+            }
           }
           break;
         default:
@@ -274,7 +280,6 @@ export class UsersService implements IUserService {
 
       const { affected } = await query.execute();
 
-      console.log(query.getSql());
       if (affected > 0) return this.getUserProfile(user.id);
     } catch (error) {
       console.log(error);
@@ -390,8 +395,6 @@ export class UsersService implements IUserService {
       );
 
     user.hobbies = hobbies;
-
-    console.log("user", user);
 
     return responseData(user);
   }

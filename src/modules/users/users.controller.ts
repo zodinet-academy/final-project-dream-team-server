@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Put,
   UploadedFile,
@@ -21,7 +23,9 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
+import { imageFileFilter } from "../../common/helper/imageFilter.helper";
 import { ResponseDto } from "../../common/response.dto";
+import { responseData } from "../../common/utils";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
 import {
@@ -75,7 +79,11 @@ export class UsersController {
   @ApiNotFoundResponse({
     description: "User id not found.",
   })
-  @UseInterceptors(FileInterceptor("file"))
+  @UseInterceptors(
+    FileInterceptor("file", {
+      fileFilter: imageFileFilter,
+    })
+  )
   @ApiConsumes("multipart/form-data")
   @ApiBody({
     schema: {
@@ -165,7 +173,11 @@ export class UsersController {
   @ApiOperation({ summary: "Upload images for user" })
   @ApiOkResponse({ description: "Save images successfully" })
   @ApiConsumes("multipart/form-data")
-  @UseInterceptors(FilesInterceptor("images"))
+  @UseInterceptors(
+    FilesInterceptor("images", undefined, {
+      fileFilter: imageFileFilter,
+    })
+  )
   @ApiBody({
     schema: {
       type: "object",
