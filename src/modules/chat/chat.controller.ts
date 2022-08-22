@@ -4,10 +4,7 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { GetUser } from "../auth/decorator";
 import { ChatService } from "./chat.service";
 import { JwtAuthGuard } from "../auth/guards";
-import {
-  GetByConversationIdDto,
-  GetConversationByUserIdAndFriendIdDto,
-} from "./dto";
+import { GetConversationByUserIdAndFriendIdDto } from "./dto";
 
 @Controller("secure/chat")
 @ApiTags("chat")
@@ -30,24 +27,13 @@ export class ChatController {
   @ApiResponse({ status: 204, description: "Conversation Not Found" })
   @ApiResponse({ status: 400, description: "Bad Requests" })
   @ApiResponse({ status: 500, description: "Server Error" })
-  async getConversation(
+  async getConversationContent(
     @GetUser("id") userId: string,
     @Param() dto: GetConversationByUserIdAndFriendIdDto
   ) {
-    return await this.chatService.getConversationByUserIdAndFriendId(
+    return await this.chatService.getConversationContentByUserIdAndFriendId(
       userId,
       dto.friendId
-    );
-  }
-
-  @Get("/message/:conversationId")
-  @ApiResponse({ status: 200, description: "List Message" })
-  @ApiResponse({ status: 204, description: "Conversation Not Found" })
-  @ApiResponse({ status: 400, description: "Bad Requests" })
-  @ApiResponse({ status: 500, description: "Server Error" })
-  async getMessage(@Param() dto: GetByConversationIdDto) {
-    return await this.chatService.getMessagesByConversationId(
-      dto.conversationId
     );
   }
 }

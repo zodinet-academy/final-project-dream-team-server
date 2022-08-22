@@ -12,15 +12,23 @@ export class UserFriendsRepository
   extends Repository<UserFriendsEntity>
   implements IUserFriendsRepository {
   async getUserFriendsByUserId(userId: string): Promise<IInfoFriendUser[]> {
-    const userFriends = await this.createQueryBuilder("UF")
+    const infoFriends = await this.createQueryBuilder("UF")
       .leftJoinAndSelect("UF.infoFriend", "infoFriend")
-      .andWhere(`UF.user_id = '${userId}' OR UF.friend_id = '${userId}'`)
+      .andWhere(`UF.user_id = '${userId}'`)
       .select([
         `UF.friend_id as id, infoFriend.name as name, infoFriend.avatar as avatar`,
       ])
       .getRawMany<IInfoFriendUser>();
 
-    return userFriends;
+    const infoUsers = await this.createQueryBuilder("UF")
+      .leftJoinAndSelect("UF.infoUser", "infoUser")
+      .andWhere(`UF.friend_id = '${userId}'`)
+      .select([
+        `UF.user_id as id, infoUser.name as name, infoUser.avatar as avatar`,
+      ])
+      .getRawMany<IInfoFriendUser>();
+
+    return [...infoFriends, ...infoUsers];
   }
 
   async getFriendByFriendIdAndFriendId(
@@ -34,6 +42,18 @@ export class UserFriendsRepository
         `UF.friend_id as id, infoFriend.name as name, infoFriend.avatar as avatar, UF.created_at as "createAt"`,
       ])
       .getRawOne<IInfoFriend>();
+
+    if (!infoFriend) {
+      const infoUser = await this.createQueryBuilder("UF")
+        .leftJoinAndSelect("UF.infoUser", "infoUser")
+        .andWhere(`UF.user_id = '${friendId}' AND UF.friend_id = '${userId}'`)
+        .select([
+          `UF.user_id as id, infoUser.name as name, infoUser.avatar as avatar, UF.created_at as "createAt"`,
+        ])
+        .getRawOne<IInfoFriend>();
+
+      return infoUser;
+    }
 
     return infoFriend;
   }

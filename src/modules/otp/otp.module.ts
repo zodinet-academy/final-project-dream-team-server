@@ -13,7 +13,7 @@ import { OtpService } from "./otp.service";
 @Module({
   imports: [
     PhoneOtpModule,
-    RateLimiterModule,
+    // RateLimiterModule,
     TypeOrmModule.forFeature([UsersRepository]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -26,10 +26,10 @@ import { OtpService } from "./otp.service";
   ],
   providers: [
     OtpService,
-    {
-      provide: APP_GUARD,
-      useClass: RateLimiterGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RateLimiterGuard,
+    // },
     JwtStrategy,
   ],
   controllers: [OtpControler],

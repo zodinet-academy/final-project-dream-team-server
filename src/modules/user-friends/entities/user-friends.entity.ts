@@ -44,4 +44,11 @@ export class UserFriendsEntity
     referencedColumnName: "id",
   })
   infoFriend: UserEntity;
+
+  @OneToOne(() => UserEntity, (user) => user.id)
+  @JoinColumn({
+    name: "user_id",
+    referencedColumnName: "id",
+  })
+  infoUser: UserEntity;
 }

@@ -7,13 +7,6 @@ export interface IConversationMessage {
   createAt: Date;
 }
 
-export interface IUserFriend {
-  userId: string;
-  name: string;
-  avatar: string;
-  createAt: Date;
-}
-
 export interface IMessage {
   messageId: string;
   senderId: string;
@@ -22,8 +15,12 @@ export interface IMessage {
   createAt: Date;
 }
 
+export interface IConversation {
+  id: string;
+  messages: IMessage[];
+}
+
 export interface IChatRepository {
   getConversationsByUserId(userId: string): Promise<IConversationMessage[]>;
-  getFriendByConversationId(conversationId: string): Promise<IUserFriend>;
   getMessagesByConversationId(conversationId: string): Promise<IMessage[]>;
 }

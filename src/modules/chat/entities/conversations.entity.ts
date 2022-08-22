@@ -29,6 +29,13 @@ export class ConversationEntity
   })
   infoFriend: UserEntity;
 
+  @OneToOne(() => UserEntity, (user) => user.id)
+  @JoinColumn({
+    name: "user_id",
+    referencedColumnName: "id",
+  })
+  userFriend: UserEntity;
+
   @OneToMany(() => MessageEntity, (messages) => messages.conversation)
   messages: MessageEntity[];
 }

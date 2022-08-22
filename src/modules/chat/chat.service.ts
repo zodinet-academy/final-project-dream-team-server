@@ -12,7 +12,6 @@ import {
   ERROR_INTERNAL_SERVER,
   ERROR_UNKNOWN,
 } from "./../../constants/code-response.constant";
-import { IConversationMessage } from "./interfaces";
 
 import { MessageEntity } from "./entities/messages.entity";
 import { ConversationEntity } from "./entities/conversations.entity";
@@ -21,7 +20,11 @@ import { SocketDeviceEntity } from "./entities/socket-devices.entity";
 import { ResponseDto } from "../../common/response.dto";
 import { ConnectChatDto, SendMessageDto, CreateDeviceDto } from "./dto";
 
-import { IChatService, IUserFriend, IMessage } from "./interfaces";
+import {
+  IChatService,
+  IConversationMessage,
+  IConversation,
+} from "./interfaces";
 
 @Injectable()
 export class ChatService implements IChatService {
@@ -57,6 +60,43 @@ export class ChatService implements IChatService {
     }
   }
 
+  async getConversationContentByUserIdAndFriendId(
+    userId: string,
+    friendId: string
+  ): Promise<ResponseDto<IConversation | null>> {
+    try {
+      const conversationEntity = await this.conversationRepository.findOne({
+        where: [
+          { userId: userId, friendId: friendId },
+          { userId: friendId, friendId: userId },
+        ],
+      });
+
+      const conversation: IConversation = {
+        id: conversationEntity?.id ?? "",
+        messages: [],
+      };
+
+      if (!conversationEntity) {
+        return responseData(
+          conversation,
+          "Conversation Not Found",
+          ERROR_DATA_NOT_FOUND
+        );
+      }
+
+      const message = await this.conversationRepository.getMessagesByConversationId(
+        conversationEntity.id
+      );
+
+      conversation.messages = message;
+
+      return responseData(conversation);
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+
   async getConversationByUserId(
     userId: string
   ): Promise<ResponseDto<IConversationMessage[] | null>> {
@@ -70,50 +110,6 @@ export class ChatService implements IChatService {
       }
 
       return responseData(conversations);
-    } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
-    }
-  }
-
-  async getFriendByConversationId(
-    conversationId: string
-  ): Promise<ResponseDto<IUserFriend | null>> {
-    try {
-      const infoFriend = await this.conversationRepository.getFriendByConversationId(
-        conversationId
-      );
-
-      if (!infoFriend) {
-        return responseData(
-          null,
-          "Not Found Conversation",
-          ERROR_DATA_NOT_FOUND
-        );
-      }
-
-      return responseData(infoFriend);
-    } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
-    }
-  }
-
-  async getMessagesByConversationId(
-    conversationId: string
-  ): Promise<ResponseDto<IMessage[] | null>> {
-    try {
-      const messages = await this.conversationRepository.getMessagesByConversationId(
-        conversationId
-      );
-
-      if (messages.length === 0) {
-        return responseData(
-          null,
-          "Not Found Conversation",
-          ERROR_DATA_NOT_FOUND
-        );
-      }
-
-      return responseData(messages);
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);
     }

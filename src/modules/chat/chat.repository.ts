@@ -4,12 +4,7 @@ import { MessageEntity } from "./entities/messages.entity";
 import { ConversationEntity } from "./entities/conversations.entity";
 import { SocketDeviceEntity } from "./entities/socket-devices.entity";
 
-import {
-  IConversationMessage,
-  IUserFriend,
-  IMessage,
-  IChatRepository,
-} from "./interfaces";
+import { IConversationMessage, IMessage, IChatRepository } from "./interfaces";
 
 @EntityRepository(ConversationEntity)
 export class ConversationRepository
@@ -18,10 +13,10 @@ export class ConversationRepository
   async getConversationsByUserId(
     userId: string
   ): Promise<IConversationMessage[]> {
-    const conversations = await this.createQueryBuilder("C")
+    const conversationFriends = await this.createQueryBuilder("C")
       .leftJoinAndSelect("C.infoFriend", "infoFriend")
       .leftJoinAndSelect("C.messages", "messages")
-      .andWhere(`C.user_id = '${userId}' OR C.friend_id = '${userId}'`)
+      .andWhere(`C.user_id = '${userId}'`)
       .select([
         `C.id as "conversationId", C.friend_id as "friendId", infoFriend.name as name, infoFriend.avatar as avatar, messages.content as content, messages.created_at as "createAt"`,
       ])
@@ -29,34 +24,35 @@ export class ConversationRepository
       .limit(1)
       .getRawMany<IConversationMessage>();
 
-    return conversations;
-  }
-
-  async getFriendByConversationId(
-    conversationId: string
-  ): Promise<IUserFriend> {
-    const infoFriend = await this.createQueryBuilder("C")
-      .leftJoinAndSelect("C.infoFriend", "infoFriend")
-      .andWhere(`C.id = '${conversationId}'`)
+    const conversationUsers = await this.createQueryBuilder("C")
+      .leftJoinAndSelect("C.userFriend", "userFriend")
+      .leftJoinAndSelect("C.messages", "messages")
+      .andWhere(`C.friend_id = '${userId}'`)
       .select([
-        `infoFriend.id as "userId", infoFriend.name as name, infoFriend.avatar as avatar, C.created_at as "createAt"`,
+        `C.id as "conversationId", C.user_id as "friendId", userFriend.name as name, userFriend.avatar as avatar, messages.content as content, messages.created_at as "createAt"`,
       ])
-      .getRawOne<IUserFriend>();
+      .orderBy("messages.created_at", "DESC")
+      .limit(1)
+      .getRawMany<IConversationMessage>();
 
-    return infoFriend;
+    return [...conversationFriends, ...conversationUsers];
   }
 
   async getMessagesByConversationId(
     conversationId: string
   ): Promise<IMessage[]> {
     const messages = await this.createQueryBuilder("C")
-      .leftJoinAndSelect("C.messages", "messages")
       .andWhere(`C.id = '${conversationId}'`)
+      .leftJoinAndSelect("C.messages", "messages")
       .select([
         `messages.id as "messageId", messages.sender_id as "senderId", messages.content as content, messages.image as image, messages.created_at as "createAt"`,
       ])
       .orderBy("messages.created_at", "DESC")
       .getRawMany<IMessage>();
+
+    if (!messages[0].messageId) {
+      return [];
+    }
 
     return messages;
   }

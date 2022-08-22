@@ -12,8 +12,8 @@ import { IChatGateway } from "./interfaces";
 import { responseData } from "../../common/utils";
 import { ERROR_UNKNOWN } from "../../constants/code-response.constant";
 
-import { SendMessageDto } from "./dto";
 import { ResponseDto } from "../../common/response.dto";
+import { SendMessageDto, CreateSocketDeviceDto } from "./dto";
 
 import { ConversationEntity } from "./entities/conversations.entity";
 import { SocketDeviceEntity } from "./entities/socket-devices.entity";
@@ -55,6 +55,20 @@ export class ChatGateway
     }
   }
 
+  @SubscribeMessage("create-socket-device")
+  async handleCreateSocketDevice(
+    client: Socket,
+    payload: CreateSocketDeviceDto
+  ) {
+    try {
+      const device = await this.createDevice(client, payload.conversationId);
+
+      return device;
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
+  }
+
   // Handle Send & Receive Message
   @SubscribeMessage("send-message")
   async messages(client: Socket, payload: SendMessageDto) {
@@ -72,13 +86,9 @@ export class ChatGateway
       }
 
       if (messageEntity.conversationId) {
-        const device = await this.createDevice(
-          client,
-          messageEntity.conversationId
-        );
         const message = await this.chatService.createMessage(messageEntity);
 
-        if (message.status && device.status) {
+        if (message.status) {
           const devices = await this.chatService.getSocketDeviceByConversationId(
             messageEntity.conversationId
           );
@@ -146,19 +156,13 @@ export class ChatGateway
         socketId,
       };
 
-      console.log("device: ", deviceEntity);
-
       const socketDevice = await this.chatService.getSocketDeviceByConversationIdAndUserId(
         conversationId,
         userId
       );
 
-      console.log("device: ", socketDevice);
-
       if (!socketDevice.status) {
         const device = await this.chatService.createSocketDevice(deviceEntity);
-
-        console.log("device old: ", device);
 
         return device;
       }
