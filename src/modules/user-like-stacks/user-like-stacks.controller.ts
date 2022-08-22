@@ -19,6 +19,7 @@ import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
 import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
 import { UserLikeStacksService } from "./user-like-stacks.service";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Controller("secure/user-like-stacks")
 @ApiTags("user-like-stacks")
@@ -43,18 +44,13 @@ export class UserLikeStacksController {
     return this.userLikeStacksService.create(userId, createUserLikeStackDto);
   }
 
-  @Get()
-  findAll() {
+  @Cron(CronExpression.EVERY_MINUTE)
+  matchFriend() {
     return this.userLikeStacksService.matchFriend();
   }
 
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.userLikeStacksService.findOne(+id);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.userLikeStacksService.remove(+id);
   }
 }

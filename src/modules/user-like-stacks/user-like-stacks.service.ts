@@ -1,20 +1,21 @@
-import { NotificationsService } from "./../notifications/notifications.service";
 import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
 import {
   ERROR_UNKNOWN,
   SOMEONE_LIKE_YOU,
 } from "../../constants/code-response.constant";
-import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
-import { UpdateUserLikeStackDto } from "./dto/update-user-like-stack.dto";
-import { UserLikeStacksRepository } from "./user-like-stacks.repository";
 import { NotificationEnum } from "../../constants/enum";
+import { NotificationsService } from "./../notifications/notifications.service";
+import { UserFriendsService } from "./../user-friends/user-friends.service";
+import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
+import { UserLikeStacksRepository } from "./user-like-stacks.repository";
 
 @Injectable()
 export class UserLikeStacksService {
   constructor(
     private readonly userLikeStacksRepository: UserLikeStacksRepository,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly userFriendsService: UserFriendsService
   ) {}
   async create(
     fromUserId: string,
@@ -52,21 +53,31 @@ export class UserLikeStacksService {
   }
 
   async matchFriend() {
-    // const listUserLike = await this.userLikeStacksRepository.find();
-    // if (listUserLike.length > 1) {
-    //   listUserLike.map(async (user) => {
-    //     const result = await this.userLikeStacksRepository.findAndCount({
-    //       where: {
-    //         fromUserId: user.toUserId,
-    //         toUserId: user.fromUserId,
-    //       },
-    //     });
-    //     if (result[1]) {
-    //       arr.push(user);
-    //     }
-    //     console.log(result);
-    //   });
-    // }
+    try {
+      const userLikeStacks = await this.userLikeStacksRepository.find();
+      const matchings = [],
+        idUserLikeStacks = [];
+      for (let i = 0; i < userLikeStacks.length - 1; i++) {
+        for (let j = i + 1; j < userLikeStacks.length; j++) {
+          if (
+            userLikeStacks[i]?.fromUserId === userLikeStacks[j]?.toUserId &&
+            userLikeStacks[j]?.fromUserId === userLikeStacks[i]?.toUserId
+          ) {
+            matchings.push({
+              userId: userLikeStacks[i].fromUserId,
+              friendId: userLikeStacks[i].toUserId,
+            });
+            idUserLikeStacks.push(userLikeStacks[i].id, userLikeStacks[j].id);
+          }
+        }
+      }
+      matchings &&
+        (await this.userFriendsService.createManyUserFriends(matchings));
+      idUserLikeStacks.length && (await this.remove(idUserLikeStacks));
+      return matchings;
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
   }
 
   findAll() {
@@ -81,7 +92,13 @@ export class UserLikeStacksService {
     return `This action updates a #${id} userLikeStack`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} userLikeStack`;
+  async remove(id: string[]) {
+    try {
+      console.log(id);
+
+      await this.userLikeStacksRepository.delete(id);
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }

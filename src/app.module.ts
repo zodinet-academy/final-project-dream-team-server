@@ -21,6 +21,7 @@ import { PurposeSettingsModule } from "./modules/purpose-settings/purpose-settin
 import { UserBlocksModule } from "./modules/user-blocks/user-blocks.module";
 import { UserLikeStacksModule } from "./modules/user-like-stacks/user-like-stacks.module";
 import { NotificationsModule } from "./modules/notifications/notifications.module";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   providers: [Logger],
@@ -50,6 +51,7 @@ import { NotificationsModule } from "./modules/notifications/notifications.modul
         config.get<TypeOrmModuleOptions>("database"),
       inject: [ConfigService],
     }),
+    ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     OtpModule,
