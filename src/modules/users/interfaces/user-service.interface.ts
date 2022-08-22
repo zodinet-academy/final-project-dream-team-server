@@ -4,7 +4,6 @@ import { ResponseToken } from "../../auth/interfaces/response-token.interface";
 import { ResponsePublicUserInterface } from "./res-public-user.interface";
 
 import { ResponseDto } from "../../../common/response.dto";
-import { SocialDTO } from "../../auth/dto/social-login.dto";
 import {
   DeleteUserDto,
   FriendDto,
@@ -12,6 +11,8 @@ import {
   UserProfileDto,
   VerifyUserDto,
 } from "../dto";
+import { SocialDTO } from "../../auth/dto/social-login.dto";
+import { UserResponeDTO } from "../dto/user-respone.dto";
 
 export interface IUserService {
   getAllUser(): Promise<ResponseDto<UserEntity[]>>;
@@ -26,7 +27,9 @@ export interface IUserService {
   verifyUserByEmail(email: string): Promise<ResponseDto<boolean | null>>;
   signUp(
     user: SocialDTO
-  ): Promise<ResponseDto<ResponseToken | string | boolean | null>>;
+  ): Promise<
+    ResponseDto<ResponseToken | string | boolean | null | UserResponeDTO>
+  >;
   updateUserProfileById(
     userId: string,
     user: UpdateUserDto,

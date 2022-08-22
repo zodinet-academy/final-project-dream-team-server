@@ -1,7 +1,7 @@
 export enum GenderEnum {
-  MALE = "Nam",
-  FEMALE = "Nữ",
-  OTHER = "other",
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  OTHER = "OTHER",
 }
 export enum UserRolesEnum {
   ADMIN = "admin",

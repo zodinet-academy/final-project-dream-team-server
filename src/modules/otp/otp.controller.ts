@@ -44,12 +44,16 @@ export class OtpControler {
     return this.otpService.confirmOtp(data.phone, data.code);
   }
 
-  @Post("verify-otp-dream")
+  @Post("verify-otp-social")
   @ApiOperation({ summary: "Verify received OTP (user)" })
   @ApiOkResponse({ description: "Verify otp success." })
   @ApiNotAcceptableResponse({ description: "Wrong otp provided." })
   @ApiNotFoundResponse({ description: "Cannot find otp for this phone." })
   async verifyOtpDreamTeam(@Body() data: VerifyOtpDto) {
-    return this.otpService.confirmOtp(data.phone, data.code);
+    return this.otpService.confirmOtpWithSocial(
+      data.phone,
+      data.code,
+      data.email
+    );
   }
 }
