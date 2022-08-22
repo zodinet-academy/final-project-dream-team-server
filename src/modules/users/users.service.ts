@@ -59,7 +59,7 @@ export class UsersService implements IUserService {
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
-  async signUp(dto: SocialDTO) {
+  async signUp(dto: SocialDTO): Promise<ResponseDto<UserResponeDTO>> {
     const { birthday, email } = dto;
 
     const isExist = await this.usersRepository.findOne({
