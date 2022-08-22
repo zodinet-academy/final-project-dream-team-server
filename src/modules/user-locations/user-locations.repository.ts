@@ -38,6 +38,7 @@ export class UserLocationsRepository
               origin: JSON.stringify(origin),
               range: radius * 1000, //KM conversion
               blockedUsers: blockedUsers,
+              likedUsers: likedUsers,
             });
           if (blockedUsers.length)
             subQuery.andWhere(`ul.userId NOT IN (:...blockedUsers)`);

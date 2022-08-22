@@ -4,11 +4,13 @@ import { Module } from "@nestjs/common";
 import { UserLikeStacksService } from "./user-like-stacks.service";
 import { UserLikeStacksController } from "./user-like-stacks.controller";
 import { UserLikeStacksRepository } from "./user-like-stacks.repository";
+import { UserFriendsModule } from "../user-friends/user-friends.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserLikeStacksRepository]),
     NotificationsModule,
+    UserFriendsModule,
   ],
   controllers: [UserLikeStacksController],
   providers: [UserLikeStacksService],
