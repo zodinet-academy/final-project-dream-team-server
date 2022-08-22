@@ -1,4 +1,4 @@
-import { UploadApiErrorResponse, UploadApiResponse, v2 } from "cloudinary";
+import { UploadApiErrorResponse, UploadApiResponse } from "cloudinary";
 
 export interface ICloudinaryService {
   uploadImage(

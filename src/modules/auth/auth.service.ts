@@ -4,21 +4,18 @@ import { LoginTicket, TokenPayload } from "google-auth-library";
 import { Auth, google } from "googleapis";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { ResponseDto } from "../../common/response.dto";
-import { responseData, signToken } from "../../common/utils";
-import { UsersService } from "../users/users.service";
-import { OtpService } from "./../otp/otp.service";
-import { UserEntity } from "./../users/entities/user.entity";
-import { IAuthService } from "./interfaces/auth-service.interface";
-import IGoogleResponse from "./interfaces/auth.interface";
-import { AdminLoginDto } from "./dto/admin-login.dto";
+import { responseData } from "../../common/utils";
 import {
   ERROR_UNKNOWN,
   ERROR_WRONG_USERNAME_OR_PASSWORD,
 } from "../../constants/code-response.constant";
-import { UserRolesEnum } from "../../constants/enum";
 import { AdminsService } from "../admins/admins.service";
-import { ResponseToken } from "./interfaces/response-token.interface";
+import { UsersService } from "../users/users.service";
+import { OtpService } from "./../otp/otp.service";
+import { AdminLoginDto } from "./dto/admin-login.dto";
 import { SocialDTO } from "./dto/social-login.dto";
+import { IAuthService } from "./interfaces/auth-service.interface";
+import IGoogleResponse from "./interfaces/auth.interface";
 
 @Injectable()
 export class AuthService implements IAuthService {

@@ -1,3 +1,5 @@
+import { UserLikeStacksService } from "./../user-like-stacks/user-like-stacks.service";
+import { UserBlocksService } from "./../user-blocks/user-blocks.service";
 import { Point } from "geojson";
 import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
@@ -19,7 +21,9 @@ export class UserLocationsService implements IUserLocationsService {
   constructor(
     private readonly userLocationsRepository: UserLocationsRepository,
     private readonly settingsService: SettingsService,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly userBlocksService: UserBlocksService,
+    private readonly userLikeStacksService: UserLikeStacksService
   ) {}
 
   /**
@@ -107,22 +111,37 @@ export class UserLocationsService implements IUserLocationsService {
         SettingEntity | string
       > = await this.settingsService.findSetting();
       if (!findSetting.status) return findSetting;
+
       const { radius } = findSetting.data as SettingEntity;
 
       const origin: IOrigin = {
         type: "Point",
         coordinates: [findData.longtitude, findData.latitude],
       };
+
+      const blockedUsers = await this.userBlocksService.getAllIdBlockedUser(
+        userId
+      );
+
+      const likedUsers = await this.userLikeStacksService.getAllIdUserLiked(
+        userId
+      );
+
       const result: IFriendNearUser[] = await this.userLocationsRepository.getFriendNearUser(
         radius,
-        origin
+        origin,
+        blockedUsers,
+        likedUsers
       );
       result.map(async (el) => {
-        el.friendAvatar = await this.cloudinaryService.getImageUrl(
-          el.friendAvatar
-        );
-        el.distance = +el.distance.toFixed();
-        el.unit = "met";
+        el.avatar = await this.cloudinaryService.getImageUrl(el.avatar);
+        if (el.distance >= 1000) {
+          el.distance = +(el.distance / 1000).toFixed(1);
+          el.unit = "kilomet";
+        } else {
+          el.distance = +el.distance.toFixed(1);
+          el.unit = "met";
+        }
         return el;
       });
       return responseData(result, "Get friend near user success");

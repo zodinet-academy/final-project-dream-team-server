@@ -19,6 +19,8 @@ import { UserLocationsModule } from "./modules/user-locations/user-locations.mod
 import { MatchingUsersModule } from "./modules/matching-users/matching-users.module";
 import { PurposeSettingsModule } from "./modules/purpose-settings/purpose-settings.module";
 import { UserBlocksModule } from "./modules/user-blocks/user-blocks.module";
+import { UserLikeStacksModule } from "./modules/user-like-stacks/user-like-stacks.module";
+import { NotificationsModule } from "./modules/notifications/notifications.module";
 
 @Module({
   providers: [Logger],
@@ -62,6 +64,8 @@ import { UserBlocksModule } from "./modules/user-blocks/user-blocks.module";
     UserBlocksModule,
     PurposeSettingsModule,
     UserFriendsModule,
+    UserLikeStacksModule,
+    NotificationsModule,
   ],
 })
 export class AppModule {}
