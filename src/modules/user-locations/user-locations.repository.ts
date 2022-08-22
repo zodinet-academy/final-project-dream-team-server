@@ -10,7 +10,8 @@ export class UserLocationsRepository
   async getFriendNearUser(
     radius: number,
     origin: IOrigin,
-    blockedUsers: string[]
+    blockedUsers: string[],
+    likedUsers: string[]
   ): Promise<IFriendNearUser[]> {
     try {
       const query = this.createQueryBuilder("user_locations")
@@ -28,9 +29,9 @@ export class UserLocationsRepository
             ])
             .from("user_locations", "ul")
             .leftJoin("ul.userEntity", "users")
-            .where(
-              "ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)"
-            )
+            // .where(
+            //   "ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)"
+            // )
             .orderBy("distance", "ASC")
             .setParameters({
               // stringify GeoJSON
@@ -40,6 +41,8 @@ export class UserLocationsRepository
             });
           if (blockedUsers.length)
             subQuery.andWhere(`ul.userId NOT IN (:...blockedUsers)`);
+          if (likedUsers.length)
+            subQuery.andWhere(`ul.userId NOT IN (:...likedUsers)`);
           return subQuery;
         }, "u")
         .where("u.distance > 0");

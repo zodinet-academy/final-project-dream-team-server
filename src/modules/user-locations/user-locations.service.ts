@@ -1,3 +1,4 @@
+import { UserLikeStacksService } from "./../user-like-stacks/user-like-stacks.service";
 import { UserBlocksService } from "./../user-blocks/user-blocks.service";
 import { Point } from "geojson";
 import { Injectable } from "@nestjs/common";
@@ -21,7 +22,8 @@ export class UserLocationsService implements IUserLocationsService {
     private readonly userLocationsRepository: UserLocationsRepository,
     private readonly settingsService: SettingsService,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly userBlocksService: UserBlocksService
+    private readonly userBlocksService: UserBlocksService,
+    private readonly userLikeStacksService: UserLikeStacksService
   ) {}
 
   /**
@@ -121,10 +123,15 @@ export class UserLocationsService implements IUserLocationsService {
         userId
       );
 
+      const likedUsers = await this.userLikeStacksService.getAllIdUserLiked(
+        userId
+      );
+
       const result: IFriendNearUser[] = await this.userLocationsRepository.getFriendNearUser(
         radius,
         origin,
-        blockedUsers
+        blockedUsers,
+        likedUsers
       );
       result.map(async (el) => {
         el.avatar = await this.cloudinaryService.getImageUrl(el.avatar);
