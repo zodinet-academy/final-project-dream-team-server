@@ -1,26 +1,24 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Post,
   UseGuards,
 } from "@nestjs/common";
-import { UserLikeStacksService } from "./user-like-stacks.service";
-import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
-import { UpdateUserLikeStackDto } from "./dto/update-user-like-stack.dto";
 import {
-  ApiTags,
   ApiBearerAuth,
-  ApiOperation,
-  ApiOkResponse,
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
 } from "@nestjs/swagger";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
+import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
+import { UserLikeStacksService } from "./user-like-stacks.service";
 
 @Controller("secure/user-like-stacks")
 @ApiTags("user-like-stacks")
@@ -53,14 +51,6 @@ export class UserLikeStacksController {
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.userLikeStacksService.findOne(+id);
-  }
-
-  @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updateUserLikeStackDto: UpdateUserLikeStackDto
-  ) {
-    return this.userLikeStacksService.update(+id, updateUserLikeStackDto);
   }
 
   @Delete(":id")
