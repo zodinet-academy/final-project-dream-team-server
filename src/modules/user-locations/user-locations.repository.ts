@@ -29,9 +29,9 @@ export class UserLocationsRepository
             ])
             .from("user_locations", "ul")
             .leftJoin("ul.userEntity", "users")
-            // .where(
-            //   "ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)"
-            // )
+            .where(
+              "ST_DWithin(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location)) ,:range)"
+            )
             .orderBy("distance", "ASC")
             .setParameters({
               // stringify GeoJSON
