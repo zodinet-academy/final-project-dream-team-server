@@ -1,12 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  UseGuards,
-} from "@nestjs/common";
+import { Body, Controller, Delete, Get, Post, UseGuards } from "@nestjs/common";
+import { Cron, CronExpression } from "@nestjs/schedule";
 import {
   ApiBearerAuth,
   ApiNotAcceptableResponse,
@@ -18,9 +11,8 @@ import {
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
 import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
-import { UserLikeStacksService } from "./user-like-stacks.service";
-import { Cron, CronExpression } from "@nestjs/schedule";
 import { DeleteUserLikeStackDto } from "./dto/delete-user-like-stacks.dto";
+import { UserLikeStacksService } from "./user-like-stacks.service";
 
 @Controller("secure/user-like-stacks")
 @ApiTags("user-like-stacks")
