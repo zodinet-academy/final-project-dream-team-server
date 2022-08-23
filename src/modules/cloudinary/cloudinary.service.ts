@@ -32,4 +32,13 @@ export class CloudinaryService implements ICloudinaryService {
     const url = v2.url(publicId);
     return url;
   }
+
+  deleteImage(pulbicId: string): boolean {
+    try {
+      v2.uploader.destroy(pulbicId);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }
