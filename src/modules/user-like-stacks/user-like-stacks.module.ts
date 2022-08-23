@@ -1,3 +1,4 @@
+import { CloudinaryModule } from "./../cloudinary/cloudinary.module";
 import { NotificationsModule } from "./../notifications/notifications.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Module } from "@nestjs/common";
@@ -12,6 +13,7 @@ import { UserFriendsRepository } from "../user-friends/user-friends.repository";
     TypeOrmModule.forFeature([UserLikeStacksRepository, UserFriendsRepository]),
     NotificationsModule,
     UserFriendsModule,
+    CloudinaryModule,
   ],
   controllers: [UserLikeStacksController],
   providers: [UserLikeStacksService],

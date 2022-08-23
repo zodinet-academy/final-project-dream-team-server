@@ -1,18 +1,18 @@
-import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
 import { Injectable } from "@nestjs/common";
-import { Connection, Transaction } from "typeorm";
+import { Connection } from "typeorm";
 import { responseData } from "../../common/utils";
 import {
-  ERROR_INTERNAL_SERVER,
   ERROR_UNKNOWN,
   SOMEONE_LIKE_YOU,
 } from "../../constants/code-response.constant";
 import { NotificationEnum } from "../../constants/enum";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { UserFriendsRepository } from "../user-friends/user-friends.repository";
 import { NotificationsService } from "./../notifications/notifications.service";
 import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
-import { UserLikeStacksRepository } from "./user-like-stacks.repository";
 import { DeleteUserLikeStackDto } from "./dto/delete-user-like-stacks.dto";
+import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
+import { UserLikeStacksRepository } from "./user-like-stacks.repository";
 
 @Injectable()
 export class UserLikeStacksService {
@@ -20,7 +20,8 @@ export class UserLikeStacksService {
     private readonly userLikeStacksRepository: UserLikeStacksRepository,
     private readonly notificationsService: NotificationsService,
     private readonly userFriendsRepository: UserFriendsRepository,
-    private readonly connection: Connection
+    private readonly connection: Connection,
+    private readonly cloudinaryService: CloudinaryService
   ) {}
   async create(
     fromUserId: string,
@@ -115,10 +116,15 @@ export class UserLikeStacksService {
 
   async getMatchingFriends(id: string) {
     try {
-      return responseData(
-        await this.userLikeStacksRepository.getMatchingFriends(id),
-        "get success"
-      );
+      const result = await this.userLikeStacksRepository.getMatchingFriends(id);
+      result.map(async (el) => {
+        el.friend.avatar = await this.cloudinaryService.getImageUrl(
+          el.friend.avatar
+        );
+
+        return el;
+      });
+      return responseData(result, "get success");
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);
     }
@@ -126,7 +132,7 @@ export class UserLikeStacksService {
 
   async remove(body: DeleteUserLikeStackDto) {
     try {
-      await this.userLikeStacksRepository.delete(body.ids);
+      body.ids.length && (await this.userLikeStacksRepository.delete(body.ids));
       return responseData(null, "Delete success");
     } catch (error) {
       throw new Error(error.message);
