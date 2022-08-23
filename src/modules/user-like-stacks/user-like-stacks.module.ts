@@ -5,10 +5,11 @@ import { UserLikeStacksService } from "./user-like-stacks.service";
 import { UserLikeStacksController } from "./user-like-stacks.controller";
 import { UserLikeStacksRepository } from "./user-like-stacks.repository";
 import { UserFriendsModule } from "../user-friends/user-friends.module";
+import { UserFriendsRepository } from "../user-friends/user-friends.repository";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserLikeStacksRepository]),
+    TypeOrmModule.forFeature([UserLikeStacksRepository, UserFriendsRepository]),
     NotificationsModule,
     UserFriendsModule,
   ],
