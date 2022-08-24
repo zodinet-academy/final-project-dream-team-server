@@ -5,7 +5,7 @@ import { IsNotEmpty, IsString, IsUUID } from "class-validator";
 import { ISocketDevicesEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 
-@Entity({ name: "socket_devices", synchronize: false })
+@Entity({ name: "socket_devices", synchronize: true })
 export class SocketDeviceEntity
   extends DefaultEntity
   implements ISocketDevicesEntity {

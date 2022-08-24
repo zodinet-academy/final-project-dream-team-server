@@ -15,7 +15,7 @@ import { OtpService } from "./otp.service";
   imports: [
     PhoneOtpModule,
     HttpModule,
-    RateLimiterModule,
+    //RateLimiterModule,
     TypeOrmModule.forFeature([UsersRepository]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
