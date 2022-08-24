@@ -10,6 +10,7 @@ import {
 import { ChatGateway } from "./chat.gateway";
 import { ChatService } from "./chat.service";
 import { ChatController } from "./chat.controller";
+import { CloudinaryModule } from "../cloudinary/cloudinary.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ChatController } from "./chat.controller";
       ConversationRepository,
       SocketDeviceRepository,
     ]),
+    CloudinaryModule,
   ],
   controllers: [ChatController],
   providers: [ChatGateway, ChatService],

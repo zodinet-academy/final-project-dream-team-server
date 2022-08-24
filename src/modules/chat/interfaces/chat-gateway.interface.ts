@@ -1,5 +1,3 @@
-import { Socket } from "socket.io";
-
 import { ResponseDto } from "../../../common/response.dto";
 
 import { ConversationEntity } from "../entities/conversations.entity";
@@ -7,10 +5,11 @@ import { SocketDeviceEntity } from "../entities/socket-devices.entity";
 
 export interface IChatGateway {
   createConversation(
-    client: Socket
-  ): Promise<ResponseDto<ConversationEntity | string | null>>;
+    userId: string,
+    friendId: string
+  ): Promise<ResponseDto<ConversationEntity | null>>;
   createDevice(
-    client: Socket,
-    conversationId: string
-  ): Promise<ResponseDto<SocketDeviceEntity | string | null>>;
+    userId: string,
+    socketId: string
+  ): Promise<ResponseDto<SocketDeviceEntity | boolean | null>>;
 }

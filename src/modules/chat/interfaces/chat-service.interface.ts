@@ -24,11 +24,7 @@ export interface IChatService {
   getConversationByUserId(
     friendId: string
   ): Promise<ResponseDto<IConversationMessage[] | null>>;
-  getSocketDeviceByConversationId(
-    conversationId: string
-  ): Promise<ResponseDto<SocketDeviceEntity[] | null>>;
-  getSocketDeviceByConversationIdAndUserId(
-    conversationId: string,
+  getSocketDeviceByUserId(
     userId: string
   ): Promise<ResponseDto<SocketDeviceEntity | null>>;
 
@@ -41,10 +37,6 @@ export interface IChatService {
   createSocketDevice(
     device: CreateDeviceDto
   ): Promise<ResponseDto<SocketDeviceEntity | null>>;
-
-  updateSocketDevice(
-    device: CreateDeviceDto
-  ): Promise<ResponseDto<boolean | null>>;
 
   deleteSocketDevice(socketId: string): Promise<ResponseDto<boolean | null>>;
   deleteConversation(
