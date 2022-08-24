@@ -5,6 +5,7 @@ import {
   Get,
   HttpException,
   HttpStatus,
+  Param,
   Post,
   Put,
   UploadedFile,
@@ -220,5 +221,11 @@ export class UsersController {
     @Body() dto: ChangeFavoriteImageDto
   ): Promise<ResponseDto<string>> {
     return this.usersService.deleteImage(userId, dto.id);
+  }
+
+  @Get("secure/friend-profile/:id")
+  @UseGuards(JwtAuthGuard)
+  getFriendProfile(@Param("id") id: string) {
+    return this.usersService.getUserProfile(id);
   }
 }

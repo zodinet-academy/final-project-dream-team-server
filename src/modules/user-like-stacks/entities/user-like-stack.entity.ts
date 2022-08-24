@@ -15,11 +15,11 @@ import { AutoMap } from "@automapper/classes";
 export class UserLikeStackEntity
   extends DefaultEntity
   implements IUserLikeStackEntity {
-  @Column({ name: "from_user_id", type: "varchar", nullable: false })
+  @Column({ name: "from_user_id", type: "uuid", nullable: false })
   @IsNotEmpty()
   fromUserId: string;
 
-  @Column({ name: "to_user_id", type: "varchar", nullable: false })
+  @Column({ name: "to_user_id", type: "uuid", nullable: false })
   @IsNotEmpty()
   toUserId: string;
 
