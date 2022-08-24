@@ -29,3 +29,4 @@ export const ERROR_CAN_NOT_FIND_IMAGE = "can_not_find_image";
 export const ERROR_USER_NOT_MATCH_WITH_IMAGE = "user_not_match_with_image";
 export const ERROR_EXCEED_MAX_FAVORITE_IMAGE = "exceed_max_favorite_image";
 export const ERROR_IN_DELETE_IMAGE_CLOUD = "error_in_delete_image_cloud";
+export const ERROR_YOUR_ALBUM_IS_FULL = "your_album_is_full";

@@ -12,6 +12,7 @@ import {
   ERROR_IN_DELETE_IMAGE_CLOUD,
   ERROR_UNKNOWN,
   ERROR_USER_NOT_MATCH_WITH_IMAGE,
+  ERROR_YOUR_ALBUM_IS_FULL,
 } from "../../constants/code-response.constant";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { ChangeFavoriteImageDto, UserImagesDto } from "./dto";
@@ -50,11 +51,27 @@ export class UserImagesService implements IUserImagesService {
     return userAlbum;
   }
 
+  async countImages(userId: string): Promise<number> {
+    const count = await this.userImagesRepository.count({ userId: userId });
+
+    return count ? count : 0;
+  }
+
   async addImages(
     userId: string,
     images: Array<Express.Multer.File>
   ): Promise<ResponseDto<string>> {
-    for (let i = 0; i < images.length; i++) {
+    const max = this.configService.get<number>("MAX_ALBUM");
+
+    const count = await this.countImages(userId);
+
+    if (count >= max) {
+      return responseData(null, "Your album is full", ERROR_YOUR_ALBUM_IS_FULL);
+    }
+
+    const length = images.length < max - count ? images.length : max - count;
+
+    for (let i = 0; i < length; i++) {
       const res = await this.cloudinaryService.uploadImage(images[i], "images");
       if ("public_id" in res) {
         try {
@@ -78,6 +95,13 @@ export class UserImagesService implements IUserImagesService {
           ERROR_CAN_NOT_SAVE_USER_IMAGE_IN_CLOUD
         );
       }
+    }
+
+    if (max - count < images.length) {
+      return responseData(
+        "Succes",
+        "Some images cannot save because your album is full."
+      );
     }
 
     return responseData("Succes", "Save images successfully.");
