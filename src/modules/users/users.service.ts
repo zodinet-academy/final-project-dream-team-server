@@ -136,10 +136,17 @@ export class UsersService implements IUserService {
     }
   }
 
-  async getAllUser(): Promise<ResponseDto<UserEntity[]>> {
+  async getAllUser(): Promise<ResponseDto<UserResponeDTO[]>> {
     try {
       const users = await this.usersRepository.find();
-      return responseData(users);
+      const res = this.mapper.mapArray(users, UserEntity, UserResponeDTO);
+
+      res.forEach(async (user) => {
+        const avatarUrl = await this.cloudinaryService.getImageUrl(user.avatar);
+        user.avatar = avatarUrl;
+      });
+
+      return responseData(res);
     } catch (error) {
       return responseData([]);
     }

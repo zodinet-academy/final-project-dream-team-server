@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
 import { LoginTicket, TokenPayload } from "google-auth-library";
 import { Auth, google } from "googleapis";
 import { isValidPhoneNumber } from "libphonenumber-js";
@@ -9,6 +10,7 @@ import {
   ERROR_UNKNOWN,
   ERROR_WRONG_USERNAME_OR_PASSWORD,
 } from "../../constants/code-response.constant";
+import { UserRolesEnum } from "../../constants/enum";
 import { AdminsService } from "../admins/admins.service";
 import { UsersService } from "../users/users.service";
 import { OtpService } from "./../otp/otp.service";
@@ -16,6 +18,7 @@ import { AdminLoginDto } from "./dto/admin-login.dto";
 import { SocialDTO } from "./dto/social-login.dto";
 import { IAuthService } from "./interfaces/auth-service.interface";
 import IGoogleResponse from "./interfaces/auth.interface";
+import { IJwtPayloadDreamteam } from "./interfaces/jwt-payload.interface";
 
 @Injectable()
 export class AuthService implements IAuthService {
@@ -25,7 +28,8 @@ export class AuthService implements IAuthService {
     private otpService: OtpService,
     private usersService: UsersService,
     private configService: ConfigService,
-    private readonly adminsService: AdminsService
+    private readonly adminsService: AdminsService,
+    private readonly jwtService: JwtService
   ) {
     const clientID = this.configService.get("CLIENT_ID");
     const clientSecret = this.configService.get("CLIENT_SECRET");
@@ -126,8 +130,15 @@ export class AuthService implements IAuthService {
       );
       if (!findData)
         return responseData(null, null, ERROR_WRONG_USERNAME_OR_PASSWORD);
-      // const jwtToken = await signToken(findData.id, null, UserRolesEnum.ADMIN);
-      return responseData("jwtToken") as ResponseDto<string>;
+
+      const payLoad: IJwtPayloadDreamteam = {
+        id: findData.id,
+        role: UserRolesEnum.ADMIN,
+        phone: this.configService.get("ADMIN_PHONE"),
+      };
+
+      const token = this.jwtService.sign(payLoad);
+      return responseData(token) as ResponseDto<string>;
     } catch (error) {
       return responseData(null, null, ERROR_UNKNOWN);
     }

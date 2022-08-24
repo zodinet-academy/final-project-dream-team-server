@@ -26,8 +26,9 @@ import {
 import { imageFileFilter } from "../../common/helper/imageFilter.helper";
 import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
-import { GetUser } from "../auth/decorator";
-import { JwtAuthGuard } from "../auth/guards";
+import { UserRolesEnum } from "../../constants/enum";
+import { GetUser, Roles } from "../auth/decorator";
+import { JwtAuthGuard, RolesGuard } from "../auth/guards";
 import {
   CreateUserHobbiesDto,
   DeleteUserHobbiesDto,
@@ -220,5 +221,13 @@ export class UsersController {
     @Body() dto: ChangeFavoriteImageDto
   ): Promise<ResponseDto<string>> {
     return this.usersService.deleteImage(userId, dto.id);
+  }
+
+  @Get("secure/get-all")
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @Roles(UserRolesEnum.ADMIN)
+  getAllBasicUses() {
+    return this.usersService.getAllUser();
   }
 }
