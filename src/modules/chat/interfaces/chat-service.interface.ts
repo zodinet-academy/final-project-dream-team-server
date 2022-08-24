@@ -9,8 +9,7 @@ import { ResponseDto } from "../../../common/response.dto";
 
 import {
   IConversationMessage,
-  IUserFriend,
-  IMessage,
+  IConversation,
 } from "./chat-repository.interface";
 
 export interface IChatService {
@@ -18,20 +17,14 @@ export interface IChatService {
     userId: string,
     friendId: string
   ): Promise<ResponseDto<ConversationEntity | null>>;
+  getConversationContentByUserIdAndFriendId(
+    userId: string,
+    friendId: string
+  ): Promise<ResponseDto<IConversation | null>>;
   getConversationByUserId(
     friendId: string
   ): Promise<ResponseDto<IConversationMessage[] | null>>;
-  getFriendByConversationId(
-    conversationId: string
-  ): Promise<ResponseDto<IUserFriend | null>>;
-  getMessagesByConversationId(
-    conversationId: string
-  ): Promise<ResponseDto<IMessage[] | null>>;
-  getSocketDeviceByConversationId(
-    conversationId: string
-  ): Promise<ResponseDto<SocketDeviceEntity[] | null>>;
-  getSocketDeviceByConversationIdAndUserId(
-    conversationId: string,
+  getSocketDeviceByUserId(
     userId: string
   ): Promise<ResponseDto<SocketDeviceEntity | null>>;
 
@@ -44,10 +37,6 @@ export interface IChatService {
   createSocketDevice(
     device: CreateDeviceDto
   ): Promise<ResponseDto<SocketDeviceEntity | null>>;
-
-  updateSocketDevice(
-    device: CreateDeviceDto
-  ): Promise<ResponseDto<boolean | null>>;
 
   deleteSocketDevice(socketId: string): Promise<ResponseDto<boolean | null>>;
   deleteConversation(

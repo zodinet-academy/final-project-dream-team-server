@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { UploadApiErrorResponse, UploadApiResponse, v2 } from "cloudinary";
-import { ICloudinaryService } from "./interfaces/cloudinary.interface";
 import toStream = require("buffer-to-stream");
+import { ICloudinaryService } from "./interfaces/cloudinary.interface";
+import { UploadApiErrorResponse, UploadApiResponse, v2 } from "cloudinary";
 
 @Injectable()
 export class CloudinaryService implements ICloudinaryService {
@@ -29,8 +29,12 @@ export class CloudinaryService implements ICloudinaryService {
   }
 
   async getImageUrl(publicId: string): Promise<string> {
-    const url = v2.url(publicId);
-    return url;
+    if (publicId) {
+      const url = v2.url(publicId);
+      return url;
+    }
+
+    return "";
   }
 
   deleteImage(pulbicId: string): boolean {

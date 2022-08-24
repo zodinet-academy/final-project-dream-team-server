@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import {
+  IsBase64,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from "class-validator";
 
 export class SendMessageDto {
   @IsNotEmpty()
@@ -13,6 +19,11 @@ export class SendMessageDto {
   @IsNotEmpty()
   @IsUUID()
   @IsString()
+  friendId: string;
+
+  @IsNotEmpty()
+  @IsUUID()
+  @IsString()
   conversationId: string;
 
   @IsNotEmpty()
@@ -20,9 +31,8 @@ export class SendMessageDto {
   content: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsOptional()
-  image?: string;
+  image?: Express.Multer.File;
 }
 
 export class MessageReceived {

@@ -28,10 +28,10 @@ import { OtpService } from "./otp.service";
   ],
   providers: [
     OtpService,
-    {
-      provide: APP_GUARD,
-      useClass: RateLimiterGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: RateLimiterGuard,
+    // },
     JwtStrategy,
     SocialGuard,
   ],

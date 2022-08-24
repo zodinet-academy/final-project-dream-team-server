@@ -9,17 +9,11 @@ import { DefaultEntity } from "../../../common/entity";
 export class SocketDeviceEntity
   extends DefaultEntity
   implements ISocketDevicesEntity {
-  @Column({ name: "user_id", type: "uuid" })
+  @Column({ name: "user_id", type: "uuid", unique: true })
   @IsNotEmpty()
   @IsUUID()
   @AutoMap()
   userId: string;
-
-  @Column({ name: "conversation_id", type: "uuid" })
-  @IsNotEmpty()
-  @IsUUID()
-  @AutoMap()
-  conversationId: string;
 
   @Column({ name: "socket_id" })
   @IsNotEmpty()
