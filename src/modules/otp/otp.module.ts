@@ -1,9 +1,10 @@
-import { Module } from "@nestjs/common";
+import { HttpModule, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RateLimiterGuard, RateLimiterModule } from "nestjs-rate-limiter";
+import { SocialGuard } from "../auth/guards/social.guard";
 import { JwtStrategy } from "../auth/strategies";
 import { PhoneOtpModule } from "../phone-otp/phone-otp.module";
 import { UsersRepository } from "../users/users.repository";
@@ -13,6 +14,7 @@ import { OtpService } from "./otp.service";
 @Module({
   imports: [
     PhoneOtpModule,
+    HttpModule,
     RateLimiterModule,
     TypeOrmModule.forFeature([UsersRepository]),
     JwtModule.registerAsync({
@@ -31,6 +33,7 @@ import { OtpService } from "./otp.service";
       useClass: RateLimiterGuard,
     },
     JwtStrategy,
+    SocialGuard,
   ],
   controllers: [OtpControler],
   exports: [OtpService],
