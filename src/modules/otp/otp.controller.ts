@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from "@nestjs/common";
+import { Body, Controller, Post, UseGuards } from "@nestjs/common";
 import {
   ApiInternalServerErrorResponse,
   ApiNotAcceptableResponse,
@@ -9,7 +9,9 @@ import {
 } from "@nestjs/swagger";
 import { RateLimit } from "nestjs-rate-limiter";
 import { ResponseDto } from "../../common/response.dto";
+import { SocialGuard } from "../auth/guards/social.guard";
 import { SendOtpDto, VerifyOtpDto } from "./dto";
+import { CheckUserVerifiedDTO } from "./dto/check-user-verified.dto";
 import { OtpService } from "./otp.service";
 
 @ApiTags("otp")
@@ -31,7 +33,7 @@ export class OtpControler {
   @ApiNotAcceptableResponse({
     description: "Phone number is not in correct form.",
   })
-  async sendOtp(@Body() data: SendOtpDto): Promise<ResponseDto<string>> {
+  sendOtp(@Body() data: SendOtpDto): Promise<ResponseDto<string>> {
     return this.otpService.sendSmsOtp(data.phone);
   }
 
@@ -40,7 +42,7 @@ export class OtpControler {
   @ApiOkResponse({ description: "Verify otp success." })
   @ApiNotAcceptableResponse({ description: "Wrong otp provided." })
   @ApiNotFoundResponse({ description: "Cannot find otp for this phone." })
-  async verifyOtp(@Body() data: VerifyOtpDto) {
+  verifyOtp(@Body() data: VerifyOtpDto) {
     return this.otpService.confirmOtp(data.phone, data.code);
   }
 
@@ -49,11 +51,17 @@ export class OtpControler {
   @ApiOkResponse({ description: "Verify otp success." })
   @ApiNotAcceptableResponse({ description: "Wrong otp provided." })
   @ApiNotFoundResponse({ description: "Cannot find otp for this phone." })
-  async verifyOtpDreamTeam(@Body() data: VerifyOtpDto) {
+  verifyOtpDreamTeam(@Body() data: VerifyOtpDto) {
     return this.otpService.confirmOtpWithSocial(
       data.phone,
       data.code,
       data.email
     );
+  }
+
+  @Post("user-verified")
+  @UseGuards(SocialGuard)
+  checkUserVerified(@Body() data: CheckUserVerifiedDTO) {
+    return this.otpService.checkUserVerified(data.email);
   }
 }
