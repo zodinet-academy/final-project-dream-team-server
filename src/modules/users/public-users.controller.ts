@@ -6,6 +6,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
+import { SocialDTO } from "../auth/dto/social-login.dto";
 
 import { CreateUserDto, VerifyUserByEmailDto, VerifyUserDto } from "./dto";
 import { UsersService } from "./users.service";
@@ -24,8 +25,8 @@ export class PublicUsersController {
   @ApiNotFoundResponse({
     description: "User is existed.",
   })
-  signupUser(@Body() dto: CreateUserDto) {
-    return "";
+  signupUser(@Body() dto: SocialDTO) {
+    return this.usersService.signUp(dto);
   }
 
   @Post("verify-user-by-email")

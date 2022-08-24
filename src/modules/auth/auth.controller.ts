@@ -15,13 +15,13 @@ import { SocialDTO } from "./dto/social-login.dto";
 import { JwtAuthGuard } from "./guards";
 import { SocialGuard } from "./guards/social.guard";
 
-@ApiBearerAuth()
 @ApiTags("auth")
 @Controller("secure/auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post("check-account")
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Check user account existed by phone (user)" })
   @ApiOkResponse({ description: "Otp has been sent." })
   @ApiNotAcceptableResponse({
@@ -35,6 +35,7 @@ export class AuthController {
   }
 
   @Post("otp-login")
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Login with OTP (user)" })
   @ApiOkResponse({ description: "Otp has been sent." })
   @ApiNotAcceptableResponse({
@@ -54,6 +55,7 @@ export class AuthController {
   }
 
   @Post("login-google")
+  @ApiBearerAuth()
   @UseGuards(SocialGuard)
   @ApiOperation({ summary: "Login with Google account (user)" })
   async loginWithSocial(@Body() socialDTO: SocialDTO) {
@@ -64,24 +66,14 @@ export class AuthController {
   @Post("/admin/login")
   @ApiOperation({ summary: "Login with OTP (user)" })
   @ApiOkResponse({ description: "Otp has been sent." })
-  @ApiNotAcceptableResponse({
-    description: "Phone number is not in correct form.",
-  })
-  @ApiNotAcceptableResponse({
-    description: "Cannot find OTP for this phone.",
-  })
-  @ApiNotAcceptableResponse({
-    description: "Invalid code provided.",
-  })
-  @ApiNotFoundResponse({
-    description: "Phone not found.",
-  })
+  @ApiNotAcceptableResponse({ description: "Username or password not match." })
   adminLogin(
     @Body() adminLoginDto: AdminLoginDto
   ): Promise<ResponseDto<string>> {
     return this.authService.adminLogin(adminLoginDto);
   }
   @Get("/profile")
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   getProfile(@Req() req): Promise<ResponseDto<string | any>> {
     return this.authService.getProfileUser(req.user.id);

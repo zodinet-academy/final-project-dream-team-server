@@ -12,7 +12,7 @@ import { DefaultEntity } from "../../../common/entity";
 import { IUserFriendsEntity } from "../interfaces";
 import { UserEntity } from "../../users/entities/user.entity";
 
-@Entity({ name: "user_friends", synchronize: false })
+@Entity({ name: "user_friends", synchronize: true })
 export class UserFriendsEntity
   extends DefaultEntity
   implements IUserFriendsEntity {
@@ -27,12 +27,6 @@ export class UserFriendsEntity
   @IsUUID()
   @AutoMap()
   friendId: string;
-
-  @Column({ type: "varchar", length: 150 })
-  @IsNotEmpty()
-  @IsString()
-  @AutoMap()
-  status: string;
 
   @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
   @AutoMap()

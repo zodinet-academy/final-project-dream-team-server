@@ -1,17 +1,17 @@
 import { Mapper } from "@automapper/core";
-import { Injectable } from "@nestjs/common";
 import { InjectMapper } from "@automapper/nestjs";
+import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
 
 import {
   CHECK_PHONE_GET_OTP,
-  ERROR_UNKNOWN,
-  ERROR_DATA_NOT_FOUND,
   ERROR_CAN_NOT_GET_USER_ALBUM,
   ERROR_CAN_NOT_GET_USER_HOBBIES,
   ERROR_CAN_NOT_UPDATE_USER_PROFILE,
   ERROR_CHANGE_USER_AVATAR,
+  ERROR_DATA_NOT_FOUND,
   ERROR_MISSING_FIELD,
+  ERROR_UNKNOWN,
   ERROR_USER_EXISTED,
   ERROR_USER_NOT_FOUND,
 } from "../../constants/code-response.constant";
@@ -22,29 +22,29 @@ import { UsersRepository } from "./users.repository";
 import { ResponsePublicUserInterface } from "./interfaces";
 import { IUserService } from "./interfaces/user-service.interface";
 
+import { ResponseDto } from "../../common/response.dto";
 import {
   CreateUserDto,
-  VerifyUserDto,
-  UpdateUserDto,
-  DeleteUserDto,
   FriendDto,
+  UpdateUserDto,
   UserProfileDto,
+  VerifyUserDto,
 } from "./dto";
-import { ResponseDto } from "../../common/response.dto";
 
-import { OtpService } from "../otp/otp.service";
 import { MatchingUsersService } from "../matching-users/matching-users.service";
+import { OtpService } from "../otp/otp.service";
 
-import { SocialDTO } from "../auth/dto/social-login.dto";
-import { UserResponeDTO } from "./dto/user-respone.dto";
 import { JwtService } from "@nestjs/jwt";
+import { SocialDTO } from "../auth/dto/social-login.dto";
 import { IJwtPayloadDreamteam } from "../auth/interfaces/jwt-payload.interface";
+import { UserResponeDTO } from "./dto/user-respone.dto";
 
 import { UpdateUserProfileEnum, UserRolesEnum } from "../../constants/enum";
-import { UserImagesService } from "../user-images/user-images.service";
-import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { GetUserHobbiesDto } from "../user-hobbies/dto";
+import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
+import { UserImagesService } from "../user-images/user-images.service";
+import { ChangeFavoriteImageDto, UserImagesDto } from "../user-images/dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -59,19 +59,24 @@ export class UsersService implements IUserService {
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
-  async signUp(dto: SocialDTO) {
-    const { email, name, url } = dto;
+  async signUp(dto: SocialDTO): Promise<ResponseDto<UserResponeDTO>> {
+    const { birthday, email } = dto;
 
     const isExist = await this.usersRepository.findOne({
       where: { email: email },
     });
 
-    if (isExist) return responseData(null, null, ERROR_USER_EXISTED);
-
+    if (isExist)
+      return responseData(
+        this.mapper.map(isExist, UserEntity, UserResponeDTO),
+        ""
+      );
+    const bthdayFormart = birthday.toString();
+    const newDate = bthdayFormart.split("/").reverse().join("/");
     const userCreated: UserEntity = await this.usersRepository.save({
-      email,
-      name,
-      avatar: url,
+      ...dto,
+      birthday: new Date(newDate),
+      avatar: dto.url,
     });
     return responseData(
       this.mapper.map(userCreated, UserEntity, UserResponeDTO),
@@ -93,7 +98,7 @@ export class UsersService implements IUserService {
         email,
         gender,
         name,
-        birthday: newDate,
+        birthday: new Date(newDate),
       });
       const userRes = this.mapper.map(newUser, UserEntity, UserResponeDTO);
       const payload: IJwtPayloadDreamteam = {
@@ -131,10 +136,17 @@ export class UsersService implements IUserService {
     }
   }
 
-  async getAllUser(): Promise<ResponseDto<UserEntity[]>> {
+  async getAllUser(): Promise<ResponseDto<UserResponeDTO[]>> {
     try {
       const users = await this.usersRepository.find();
-      return responseData(users);
+      const res = this.mapper.mapArray(users, UserEntity, UserResponeDTO);
+
+      res.forEach(async (user) => {
+        const avatarUrl = await this.cloudinaryService.getImageUrl(user.avatar);
+        user.avatar = avatarUrl;
+      });
+
+      return responseData(res);
     } catch (error) {
       return responseData([]);
     }
@@ -249,20 +261,26 @@ export class UsersService implements IUserService {
           break;
         case UpdateUserProfileEnum.OTHER:
           {
-            const newImage = await this.changeAvatar(user.avatar, file);
-            console.log(newImage);
-            if (!newImage)
-              responseData(
-                null,
-                "Error change user avatar",
-                ERROR_CHANGE_USER_AVATAR
-              );
+            if (file) {
+              const newImage = await this.changeAvatar(user.avatar, file);
+              if (!newImage)
+                responseData(
+                  null,
+                  "Error change user avatar",
+                  ERROR_CHANGE_USER_AVATAR
+                );
 
-            query.set({
-              avatar: newImage ? newImage : user.avatar,
-              name: dto.name ? dto.name : user.name,
-              birthday: dto.birthday ? dto.birthday : user.birthday,
-            });
+              query.set({
+                avatar: newImage ? newImage : user.avatar,
+                name: dto.name ? dto.name : user.name,
+                birthday: dto.birthday ? dto.birthday : user.birthday,
+              });
+            } else {
+              query.set({
+                name: dto.name ? dto.name : user.name,
+                birthday: dto.birthday ? dto.birthday : user.birthday,
+              });
+            }
           }
           break;
         default:
@@ -273,7 +291,6 @@ export class UsersService implements IUserService {
 
       const { affected } = await query.execute();
 
-      console.log(query.getSql());
       if (affected > 0) return this.getUserProfile(user.id);
     } catch (error) {
       console.log(error);
@@ -426,6 +443,44 @@ export class UsersService implements IUserService {
     if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
 
     const res = await this.userHobbiesServies.deleteUserHobby(userId, hobbyId);
+    return res;
+  }
+
+  async addImages(
+    userId: string,
+    images: Array<Express.Multer.File>
+  ): Promise<ResponseDto<string | UserImagesDto[]>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.addImages(userId, images);
+    if (!res.status) return res;
+
+    const album = await this.userImagesService.getUserAlbum(userId);
+    return responseData(album);
+  }
+
+  async changeImageFavorite(
+    imageId: string,
+    userId: string
+  ): Promise<ResponseDto<string | UserImagesDto>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.changeFavorite(imageId, userId);
+
+    return res;
+  }
+
+  async deleteImage(
+    userId: string,
+    imageId: string
+  ): Promise<ResponseDto<string>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.deleteImage(userId, imageId);
+
     return res;
   }
 }
