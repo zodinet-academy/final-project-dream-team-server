@@ -15,7 +15,7 @@ import { SocialDTO } from "../../auth/dto/social-login.dto";
 import { UserResponeDTO } from "../dto/user-respone.dto";
 
 export interface IUserService {
-  getAllUser(): Promise<ResponseDto<UserEntity[]>>;
+  getAllUser(): Promise<ResponseDto<UserResponeDTO[]>>;
   getPublicById(
     userId: string
   ): Promise<ResponseDto<ResponsePublicUserInterface | null>>;
