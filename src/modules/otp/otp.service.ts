@@ -5,9 +5,11 @@ import { isValidPhoneNumber, parsePhoneNumber } from "libphonenumber-js";
 import { Twilio } from "twilio";
 import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
-import { ERROR_USER_EXISTED } from "../../constants/code-response.constant";
+import {
+  ERROR_DATA_NOT_FOUND,
+  ERROR_USER_NOT_FOUND,
+} from "../../constants/code-response.constant";
 import { OtpStatusEnum, UserRolesEnum } from "../../constants/enum";
-import { SocialDTO } from "../auth/dto/social-login.dto";
 import { IJwtPayloadDreamteam } from "../auth/interfaces/jwt-payload.interface";
 import { PhoneOtpService } from "../phone-otp/phone-otp.service";
 import { UserEntity } from "../users/entities/user.entity";
@@ -48,8 +50,8 @@ export class OtpService implements IOtpService {
     if (!isValidSendOtp)
       return responseData(
         null,
-        null,
-        "NOT_ALLOW_TO_CREATE_OTP"
+        "PLEASE_TRY_AGAIN_AFTER_5_MINUES",
+        "SEND_OTP_ERROR"
       ) as ResponseDto<string>;
 
     if (process.env.NODE_ENV === "local") {
@@ -74,7 +76,7 @@ export class OtpService implements IOtpService {
       console.log(error);
       return responseData(
         null,
-        "Please wait about 10 minutes and try to create a new otp.",
+        "PLEASE_TRY_AGAIN_A_FEW_MINUTES",
         "SEND_OTP_ERROR"
       ) as ResponseDto<string>;
     }
@@ -127,7 +129,7 @@ export class OtpService implements IOtpService {
       if (countTimesWrongOtp + 1 >= timesLimit) {
         return responseData(
           null,
-          "Exceed times wrong otp",
+          "EXCEED_TIMES_WRONG_OTP",
           "EXCEED_TIMES_WRONG_OTP"
         );
       }
@@ -136,7 +138,7 @@ export class OtpService implements IOtpService {
 
       return responseData(
         null,
-        "OTP not valid",
+        "OTP_NOT_VALID",
         "OTP_NOT_VALID"
       ) as ResponseDto<string>;
     }
@@ -161,7 +163,7 @@ export class OtpService implements IOtpService {
         if (countTimesWrongOtp + 1 >= timesLimit) {
           return responseData(
             null,
-            "Exceed times wrong otp",
+            "EXCEED_TIMES_WRONG_OTP",
             "EXCEED_TIMES_WRONG_OTP"
           );
         }
@@ -172,7 +174,7 @@ export class OtpService implements IOtpService {
 
         return responseData(
           null,
-          "OTP not valid",
+          "OTP_NOT_VALID",
           "OTP_NOT_VALID"
         ) as ResponseDto<string>;
       }
@@ -180,7 +182,7 @@ export class OtpService implements IOtpService {
       console.log(error);
       return responseData(
         null,
-        "No OTP found for this phone",
+        "NO_OTP_FOR_THIS_PHONE",
         "NO_OTP_FOR_THIS_PHONE"
       ) as ResponseDto<string>;
     }
@@ -190,13 +192,13 @@ export class OtpService implements IOtpService {
     );
 
     // If DB Have User Return Token
+
     if (isExistWithPhone?.name) {
       const payLoad: IJwtPayloadDreamteam = {
         id: isExistWithPhone.id,
         role: UserRolesEnum.USER,
         phone: isExistWithPhone.phone,
       };
-
       const token = this.jwtService.sign(payLoad);
       return responseData(token, "Verify OTP success");
     }
@@ -205,46 +207,83 @@ export class OtpService implements IOtpService {
       phone: "0" + phone.nationalNumber,
       isVerify: true,
     });
-    return responseData(true, "Verify OTP success");
+    return responseData(null, "Verify OTP success");
   }
-  async confirmOtpDreamTeam(
+  async confirmOtpWithSocial(
     phoneNumber: string,
-    verificationCode: string
+    code: string,
+    email: string
   ): Promise<ResponseDto<string | boolean | null>> {
     const isValid = isValidPhoneNumber(phoneNumber, "VN");
     if (!isValid)
       return responseData(
         null,
-        "Phone not correct form.",
+        "PHONE_NOT_CORRECT_FORM",
         "PHONE_NOT_CORRECT_FORM"
       ) as ResponseDto<string>;
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
-    // if (process.env.NODE_ENV === "local") {
-    //   if (process.env.OTP_DEFAULT === verificationCode)
-    //     return responseData("Verify OTP success") as ResponseDto<string>;
 
-    //   const timesLimit = this.configService.get("TIME_LIMIT");
-    //   const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
-    //     "0" + phone.nationalNumber
-    //   );
+    if (process.env.NODE_ENV === "local") {
+      if (process.env.OTP_DEFAULT === code) {
+        const isExistWithPhone = await this.userExistedByPhone(
+          "0" + phone.nationalNumber
+        );
+        if (isExistWithPhone) {
+          if (isExistWithPhone?.email !== email) {
+            return responseData(
+              null,
+              "THIS_PHONE_NUMBER_IS_EXISTED",
+              "THIS_PHONE_NUMBER_IS_EXISTED"
+            );
+          }
+        }
+        const userExistedByEmail = await this.userExistedByEmail(email);
+        if (!userExistedByEmail) {
+          return responseData(null, null, ERROR_DATA_NOT_FOUND);
+        }
+        const payLoad: IJwtPayloadDreamteam = {
+          id: userExistedByEmail.id,
+          role: UserRolesEnum.USER,
+          phone: userExistedByEmail.phone,
+        };
+        const token = this.jwtService.sign(payLoad);
+        if (isExistWithPhone?.email === email) {
+          return responseData(token, "Verify OTP success");
+        }
 
-    //   if (countTimesWrongOtp + 1 >= timesLimit) {
-    //     return responseData(
-    //       null,
-    //       "Exceed times wrong otp",
-    //       "EXCEED_TIMES_WRONG_OTP"
-    //     );
-    //   }
+        if (!userExistedByEmail?.isVerify) {
+          await this.usersRepository.save({
+            ...userExistedByEmail,
+            phone: "0" + phone.nationalNumber,
+            isVerify: true,
+          });
 
-    //   await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
+          return responseData(token, "Verify OTP success");
+        }
+      }
 
-    //   return responseData(
-    //     null,
-    //     "OTP not valid",
-    //     "OTP_NOT_VALID"
-    //   ) as ResponseDto<string>;
-    // }
+      const timesLimit = this.configService.get("TIME_LIMIT");
+      const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
+        "0" + phone.nationalNumber
+      );
+
+      if (countTimesWrongOtp + 1 >= timesLimit) {
+        return responseData(
+          null,
+          "EXCEED_TIMES_WRONG_OTP",
+          "EXCEED_TIMES_WRONG_OTP"
+        );
+      }
+
+      await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
+
+      return responseData(
+        null,
+        "OTP_NOT_VALID",
+        "OTP_NOT_VALID"
+      ) as ResponseDto<string>;
+    }
     const serviceSid = this.configService.get(
       "TWILIO_VERIFICATION_SERVICE_SID"
     );
@@ -253,7 +292,7 @@ export class OtpService implements IOtpService {
         .services(serviceSid)
         .verificationChecks.create({
           to: phone.number,
-          code: verificationCode,
+          code: code,
         });
 
       if (!result.valid || result.status !== OtpStatusEnum.APPROVED) {
@@ -265,7 +304,7 @@ export class OtpService implements IOtpService {
         if (countTimesWrongOtp + 1 >= timesLimit) {
           return responseData(
             null,
-            "Exceed times wrong otp",
+            "EXCEED_TIMES_WRONG_OTP",
             "EXCEED_TIMES_WRONG_OTP"
           );
         }
@@ -276,7 +315,7 @@ export class OtpService implements IOtpService {
 
         return responseData(
           null,
-          "OTP not valid",
+          "OTP_NOT_VALID",
           "OTP_NOT_VALID"
         ) as ResponseDto<string>;
       }
@@ -284,21 +323,80 @@ export class OtpService implements IOtpService {
       console.log(error);
       return responseData(
         null,
-        "No OTP found for this phone",
+        "NO_OTP_FOR_THIS_PHONE",
         "NO_OTP_FOR_THIS_PHONE"
       ) as ResponseDto<string>;
     }
 
+    const isExistWithPhone = await this.userExistedByPhone(
+      "0" + phone.nationalNumber
+    );
+    if (isExistWithPhone) {
+      if (isExistWithPhone?.email !== email) {
+        return responseData(
+          null,
+          null,
+          "This_Phone_Number_Is_Existed_Please_Sign_In_With_Phone_number"
+        );
+      }
+    }
+
+    // If DB Have User Return Token
+    const userExistedByEmail = await this.userExistedByEmail(email);
+
+    if (!userExistedByEmail) {
+      return responseData(null, null, ERROR_DATA_NOT_FOUND);
+    }
+    const payLoad: IJwtPayloadDreamteam = {
+      id: userExistedByEmail.id,
+      role: UserRolesEnum.USER,
+      phone: userExistedByEmail.phone,
+    };
+    const token = this.jwtService.sign(payLoad);
+    if (isExistWithPhone?.email === email) {
+      return responseData(token, "Verify OTP success");
+    }
+
+    if (!userExistedByEmail?.isVerify) {
+      await this.usersRepository.save({
+        ...userExistedByEmail,
+        phone: "0" + phone.nationalNumber,
+        isVerify: true,
+      });
+
+      return responseData(token, "Verify OTP success");
+    }
+
+    await this.usersRepository.save({
+      phone: "0" + phone.nationalNumber,
+      isVerify: true,
+    });
     return responseData(true, "Verify OTP success");
   }
-  async userExisted(email: string): Promise<UserEntity | undefined> {
-    const userExisted = await this.usersRepository.findOne({ email });
+
+  async userExistedByEmail(email: string): Promise<UserEntity | undefined> {
+    const userExisted = await this.usersRepository.findOne({
+      where: { email },
+    });
     if (!userExisted) return;
     return userExisted;
   }
+
   async userExistedByPhone(phone: string): Promise<UserEntity | undefined> {
-    const userExisted = await this.usersRepository.findOne({ phone });
+    const userExisted = await this.usersRepository.findOne({
+      where: { phone },
+    });
     if (!userExisted) return;
     return userExisted;
+  }
+
+  async checkUserVerified(email: string) {
+    const userVerified = await this.userExistedByEmail(email);
+    if (!userVerified?.isVerify) {
+      return responseData(null, null, ERROR_USER_NOT_FOUND);
+    }
+    const isSendOTP = await this.sendSmsOtp(userVerified.phone);
+    if (!isSendOTP.status) return isSendOTP;
+    return responseData(userVerified.phone, "Send OTP Success");
   }
 }

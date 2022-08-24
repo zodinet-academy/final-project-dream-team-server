@@ -1,6 +1,6 @@
 export enum GenderEnum {
-  MALE = "Nam",
-  FEMALE = "Nữ",
+  MALE = "male",
+  FEMALE = "femail",
   OTHER = "other",
 }
 export enum UserRolesEnum {
@@ -13,9 +13,9 @@ export enum OtpStatusEnum {
   CANCELED = "canceled",
 }
 export enum NotificationEnum {
-  LIKE = "LIKE",
-  MESSAGE = "MESSAGE",
-  MATCH = "MATCH",
+  LIKE = "like",
+  MESSAGE = "message",
+  MATCH = "match",
 }
 export enum SocialEnum {
   FACEBOOK = "facebook",

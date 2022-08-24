@@ -6,7 +6,7 @@ export class UserResponeDTO {
   @AutoMap()
   email: string;
   @AutoMap()
-  avatart: string;
+  avatar: string;
   @AutoMap()
   name: string;
   @AutoMap()

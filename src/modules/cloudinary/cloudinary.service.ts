@@ -36,4 +36,13 @@ export class CloudinaryService implements ICloudinaryService {
 
     return "";
   }
+
+  deleteImage(pulbicId: string): boolean {
+    try {
+      v2.uploader.destroy(pulbicId);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
 }
