@@ -7,4 +7,7 @@ export class UserImagesDto implements IUserImageEntity {
 
   @AutoMap()
   url: string;
+
+  @AutoMap()
+  isFavorite: boolean;
 }

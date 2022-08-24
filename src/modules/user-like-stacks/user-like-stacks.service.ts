@@ -1,20 +1,27 @@
-import { NotificationsService } from "./../notifications/notifications.service";
 import { Injectable } from "@nestjs/common";
+import { Connection } from "typeorm";
 import { responseData } from "../../common/utils";
 import {
   ERROR_UNKNOWN,
   SOMEONE_LIKE_YOU,
 } from "../../constants/code-response.constant";
-import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
-import { UpdateUserLikeStackDto } from "./dto/update-user-like-stack.dto";
-import { UserLikeStacksRepository } from "./user-like-stacks.repository";
 import { NotificationEnum } from "../../constants/enum";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { UserFriendsRepository } from "../user-friends/user-friends.repository";
+import { NotificationsService } from "./../notifications/notifications.service";
+import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
+import { DeleteUserLikeStackDto } from "./dto/delete-user-like-stacks.dto";
+import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
+import { UserLikeStacksRepository } from "./user-like-stacks.repository";
 
 @Injectable()
 export class UserLikeStacksService {
   constructor(
     private readonly userLikeStacksRepository: UserLikeStacksRepository,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly userFriendsRepository: UserFriendsRepository,
+    private readonly connection: Connection,
+    private readonly cloudinaryService: CloudinaryService
   ) {}
   async create(
     fromUserId: string,
@@ -51,37 +58,84 @@ export class UserLikeStacksService {
     }
   }
 
-  async matchFriend() {
-    // const listUserLike = await this.userLikeStacksRepository.find();
-    // if (listUserLike.length > 1) {
-    //   listUserLike.map(async (user) => {
-    //     const result = await this.userLikeStacksRepository.findAndCount({
-    //       where: {
-    //         fromUserId: user.toUserId,
-    //         toUserId: user.fromUserId,
-    //       },
-    //     });
-    //     if (result[1]) {
-    //       arr.push(user);
-    //     }
-    //     console.log(result);
-    //   });
-    // }
+  async matchFriends() {
+    try {
+      const userLikeStacks = await this.userLikeStacksRepository.find();
+      const matchings = [],
+        idUserLikeStacks = [];
+      for (let i = 0; i < userLikeStacks.length - 1; i++) {
+        for (let j = i + 1; j < userLikeStacks.length; j++) {
+          if (
+            userLikeStacks[i].isFriend === false &&
+            userLikeStacks[i]?.fromUserId === userLikeStacks[j]?.toUserId &&
+            userLikeStacks[j]?.fromUserId === userLikeStacks[i]?.toUserId
+          ) {
+            matchings.push({
+              userId: userLikeStacks[i].fromUserId,
+              friendId: userLikeStacks[i].toUserId,
+            });
+            idUserLikeStacks.push(userLikeStacks[i].id, userLikeStacks[j].id);
+          }
+        }
+      }
+      if (matchings && idUserLikeStacks) {
+        try {
+          const queryRunner = this.connection.createQueryRunner();
+          await queryRunner.connect();
+          await queryRunner.startTransaction();
+          try {
+            matchings.map(async (el) => {
+              await queryRunner.manager.save(
+                await this.userFriendsRepository.create(el)
+              );
+            });
+            idUserLikeStacks.map(async (el) => {
+              await queryRunner.manager.update(
+                UserLikeStackEntity,
+                { id: el },
+                {
+                  isFriend: true,
+                }
+              );
+            });
+            await queryRunner.commitTransaction();
+          } catch (error) {
+            await queryRunner.rollbackTransaction();
+          } finally {
+            await queryRunner.release();
+          }
+        } catch (error) {
+          throw new Error(error.message);
+        }
+      }
+      return matchings;
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
   }
 
-  findAll() {
-    return `This action returns all userLikeStacks`;
+  async getMatchingFriends(id: string) {
+    try {
+      const result = await this.userLikeStacksRepository.getMatchingFriends(id);
+      result.map(async (el) => {
+        el.friend.avatar = await this.cloudinaryService.getImageUrl(
+          el.friend.avatar
+        );
+
+        return el;
+      });
+      return responseData(result, "get success");
+    } catch (error) {
+      return responseData(null, error.message, ERROR_UNKNOWN);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} userLikeStack`;
-  }
-
-  update(id: number) {
-    return `This action updates a #${id} userLikeStack`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} userLikeStack`;
+  async remove(body: DeleteUserLikeStackDto) {
+    try {
+      body.ids.length && (await this.userLikeStacksRepository.delete(body.ids));
+      return responseData(null, "Delete success");
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }

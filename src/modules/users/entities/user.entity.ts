@@ -118,4 +118,7 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
 
   @OneToMany(() => UserLikeStackEntity, (entity) => entity.user)
   userLikeStacks: UserLikeStackEntity[];
+
+  @OneToMany(() => UserLikeStackEntity, (entity) => entity.friend)
+  userFriendLikeStacks: UserLikeStackEntity[];
 }

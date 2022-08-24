@@ -137,10 +137,10 @@ export class UserLocationsService implements IUserLocationsService {
         el.avatar = await this.cloudinaryService.getImageUrl(el.avatar);
         if (el.distance >= 1000) {
           el.distance = +(el.distance / 1000).toFixed(1);
-          el.unit = "kilomet";
+          el.unit = "km";
         } else {
           el.distance = +el.distance.toFixed(1);
-          el.unit = "met";
+          el.unit = "m";
         }
         return el;
       });

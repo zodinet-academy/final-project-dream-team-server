@@ -209,7 +209,6 @@ export class OtpService implements IOtpService {
     });
     return responseData(null, "Verify OTP success");
   }
-
   async confirmOtpWithSocial(
     phoneNumber: string,
     code: string,
@@ -239,11 +238,7 @@ export class OtpService implements IOtpService {
             );
           }
         }
-
-        // If User Login With Social
-
         const userExistedByEmail = await this.userExistedByEmail(email);
-
         if (!userExistedByEmail) {
           return responseData(null, null, ERROR_DATA_NOT_FOUND);
         }
@@ -253,14 +248,19 @@ export class OtpService implements IOtpService {
           phone: userExistedByEmail.phone,
         };
         const token = this.jwtService.sign(payLoad);
+        if (isExistWithPhone?.email === email) {
+          return responseData(token, "Verify OTP success");
+        }
+
         if (!userExistedByEmail?.isVerify) {
           await this.usersRepository.save({
             ...userExistedByEmail,
             phone: "0" + phone.nationalNumber,
             isVerify: true,
           });
+
+          return responseData(token, "Verify OTP success");
         }
-        return responseData(token, "Verify OTP success");
       }
 
       const timesLimit = this.configService.get("TIME_LIMIT");
@@ -287,7 +287,6 @@ export class OtpService implements IOtpService {
     const serviceSid = this.configService.get(
       "TWILIO_VERIFICATION_SERVICE_SID"
     );
-
     try {
       const result = await this.twilioClient.verify.v2
         .services(serviceSid)
@@ -382,6 +381,7 @@ export class OtpService implements IOtpService {
     if (!userExisted) return;
     return userExisted;
   }
+
   async userExistedByPhone(phone: string): Promise<UserEntity | undefined> {
     const userExisted = await this.usersRepository.findOne({
       where: { phone },

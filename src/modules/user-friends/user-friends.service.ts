@@ -13,10 +13,14 @@ import {
 } from "./interfaces";
 
 import { ResponseDto } from "../../common/response.dto";
+import { Connection } from "typeorm";
 
 @Injectable()
 export class UserFriendsService implements IUserFriendsService {
-  constructor(private readonly userFriendsRepository: UserFriendsRepository) {}
+  constructor(
+    private readonly userFriendsRepository: UserFriendsRepository,
+    private readonly connection: Connection
+  ) {}
 
   async getUserFriendsByUserId(
     userId: string
@@ -51,6 +55,27 @@ export class UserFriendsService implements IUserFriendsService {
       }
 
       return responseData(null, "No Found Friend", ERROR_DATA_NOT_FOUND);
+    } catch (error) {
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
+    }
+  }
+  async createManyUserFriends(data) {
+    try {
+      const queryRunner = this.connection.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        data.map(async (el) => {
+          await queryRunner.manager.save(
+            await this.userFriendsRepository.create(el)
+          );
+        });
+        await queryRunner.commitTransaction();
+      } catch (error) {
+        await queryRunner.rollbackTransaction();
+      } finally {
+        await queryRunner.release();
+      }
     } catch (error) {
       return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }

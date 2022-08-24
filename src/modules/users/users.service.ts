@@ -44,6 +44,7 @@ import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { GetUserHobbiesDto } from "../user-hobbies/dto";
 import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
 import { UserImagesService } from "../user-images/user-images.service";
+import { ChangeFavoriteImageDto, UserImagesDto } from "../user-images/dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -253,20 +254,26 @@ export class UsersService implements IUserService {
           break;
         case UpdateUserProfileEnum.OTHER:
           {
-            const newImage = await this.changeAvatar(user.avatar, file);
-            console.log(newImage);
-            if (!newImage)
-              responseData(
-                null,
-                "Error change user avatar",
-                ERROR_CHANGE_USER_AVATAR
-              );
+            if (file) {
+              const newImage = await this.changeAvatar(user.avatar, file);
+              if (!newImage)
+                responseData(
+                  null,
+                  "Error change user avatar",
+                  ERROR_CHANGE_USER_AVATAR
+                );
 
-            query.set({
-              avatar: newImage ? newImage : user.avatar,
-              name: dto.name ? dto.name : user.name,
-              birthday: dto.birthday ? dto.birthday : user.birthday,
-            });
+              query.set({
+                avatar: newImage ? newImage : user.avatar,
+                name: dto.name ? dto.name : user.name,
+                birthday: dto.birthday ? dto.birthday : user.birthday,
+              });
+            } else {
+              query.set({
+                name: dto.name ? dto.name : user.name,
+                birthday: dto.birthday ? dto.birthday : user.birthday,
+              });
+            }
           }
           break;
         default:
@@ -277,7 +284,6 @@ export class UsersService implements IUserService {
 
       const { affected } = await query.execute();
 
-      console.log(query.getSql());
       if (affected > 0) return this.getUserProfile(user.id);
     } catch (error) {
       console.log(error);
@@ -430,6 +436,44 @@ export class UsersService implements IUserService {
     if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
 
     const res = await this.userHobbiesServies.deleteUserHobby(userId, hobbyId);
+    return res;
+  }
+
+  async addImages(
+    userId: string,
+    images: Array<Express.Multer.File>
+  ): Promise<ResponseDto<string | UserImagesDto[]>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.addImages(userId, images);
+    if (!res.status) return res;
+
+    const album = await this.userImagesService.getUserAlbum(userId);
+    return responseData(album);
+  }
+
+  async changeImageFavorite(
+    imageId: string,
+    userId: string
+  ): Promise<ResponseDto<string | UserImagesDto>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.changeFavorite(imageId, userId);
+
+    return res;
+  }
+
+  async deleteImage(
+    userId: string,
+    imageId: string
+  ): Promise<ResponseDto<string>> {
+    const user = await this.getUserById(userId);
+    if (!user) return responseData("", "User not found", ERROR_USER_NOT_FOUND);
+
+    const res = await this.userImagesService.deleteImage(userId, imageId);
+
     return res;
   }
 }
