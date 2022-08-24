@@ -7,11 +7,11 @@ import { CreateSettingDto } from "./dto/create-setting.dto";
 import { UpdateSettingDto } from "./dto/update-setting.dto";
 import { SettingsService } from "./settings.service";
 
-@Controller("settings")
+@Controller("secure/settings")
 @ApiTags("settings")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
-@Roles(UserRolesEnum.ADMIN)
+// @Roles(UserRolesEnum.ADMIN)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 

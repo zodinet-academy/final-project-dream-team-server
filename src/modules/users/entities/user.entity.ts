@@ -20,6 +20,8 @@ import {
 import { PurposeSettingEntity } from "./../../purpose-settings/entities/purpose-setting.entity";
 import { IUserEntity } from "./../interfaces/user-entity.interface";
 import { UserLikeStackEntity } from "../../user-like-stacks/entities/user-like-stack.entity";
+import { UserHobbyEntity } from "../../user-hobbies/entities/user-hobbies.entity";
+import { UserImageEntity } from "../../user-images/entities/user-images.entity";
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
 export class UserEntity extends DefaultEntity implements IUserEntity {
   @Column({ type: "varchar", nullable: true })
@@ -121,4 +123,10 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
 
   @OneToMany(() => UserLikeStackEntity, (entity) => entity.friend)
   userFriendLikeStacks: UserLikeStackEntity[];
+
+  @OneToMany(() => UserHobbyEntity, (entity) => entity.user)
+  userHobbies: UserHobbyEntity[];
+
+  @OneToMany(() => UserImageEntity, (entity) => entity.user)
+  userImages: UserImageEntity[];
 }

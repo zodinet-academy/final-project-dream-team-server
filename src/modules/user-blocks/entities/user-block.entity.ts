@@ -7,12 +7,12 @@ import { IUserBlockEntity } from "./../interfaces/user-block-entity.interface";
 
 @Entity({ name: "user_blocks", synchronize: true })
 export class UserBlockEntity extends DefaultEntity implements IUserBlockEntity {
-  @Column({ name: "user_id", type: "varchar", nullable: false })
+  @Column({ name: "user_id", type: "uuid", nullable: false })
   @IsNotEmpty()
   @AutoMap()
   userId: string;
 
-  @Column({ name: "blocked_user_id", type: "varchar", nullable: false })
+  @Column({ name: "blocked_user_id", type: "uuid", nullable: false })
   @IsNotEmpty()
   @IsUUID()
   @AutoMap()
