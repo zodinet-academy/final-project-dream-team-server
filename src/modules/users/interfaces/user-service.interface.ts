@@ -1,17 +1,9 @@
-import { UserEntity } from "../entities/user.entity";
-
 import { ResponseToken } from "../../auth/interfaces/response-token.interface";
 import { ResponsePublicUserInterface } from "./res-public-user.interface";
 
 import { ResponseDto } from "../../../common/response.dto";
-import {
-  DeleteUserDto,
-  FriendDto,
-  UpdateUserDto,
-  UserProfileDto,
-  VerifyUserDto,
-} from "../dto";
 import { SocialDTO } from "../../auth/dto/social-login.dto";
+import { UpdateUserDto, UserProfileDto, VerifyUserDto } from "../dto";
 import { UserResponeDTO } from "../dto/user-respone.dto";
 
 export interface IUserService {
@@ -19,9 +11,6 @@ export interface IUserService {
   getPublicById(
     userId: string
   ): Promise<ResponseDto<ResponsePublicUserInterface | null>>;
-  getUserByPhone(phone: string): Promise<ResponseDto<UserEntity | null>>;
-  getUserByEmail(email: string): Promise<ResponseDto<UserEntity | null>>;
-  getListFriends(id: string): Promise<ResponseDto<FriendDto[]>>;
 
   verifyUser(dto: VerifyUserDto): Promise<ResponseDto<null>>;
   verifyUserByEmail(email: string): Promise<ResponseDto<boolean | null>>;
@@ -35,8 +24,8 @@ export interface IUserService {
     user: UpdateUserDto,
     file: Express.Multer.File
   ): Promise<ResponseDto<string | UserProfileDto>>;
-  deleteUserProfileById(
-    userId: string,
-    user: DeleteUserDto
-  ): Promise<ResponseDto<UserEntity | null>>;
+  // deleteUserProfileById(
+  //   userId: string,
+  //   user: DeleteUserDto
+  // ): Promise<ResponseDto<UserEntity | null>>;
 }

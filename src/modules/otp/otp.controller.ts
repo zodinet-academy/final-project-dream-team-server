@@ -18,12 +18,12 @@ import { OtpService } from "./otp.service";
 @Controller("otp")
 export class OtpControler {
   constructor(private otpService: OtpService) {}
-  // @RateLimit({
-  //   keyPrefix: "send-otp",
-  //   points: 1,
-  //   duration: 10,
-  //   errorMessage: "OTP Cannot Be Created More Than Once In 10 Minute",
-  // })
+  @RateLimit({
+    keyPrefix: "send-otp",
+    points: 1,
+    duration: 5 * 60,
+    errorMessage: "OTP Cannot Be Created More Than Once In 10 Minute",
+  })
   @Post("send-otp")
   @ApiOperation({ summary: "Send OTP code (user)" })
   @ApiOkResponse({ description: "Otp has been sent." })

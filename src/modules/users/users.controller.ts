@@ -3,8 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Post,
   Put,
@@ -26,7 +24,6 @@ import {
 } from "@nestjs/swagger";
 import { imageFileFilter } from "../../common/helper/imageFilter.helper";
 import { ResponseDto } from "../../common/response.dto";
-import { responseData } from "../../common/utils";
 import { UserRolesEnum } from "../../constants/enum";
 import { GetUser, Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
@@ -35,44 +32,18 @@ import {
   DeleteUserHobbiesDto,
 } from "../user-hobbies/dto";
 import { ChangeFavoriteImageDto, UserImagesDto } from "../user-images/dto";
-import { CreateUserDto, PhoneUserDto, UpdateUserDto } from "./dto";
+import { UpdateUserDto } from "./dto";
 import { UsersService } from "./users.service";
 
-@Controller("users")
+@Controller("secure/users")
 @ApiTags("users")
-//@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRolesEnum.USER)
 @ApiBearerAuth()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post("phone")
-  @ApiOperation({ summary: "Get user profile by phone (user)" })
-  @ApiOkResponse({ description: "Matching user." })
-  @ApiNotAcceptableResponse({
-    description: "Phone number is not in correct form.",
-  })
-  @ApiNotFoundResponse({
-    description: "Phone not found.",
-  })
-  getUserByPhone(@Body() phone: PhoneUserDto) {
-    return this.usersService.getUserByPhone(phone.phone);
-  }
-
-  @Post("email")
-  @ApiOperation({ summary: "Get user profile by email (user)" })
-  @ApiOkResponse({ description: "Matching user." })
-  @ApiNotAcceptableResponse({
-    description: "Email is not in correct form.",
-  })
-  @ApiNotFoundResponse({
-    description: "Email not found.",
-  })
-  getUserByEmail(@Body() email: string) {
-    return this.usersService.getUserByEmail(email);
-  }
-
-  @Put("secure/update")
-  @UseGuards(JwtAuthGuard)
+  @Put("update")
   @ApiOperation({ summary: "Update user profile by user-id (user)" })
   @ApiOkResponse({ description: "User has been updated." })
   @ApiNotAcceptableResponse({
@@ -118,14 +89,12 @@ export class UsersController {
     return this.usersService.updateUserProfileById(userId, dto, file);
   }
 
-  @Get("secure/user-profile")
-  @UseGuards(JwtAuthGuard)
+  @Get("user-profile")
   getUserProfile(@GetUser("id") userId: string) {
     return this.usersService.getUserProfile(userId);
   }
 
-  @Post("secure/hobbies")
-  @UseGuards(JwtAuthGuard)
+  @Post("hobbies")
   createUserHobby(
     @GetUser("id") userId: string,
     @Body() dto: CreateUserHobbiesDto
@@ -133,8 +102,7 @@ export class UsersController {
     return this.usersService.createUserHobby(userId, dto.name);
   }
 
-  @Delete("secure/hobbies")
-  @UseGuards(JwtAuthGuard)
+  @Delete("hobbies")
   deleteUserHobby(
     @GetUser("id") userId: string,
     @Body() dto: DeleteUserHobbiesDto
@@ -142,36 +110,7 @@ export class UsersController {
     return this.usersService.deleteUserHobby(userId, dto.id);
   }
 
-  // @Delete(":userId")
-  // @ApiOperation({ summary: "Delete user data (admin)" })
-  // @ApiOkResponse({ description: "User has been deleted." })
-  // @ApiNotAcceptableResponse({
-  //   description: "Request is not in correct form.",
-  // })
-  // @ApiNotFoundResponse({
-  //   description: "User id not found.",
-  // })
-  // deleteUserProfileById(
-  //   @Param("userId") userId: string,
-  //   @Body() dto: DeleteUserDto
-  // ) {
-  //   return this.usersService.deleteUserProfileById(userId, dto);
-  // }
-
-  @Get("friends")
-  @ApiOperation({ summary: "Get friends list (user)" })
-  @ApiOkResponse({ description: "Matching friends list." })
-  getListFriends(@GetUser("id") userId: string) {
-    return this.usersService.getListFriends(userId);
-  }
-
-  @Post("update-dream-team")
-  async updateUserAfterVerifyPhone(@Body() data: CreateUserDto) {
-    return await this.usersService.updateUserAfterVerifyOTP(data);
-  }
-
-  @Post("secure/up-images")
-  @UseGuards(JwtAuthGuard)
+  @Post("upload-images")
   @ApiOperation({ summary: "Upload images for user" })
   @ApiOkResponse({ description: "Save images successfully" })
   @ApiConsumes("multipart/form-data")
@@ -202,8 +141,7 @@ export class UsersController {
     return this.usersService.addImages(userId, images);
   }
 
-  @Post("secure/change-image-favorite")
-  @UseGuards(JwtAuthGuard)
+  @Post("change-image-favorite")
   @ApiOperation({ summary: "Change image favorite" })
   @ApiOkResponse({ description: "Change image favorite success" })
   changeImageFavorie(
@@ -213,8 +151,7 @@ export class UsersController {
     return this.usersService.changeImageFavorite(dto.id, userId);
   }
 
-  @Delete("secure/delete-image")
-  @UseGuards(JwtAuthGuard)
+  @Delete("delete-image")
   @ApiOperation({ summary: "Change image favorite" })
   @ApiOkResponse({ description: "Change image favorite success" })
   deleteImage(
@@ -224,17 +161,8 @@ export class UsersController {
     return this.usersService.deleteImage(userId, dto.id);
   }
 
-  @Get("secure/friend-profile/:id")
-  @UseGuards(JwtAuthGuard)
+  @Get("friend-profile/:id")
   getFriendProfile(@Param("id") id: string) {
     return this.usersService.getUserProfile(id);
-  }
-
-  @Get("secure/get-all")
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @ApiBearerAuth()
-  @Roles(UserRolesEnum.ADMIN)
-  getAllBasicUses() {
-    return this.usersService.getAllUser();
   }
 }

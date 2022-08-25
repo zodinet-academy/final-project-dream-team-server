@@ -70,4 +70,9 @@ export class PublicUsersController {
   getPublicById(@Param("userId") userId: string) {
     return this.usersService.getPublicById(userId);
   }
+
+  @Post("update-profile")
+  async updateUserAfterVerifyPhone(@Body() data: CreateUserDto) {
+    return await this.usersService.updateUserAfterVerifyOTP(data);
+  }
 }
