@@ -43,6 +43,17 @@ export class OtpService implements IOtpService {
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
+    const isUserBlocked = await this.userExistedByPhone(
+      "0" + phone.nationalNumber
+    );
+    if (isUserBlocked && isUserBlocked.isBlock) {
+      return responseData(
+        null,
+        "USER_WAS_BLOCKED",
+        "USER_WAS_BLOCKED"
+      ) as ResponseDto<string>;
+    }
+
     const isValidSendOtp = await this.phoneOtpService.isValidToSendOTP(
       "0" + phone.nationalNumber
     );
@@ -108,17 +119,21 @@ export class OtpService implements IOtpService {
             id: isExistWithPhone.id,
             role: UserRolesEnum.USER,
             phone: isExistWithPhone.phone,
+            isBlock: isExistWithPhone.isBlock,
           };
 
           const token = this.jwtService.sign(payLoad);
           return responseData(token, "Verify OTP success");
+        }
+        if (isExistWithPhone && isExistWithPhone.isVerify) {
+          return responseData(null, "Verify OTP success");
         }
 
         await this.usersRepository.save({
           phone: "0" + phone.nationalNumber,
           isVerify: true,
         });
-        return responseData(null, "Verify OTP success") as ResponseDto<string>;
+        return responseData(null, "Verify OTP success");
       }
 
       const timesLimit = this.configService.get("TIME_LIMIT");
@@ -198,6 +213,7 @@ export class OtpService implements IOtpService {
         id: isExistWithPhone.id,
         role: UserRolesEnum.USER,
         phone: isExistWithPhone.phone,
+        isBlock: isExistWithPhone.isBlock,
       };
       const token = this.jwtService.sign(payLoad);
       return responseData(token, "Verify OTP success");
@@ -246,6 +262,7 @@ export class OtpService implements IOtpService {
           id: userExistedByEmail.id,
           role: UserRolesEnum.USER,
           phone: userExistedByEmail.phone,
+          isBlock: userExistedByEmail.isBlock,
         };
         const token = this.jwtService.sign(payLoad);
         if (isExistWithPhone?.email === email) {
@@ -351,6 +368,7 @@ export class OtpService implements IOtpService {
       id: userExistedByEmail.id,
       role: UserRolesEnum.USER,
       phone: userExistedByEmail.phone,
+      isBlock: userExistedByEmail.isBlock,
     };
     const token = this.jwtService.sign(payLoad);
     if (isExistWithPhone?.email === email) {

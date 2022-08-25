@@ -25,7 +25,6 @@ import { IUserService } from "./interfaces/user-service.interface";
 import { ResponseDto } from "../../common/response.dto";
 import {
   CreateUserDto,
-  FriendDto,
   UpdateUserDto,
   UserProfileDto,
   VerifyUserDto,
@@ -43,8 +42,8 @@ import { UpdateUserProfileEnum, UserRolesEnum } from "../../constants/enum";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { GetUserHobbiesDto } from "../user-hobbies/dto";
 import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
+import { UserImagesDto } from "../user-images/dto";
 import { UserImagesService } from "../user-images/user-images.service";
-import { ChangeFavoriteImageDto, UserImagesDto } from "../user-images/dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -105,6 +104,7 @@ export class UsersService implements IUserService {
         id: newUser.id,
         phone: newUser.phone,
         role: UserRolesEnum.USER,
+        isBlock: false,
       };
       const token = this.jwtService.sign(payload);
       const respone = {
@@ -449,5 +449,15 @@ export class UsersService implements IUserService {
     const res = await this.userImagesService.deleteImage(userId, imageId);
 
     return res;
+  }
+
+  async checkUserIsBlock(id: string): Promise<boolean | ResponseDto<string>> {
+    try {
+      const isBlocked = await this.usersRepository.findOne(id);
+      return isBlocked.isBlock;
+    } catch (error) {
+      console.log(error);
+      return responseData(null, ERROR_UNKNOWN, ERROR_UNKNOWN);
+    }
   }
 }

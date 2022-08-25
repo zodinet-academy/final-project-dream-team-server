@@ -1,14 +1,14 @@
-import { JwtStrategy } from "./strategies/jwt.strategy";
-import { OtpModule } from "./../otp/otp.module";
-import { Module } from "@nestjs/common";
-import { UsersModule } from "../users/users.module";
-import { AuthController } from "./auth.controller";
-import { AuthService } from "./auth.service";
+import { HttpModule, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { AdminsModule } from "../admins/admins.module";
+import { UsersModule } from "../users/users.module";
+import { OtpModule } from "./../otp/otp.module";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+
 import { SocialGuard } from "./guards/social.guard";
-import { HttpModule } from "@nestjs/common";
+import { JwtStrategy } from "./strategies/jwt.strategy";
 
 @Module({
   imports: [

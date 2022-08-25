@@ -21,8 +21,8 @@ export class OtpControler {
   @RateLimit({
     keyPrefix: "send-otp",
     points: 1,
-    duration: 5 * 60,
-    errorMessage: "OTP Cannot Be Created More Than Once In 10 Minute",
+    duration: 1, //5 * 60,
+    errorMessage: "OTP_CANNOT_BE_CREATED_MORE_THAN_ONCE_IN_5_MINUTES",
   })
   @Post("send-otp")
   @ApiOperation({ summary: "Send OTP code (user)" })
