@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { UserRolesEnum } from "../../constants/enum";
@@ -16,9 +16,13 @@ export class AdminUsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get("get-all")
-  @ApiBearerAuth()
   getAllBasicUses() {
     return this.usersService.getAllUser();
+  }
+
+  @Get("user-profile/:id")
+  getUserProfile(@Param("id") id: string) {
+    return this.usersService.getUserProfile(id);
   }
 
   // ------- Khong duoc xoa, nho lam -----------
