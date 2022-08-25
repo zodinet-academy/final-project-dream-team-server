@@ -1,10 +1,10 @@
 import { AutoMap } from "@automapper/classes";
-import { IsNotEmpty, IsString, IsUUID } from "class-validator";
+import { IsNotEmpty, IsUUID } from "class-validator";
 import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   UpdateDateColumn,
 } from "typeorm";
 
@@ -32,17 +32,17 @@ export class UserFriendsEntity
   @AutoMap()
   updatedAt: Date;
 
-  @OneToOne(() => UserEntity, (user) => user.id)
+  @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn({
     name: "friend_id",
     referencedColumnName: "id",
   })
-  infoFriend: UserEntity;
+  friend: UserEntity;
 
-  @OneToOne(() => UserEntity, (user) => user.id)
+  @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn({
     name: "user_id",
     referencedColumnName: "id",
   })
-  infoUser: UserEntity;
+  user: UserEntity;
 }
