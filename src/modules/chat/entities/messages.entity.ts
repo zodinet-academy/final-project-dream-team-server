@@ -5,6 +5,7 @@ import { IsNotEmpty, IsString, IsUrl, IsUUID } from "class-validator";
 import { IMessageEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 import { ConversationEntity } from "./conversations.entity";
+import { UserEntity } from "./../../users/entities/user.entity";
 
 @Entity({ name: "messages", synchronize: true })
 export class MessageEntity extends DefaultEntity implements IMessageEntity {
@@ -31,6 +32,13 @@ export class MessageEntity extends DefaultEntity implements IMessageEntity {
   @IsUrl()
   @AutoMap()
   image: string;
+
+  @ManyToOne(() => UserEntity, (user) => user.id)
+  @JoinColumn({
+    name: "sender_id",
+    referencedColumnName: "id",
+  })
+  user: UserEntity;
 
   @ManyToOne(() => ConversationEntity, (conversation) => conversation.messages)
   @JoinColumn({

@@ -1,6 +1,6 @@
 import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty, IsUUID } from "class-validator";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { IConversationsEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 import { UserEntity } from "../../users/entities/user.entity";
@@ -22,19 +22,19 @@ export class ConversationEntity
   @AutoMap()
   friendId: string;
 
-  @OneToOne(() => UserEntity, (user) => user.id)
+  @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn({
     name: "friend_id",
     referencedColumnName: "id",
   })
-  infoFriend: UserEntity;
+  friend: UserEntity;
 
-  @OneToOne(() => UserEntity, (user) => user.id)
+  @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn({
     name: "user_id",
     referencedColumnName: "id",
   })
-  userFriend: UserEntity;
+  user: UserEntity;
 
   @OneToMany(() => MessageEntity, (messages) => messages.conversation)
   messages: MessageEntity[];
