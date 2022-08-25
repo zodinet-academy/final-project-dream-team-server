@@ -104,6 +104,7 @@ export class UsersService implements IUserService {
         id: newUser.id,
         phone: newUser.phone,
         role: UserRolesEnum.USER,
+        isBlock: false,
       };
       const token = this.jwtService.sign(payload);
       const respone = {
@@ -448,6 +449,16 @@ export class UsersService implements IUserService {
     const res = await this.userImagesService.deleteImage(userId, imageId);
 
     return res;
+  }
+
+  async checkUserIsBlock(id: string): Promise<boolean | ResponseDto<string>> {
+    try {
+      const isBlocked = await this.usersRepository.findOne(id);
+      return isBlocked.isBlock;
+    } catch (error) {
+      console.log(error);
+      return responseData(null, ERROR_UNKNOWN, ERROR_UNKNOWN);
+    }
   }
 
   async getFriendProfile(

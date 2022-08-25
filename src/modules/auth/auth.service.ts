@@ -110,6 +110,7 @@ export class AuthService implements IAuthService {
         id: findData.id,
         role: UserRolesEnum.ADMIN,
         phone: this.configService.get("ADMIN_PHONE"),
+        isBlock: false,
       };
 
       const token = this.jwtService.sign(payLoad);
