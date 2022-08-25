@@ -8,7 +8,7 @@ import { UserFriendsService } from "./user-friends.service";
 @Module({
   imports: [TypeOrmModule.forFeature([UserFriendsRepository])],
   controllers: [UserFriendsController],
-  providers: [UserFriendsService, UserFriendsRepository],
-  exports: [UserFriendsService, UserFriendsRepository],
+  providers: [UserFriendsService],
+  exports: [UserFriendsService],
 })
 export class UserFriendsModule {}

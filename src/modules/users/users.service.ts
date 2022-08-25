@@ -183,18 +183,6 @@ export class UsersService implements IUserService {
     }
   }
 
-  async getUserByEmail(email: string): Promise<ResponseDto<UserEntity>> {
-    try {
-      const user = await this.usersRepository.findOne({
-        where: { email: email },
-      });
-      if (!user) return responseData(null, null, "ERROR_USER_NOT_FOUND");
-      return responseData(user, null);
-    } catch (error) {
-      return error;
-    }
-  }
-
   async updateUserProfileById(
     userId: string,
     dto: UpdateUserDto,
@@ -302,29 +290,9 @@ export class UsersService implements IUserService {
     }
   }
 
-  async deleteUserProfileById(): Promise<ResponseDto<UserEntity>> {
-    return null;
-  }
-
-  async getListFriends(id: string): Promise<ResponseDto<FriendDto[]>> {
-    try {
-      const listFriendsId = await this.matchingUsersService.getListFriendsId(
-        id
-      );
-
-      const listUserEntities = await this.usersRepository.getListFriends(
-        listFriendsId
-      );
-
-      return responseData(
-        this.mapper.mapArray(listUserEntities, UserEntity, FriendDto),
-        ""
-      );
-    } catch (error) {
-      console.log(error);
-      return responseData(null, null, "ERROR_UNKNOWN");
-    }
-  }
+  // async deleteUserProfileById(): Promise<ResponseDto<UserEntity>> {
+  //   return null;
+  // }
 
   async verifyUserByEmail(email: string) {
     try {
@@ -374,7 +342,6 @@ export class UsersService implements IUserService {
 
     return userProfile;
   }
-
   async getUserProfile(
     userId: string
   ): Promise<ResponseDto<UserProfileDto | string>> {
