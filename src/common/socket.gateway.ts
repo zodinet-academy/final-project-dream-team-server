@@ -1,5 +1,4 @@
 import {
-  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -9,21 +8,27 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
-import { IChatGateway } from "./interfaces";
-import { responseData } from "../../common/utils";
-import { ERROR_UNKNOWN } from "../../constants/code-response.constant";
+import { responseData } from "./utils";
+import { NotificationEnum } from "../constants/enum";
+import { IChatGateway } from "../modules/chat/interfaces";
+import {
+  SOMEONE_LIKE_YOU,
+  ERROR_INTERNAL_SERVER,
+} from "../constants/code-response.constant";
 
-import { SendMessageDto } from "./dto";
-import { ResponseDto } from "../../common/response.dto";
+import { ResponseDto } from "./response.dto";
+import { SendMessageDto } from "../modules/chat/dto";
+import { CreateNotificationDto } from "../modules/notifications/dto";
 
-import { ConversationEntity } from "./entities/conversations.entity";
-import { SocketDeviceEntity } from "./entities/socket-devices.entity";
+import { ConversationEntity } from "../modules/chat/entities/conversations.entity";
+import { SocketDeviceEntity } from "../modules/chat/entities/socket-devices.entity";
 
-import { ChatService } from "./chat.service";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { ChatService } from "../modules/chat/chat.service";
+import { CloudinaryService } from "../modules/cloudinary/cloudinary.service";
+import { NotificationsService } from "./../modules/notifications/notifications.service";
 
 @WebSocketGateway(3006, { cors: true })
-export class ChatGateway
+export class SocketGateway
   implements
     OnGatewayInit,
     OnGatewayConnection,
@@ -32,7 +37,8 @@ export class ChatGateway
   @WebSocketServer() server: Server;
   constructor(
     private readonly chatService: ChatService,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly notificationService: NotificationsService
   ) {}
 
   afterInit(): void {
@@ -50,7 +56,7 @@ export class ChatGateway
 
       return device;
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }
   }
 
@@ -66,7 +72,7 @@ export class ChatGateway
 
       return deleteSocketDevice;
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }
   }
 
@@ -74,9 +80,7 @@ export class ChatGateway
   @SubscribeMessage("send-message")
   async messages(client: Socket, payload: SendMessageDto) {
     try {
-      const messageEntity: SendMessageDto = {
-        ...payload,
-      };
+      const messageEntity = payload;
 
       if (!payload.conversationId) {
         const conversation = await this.createConversation(
@@ -95,25 +99,48 @@ export class ChatGateway
           payload.friendId
         );
 
-        if (message.status && device.status) {
-          const image = await this.cloudinaryService.getImageUrl(
-            message.data.image
-          );
-          const messageReceived = {
-            content: messageEntity.content ?? "",
-            image: image ?? "",
-            senderId: messageEntity.senderId,
-          };
+        if (message.status) {
+          if (message.data.image) {
+            const image = await this.cloudinaryService.getImageUrl(
+              message.data.image
+            );
+
+            message.data.image = image;
+          }
 
           const emit = this.server;
-          emit.to(client.id).emit("message-received", messageReceived);
-          emit
-            .to(device.data.socketId)
-            .emit("message-received", messageReceived);
+          emit.to(client.id).emit("message-received", message.data);
+
+          if (device.status) {
+            emit
+              .to(device.data.socketId)
+              .emit("message-received", message.data);
+          }
         }
       }
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
+    }
+  }
+
+  @SubscribeMessage("send-notification")
+  async notifications(client: Socket, payload: string) {
+    try {
+      const device = await this.chatService.getSocketDeviceByUserId(payload);
+      const notification = await this.notificationService.create({
+        type: NotificationEnum.LIKE,
+        message: SOMEONE_LIKE_YOU,
+        receiverId: payload,
+      });
+
+      if (device.status && notification.status) {
+        const emit = this.server;
+        emit
+          .to(device.data.socketId)
+          .emit("notification-received", notification.data);
+      }
+    } catch (error) {
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }
   }
 
@@ -143,7 +170,7 @@ export class ChatGateway
 
       return conversation;
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }
   }
 
@@ -162,7 +189,7 @@ export class ChatGateway
 
       return device;
     } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }
   }
 }

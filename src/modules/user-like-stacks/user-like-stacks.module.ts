@@ -1,17 +1,19 @@
-import { CloudinaryModule } from "./../cloudinary/cloudinary.module";
-import { NotificationsModule } from "./../notifications/notifications.module";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { Module } from "@nestjs/common";
-import { UserLikeStacksService } from "./user-like-stacks.service";
-import { UserLikeStacksController } from "./user-like-stacks.controller";
+import { TypeOrmModule } from "@nestjs/typeorm";
+
 import { UserLikeStacksRepository } from "./user-like-stacks.repository";
-import { UserFriendsModule } from "../user-friends/user-friends.module";
 import { UserFriendsRepository } from "../user-friends/user-friends.repository";
+
+import { CloudinaryModule } from "./../cloudinary/cloudinary.module";
+import { UserFriendsModule } from "../user-friends/user-friends.module";
+
+import { UserLikeStacksController } from "./user-like-stacks.controller";
+
+import { UserLikeStacksService } from "./user-like-stacks.service";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserLikeStacksRepository, UserFriendsRepository]),
-    NotificationsModule,
     UserFriendsModule,
     CloudinaryModule,
   ],

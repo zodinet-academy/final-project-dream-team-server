@@ -7,7 +7,6 @@ import {
   SocketDeviceRepository,
 } from "./chat.repository";
 
-import { ChatGateway } from "./chat.gateway";
 import { ChatService } from "./chat.service";
 import { ChatController } from "./chat.controller";
 import { CloudinaryModule } from "../cloudinary/cloudinary.module";
@@ -22,7 +21,7 @@ import { CloudinaryModule } from "../cloudinary/cloudinary.module";
     CloudinaryModule,
   ],
   controllers: [ChatController],
-  providers: [ChatGateway, ChatService],
+  providers: [ChatService],
   exports: [ChatService],
 })
 export class ChatModule {}
