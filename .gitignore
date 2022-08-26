@@ -1,9 +1,8 @@
 # compiled output
 /dist
 /node_modules
-.env
 .env.local
-# ormconfig-local.json
+ormconfig-local.json
 # ormconfig.json
 
 # Logs

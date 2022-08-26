@@ -1,5 +1,6 @@
-import { User } from "../entities/user.entity";
+import { CommonRepository } from "../../../common/repository";
+import { UserEntity } from "../entities/user.entity";
 
-export interface IUserRepository {
-  getUserByFullName(fullName: string): Promise<User>;
+export interface IUserRepository extends CommonRepository<UserEntity> {
+  getUserByFullName(fullName: string): Promise<UserEntity>;
 }

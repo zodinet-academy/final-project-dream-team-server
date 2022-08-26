@@ -1,6 +1,6 @@
+import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty } from "class-validator";
 import { BaseEntity, CreateDateColumn, PrimaryGeneratedColumn } from "typeorm";
-import { AutoMap } from "@automapper/classes";
 
 export abstract class DefaultEntity extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -9,5 +9,6 @@ export abstract class DefaultEntity extends BaseEntity {
   id: string;
 
   @CreateDateColumn({ name: "created_at", type: "timestamp" })
+  @AutoMap()
   createdAt: Date;
 }
