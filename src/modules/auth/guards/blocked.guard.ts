@@ -1,10 +1,7 @@
-import { HttpService } from "@nestjs/axios";
-import { ConfigService } from "@nestjs/config";
-import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
-import { SocialEnum } from "../../../constants/enum";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { IJwtPayloadDreamteam } from "../interfaces/jwt-payload.interface";
 import { UsersService } from "../../users/users.service";
+import { IJwtPayloadDreamteam } from "../interfaces/jwt-payload.interface";
 
 @Injectable()
 export class BlockedGuard implements CanActivate {
