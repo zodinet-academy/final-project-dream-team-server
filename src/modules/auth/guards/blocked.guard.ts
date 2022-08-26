@@ -18,7 +18,7 @@ export class BlockedGuard implements CanActivate {
     const splitBearer = request.rawHeaders[9].split("Bearer ");
     const decodedJwtAccessToken = this.jwtService.decode(splitBearer[1]);
     const praseToken = decodedJwtAccessToken as IJwtPayloadDreamteam;
-    const isBlock = await this.userServices.checkUserIsBlock(praseToken.id);
+    const isBlock = await this.userServices.checkUserIsBlock(praseToken?.id);
     if (!isBlock) return true;
     return false;
   }
