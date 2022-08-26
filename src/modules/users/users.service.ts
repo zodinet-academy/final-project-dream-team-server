@@ -25,7 +25,6 @@ import { IUserService } from "./interfaces/user-service.interface";
 import { ResponseDto } from "../../common/response.dto";
 import {
   CreateUserDto,
-  FriendDto,
   UpdateUserDto,
   UserProfileDto,
   VerifyUserDto,
@@ -43,8 +42,8 @@ import { UpdateUserProfileEnum, UserRolesEnum } from "../../constants/enum";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { GetUserHobbiesDto } from "../user-hobbies/dto";
 import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
+import { UserImagesDto } from "../user-images/dto";
 import { UserImagesService } from "../user-images/user-images.service";
-import { ChangeFavoriteImageDto, UserImagesDto } from "../user-images/dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -105,6 +104,7 @@ export class UsersService implements IUserService {
         id: newUser.id,
         phone: newUser.phone,
         role: UserRolesEnum.USER,
+        isBlock: false,
       };
       const token = this.jwtService.sign(payload);
       const respone = {
@@ -449,5 +449,50 @@ export class UsersService implements IUserService {
     const res = await this.userImagesService.deleteImage(userId, imageId);
 
     return res;
+  }
+
+  async checkUserIsBlock(id: string): Promise<boolean | ResponseDto<string>> {
+    try {
+      const isBlocked = await this.usersRepository.findOne(id);
+      return isBlocked.isBlock;
+    } catch (error) {
+      console.log(error);
+      return responseData(null, ERROR_UNKNOWN, ERROR_UNKNOWN);
+    }
+  }
+
+  async getFriendProfile(
+    id: string
+  ): Promise<ResponseDto<UserProfileDto | string>> {
+    const user = await this.getUserById(id);
+
+    if (!user)
+      return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
+
+    const urlAvatar = await this.cloudinaryService.getImageUrl(user.avatar);
+
+    user.avatar = urlAvatar;
+
+    const album = await this.userImagesService.getUserAlbum(user.id, true);
+    if (!album)
+      responseData(
+        null,
+        "Can not get user album",
+        ERROR_CAN_NOT_GET_USER_ALBUM
+      );
+
+    user.album = album;
+
+    const hobbies = await this.userHobbiesServies.getUserHobbies(user.id);
+    if (!hobbies)
+      responseData(
+        null,
+        "Can not get user hobbies",
+        ERROR_CAN_NOT_GET_USER_HOBBIES
+      );
+
+    user.hobbies = hobbies;
+
+    return responseData(user);
   }
 }

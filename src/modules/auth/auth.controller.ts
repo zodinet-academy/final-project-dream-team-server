@@ -10,6 +10,7 @@ import { ResponseDto } from "../../common/response.dto";
 import { AuthService } from "./auth.service";
 import { AdminLoginDto } from "./dto/admin-login.dto";
 import { JwtAuthGuard } from "./guards";
+import { BlockedGuard } from "./guards/blocked.guard";
 
 @ApiTags("auth")
 @Controller("secure/auth")
@@ -28,6 +29,7 @@ export class AuthController {
   @Get("/profile")
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @UseGuards(BlockedGuard)
   getProfile(@Req() req): Promise<ResponseDto<string | any>> {
     return this.authService.getProfileUser(req.user.id);
   }
