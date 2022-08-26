@@ -10,6 +10,7 @@ import {
   ERROR_CAN_NOT_UPDATE_USER_PROFILE,
   ERROR_CHANGE_USER_AVATAR,
   ERROR_DATA_NOT_FOUND,
+  ERROR_EMAIL_CONFLICT,
   ERROR_MISSING_FIELD,
   ERROR_UNKNOWN,
   ERROR_USER_EXISTED,
@@ -89,7 +90,16 @@ export class UsersService implements IUserService {
       const userFound = await this.usersRepository.findOne({
         where: { phone: data.phone },
       });
-      if (!userFound) return responseData(null, ERROR_DATA_NOT_FOUND);
+      if (!userFound) {
+        return responseData(
+          null,
+          "ERROR_USER_NOT_EXIST",
+          "ERROR_USER_NOT_EXIST"
+        );
+      }
+      if (userFound && userFound.email === data.email) {
+        return responseData(null, ERROR_EMAIL_CONFLICT, ERROR_EMAIL_CONFLICT);
+      }
       const bthdayFormart = birthday.toString();
       const newDate = bthdayFormart.split("/").reverse().join("/");
       const newUser = await this.usersRepository.save({
