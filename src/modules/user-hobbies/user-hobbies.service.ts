@@ -102,4 +102,26 @@ export class UserHobbiesService implements IUserHobbiesService {
       return responseData("", "error_unknown", ERROR_UNKNOWN);
     }
   }
+
+  async deleteUserHobbies(userId: string): Promise<ResponseDto<string>> {
+    try {
+      const hobbies = await this.userHobbiesRepository.find({ userId: userId });
+      if (!hobbies)
+        return responseData(
+          null,
+          "Can not get user hobbies",
+          ERROR_CAN_NOT_GET_USER_HOBBIES
+        );
+
+      for (let i = 0; i < hobbies.length; i++) {
+        await this.userHobbiesRepository.delete({
+          id: hobbies[i].id,
+        });
+      }
+
+      return responseData(null, "Delete user hobbies success.");
+    } catch (error) {
+      return responseData("", "Can not delete user hobbies", ERROR_UNKNOWN);
+    }
+  }
 }
