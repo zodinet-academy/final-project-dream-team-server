@@ -12,13 +12,15 @@ import {
   IUserFriendsService,
 } from "./interfaces";
 
-import { ResponseDto } from "../../common/response.dto";
 import { Connection } from "typeorm";
+import { ResponseDto } from "../../common/response.dto";
+import { CloudinaryService } from "./../cloudinary/cloudinary.service";
 
 @Injectable()
 export class UserFriendsService implements IUserFriendsService {
   constructor(
     private readonly userFriendsRepository: UserFriendsRepository,
+    private readonly cloudinaryService: CloudinaryService,
     private readonly connection: Connection
   ) {}
 
@@ -30,7 +32,13 @@ export class UserFriendsService implements IUserFriendsService {
         userId
       );
 
-      if (userFriends) {
+      if (userFriends.length !== 0) {
+        userFriends.map(async (userFriend) => {
+          userFriend.avatar = await this.cloudinaryService.getImageUrl(
+            userFriend.avatar
+          );
+        });
+
         return responseData(userFriends, "List User Friends");
       }
 
@@ -51,6 +59,10 @@ export class UserFriendsService implements IUserFriendsService {
       );
 
       if (infoFriend) {
+        infoFriend.avatar = await this.cloudinaryService.getImageUrl(
+          infoFriend.avatar
+        );
+
         return responseData(infoFriend, "Info Friends");
       }
 

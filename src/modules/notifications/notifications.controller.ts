@@ -1,27 +1,25 @@
-import { Controller, Delete, Get, Param } from "@nestjs/common";
+import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth } from "@nestjs/swagger";
+
+import { GetUser } from "../auth/decorator";
+import { JwtAuthGuard } from "../auth/guards";
+import { CreateNotificationDto } from "./dto";
+
 import { NotificationsService } from "./notifications.service";
 
-@Controller("notifications")
+@Controller("secure/notifications")
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  // @Post()
-  // create(@Body() createNotificationDto: CreateNotificationDto) {
-  //   return this.notificationsService.create(createNotificationDto);
-  // }
-
   @Get()
-  findAll() {
-    return this.notificationsService.findAll();
+  async getNotificationByUserId(@GetUser("id") userId: string) {
+    return await this.notificationsService.getNotificationByUserId(userId);
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
-    return this.notificationsService.findOne(+id);
-  }
-
-  @Delete(":id")
-  remove(@Param("id") id: string) {
-    return this.notificationsService.remove(+id);
+  @Post()
+  create(@Body() createNotificationDto: CreateNotificationDto) {
+    return this.notificationsService.create(createNotificationDto);
   }
 }

@@ -1,27 +1,25 @@
-import { Injectable } from "@nestjs/common";
 import { Connection } from "typeorm";
+import { Injectable } from "@nestjs/common";
+
 import { responseData } from "../../common/utils";
-import {
-  ERROR_UNKNOWN,
-  SOMEONE_LIKE_YOU,
-} from "../../constants/code-response.constant";
-import { NotificationEnum } from "../../constants/enum";
-import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { ERROR_UNKNOWN } from "../../constants/code-response.constant";
+import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
+
+import { UserLikeStacksRepository } from "./user-like-stacks.repository";
 import { UserFriendsRepository } from "../user-friends/user-friends.repository";
-import { NotificationsService } from "./../notifications/notifications.service";
+
 import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
 import { DeleteUserLikeStackDto } from "./dto/delete-user-like-stacks.dto";
-import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
-import { UserLikeStacksRepository } from "./user-like-stacks.repository";
+
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @Injectable()
 export class UserLikeStacksService {
   constructor(
-    private readonly userLikeStacksRepository: UserLikeStacksRepository,
-    private readonly notificationsService: NotificationsService,
-    private readonly userFriendsRepository: UserFriendsRepository,
     private readonly connection: Connection,
-    private readonly cloudinaryService: CloudinaryService
+    private readonly cloudinaryService: CloudinaryService,
+    private readonly userFriendsRepository: UserFriendsRepository,
+    private readonly userLikeStacksRepository: UserLikeStacksRepository
   ) {}
   async create(
     fromUserId: string,
@@ -34,11 +32,7 @@ export class UserLikeStacksService {
           ...createUserLikeStackDto,
         })
       );
-      await this.notificationsService.create(
-        NotificationEnum.LIKE,
-        SOMEONE_LIKE_YOU,
-        result.toUserId
-      );
+
       return responseData(result);
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);
