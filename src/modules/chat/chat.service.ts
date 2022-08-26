@@ -119,6 +119,12 @@ export class ChatService implements IChatService {
         return responseData([], "Not Found Conversation", ERROR_DATA_NOT_FOUND);
       }
 
+      conversations.map(async (conversation) => {
+        conversation.avatar = await this.cloudinaryService.getImageUrl(
+          conversation.avatar
+        );
+      });
+
       return responseData(conversations);
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);

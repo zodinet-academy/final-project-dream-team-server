@@ -1,41 +1,55 @@
-import { NotificationEnum } from "./../../constants/enum";
 import { Injectable } from "@nestjs/common";
-import { UpdateNotificationDto } from "./dto/update-notification.dto";
-import { NotificationEntity } from "./entities/notification.entity";
+
+import { responseData } from "../../common/utils";
 import { NotificationsRepository } from "./notifications.repository";
+import {
+  ERROR_DATA_NOT_FOUND,
+  ERROR_INTERNAL_SERVER,
+} from "./../../constants/code-response.constant";
+import { NotificationEntity } from "./entities/notification.entity";
+
+import { ResponseDto } from "../../common/response.dto";
+import { CreateNotificationDto } from "./dto/create-notification.dto";
 
 @Injectable()
 export class NotificationsService {
   constructor(
     private readonly notificationsRepository: NotificationsRepository
   ) {}
+
   async create(
-    type: NotificationEnum,
-    message: string,
-    receiverId: string
-  ): Promise<NotificationEntity> {
+    createNotificationDto: CreateNotificationDto
+  ): Promise<ResponseDto<NotificationEntity>> {
     try {
-      return await this.notificationsRepository.save(
-        this.notificationsRepository.create({ type, message, receiverId })
+      const notificationEntity = await this.notificationsRepository.save(
+        createNotificationDto
       );
+
+      return responseData(notificationEntity);
     } catch (error) {
-      throw new Error(error.message);
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }
   }
 
-  findAll() {
-    return `This action returns all notifications`;
-  }
+  async getNotificationByUserId(
+    userId: string
+  ): Promise<ResponseDto<NotificationEntity[] | null>> {
+    try {
+      const notificationEntity = await this.notificationsRepository.find({
+        where: { receiverId: userId },
+      });
 
-  findOne(id: number) {
-    return `This action returns a #${id} notification`;
-  }
+      if (notificationEntity.length === 0) {
+        return responseData(
+          null,
+          "Not Found Notification",
+          ERROR_DATA_NOT_FOUND
+        );
+      }
 
-  update(id: number) {
-    return `This action updates a #${id} notification`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} notification`;
+      return responseData(notificationEntity);
+    } catch (error) {
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
+    }
   }
 }

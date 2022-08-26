@@ -1,4 +1,3 @@
-import { UserBlockEntity } from "./../../user-blocks/entities/user-block.entity";
 import { AutoMap } from "@automapper/classes";
 import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
 import {
@@ -17,11 +16,18 @@ import {
   MaritalStatusEnum,
   ReligionEnum,
 } from "../../../constants/enum";
-import { PurposeSettingEntity } from "./../../purpose-settings/entities/purpose-setting.entity";
+
 import { IUserEntity } from "./../interfaces/user-entity.interface";
-import { UserLikeStackEntity } from "../../user-like-stacks/entities/user-like-stack.entity";
-import { UserHobbyEntity } from "../../user-hobbies/entities/user-hobbies.entity";
+
+import { MessageEntity } from "./../../chat/entities/messages.entity";
+import { ConversationEntity } from "../../chat/entities/conversations.entity";
 import { UserImageEntity } from "../../user-images/entities/user-images.entity";
+import { UserBlockEntity } from "./../../user-blocks/entities/user-block.entity";
+import { UserHobbyEntity } from "../../user-hobbies/entities/user-hobbies.entity";
+import { UserFriendsEntity } from "../../user-friends/entities/user-friends.entity";
+import { UserLikeStackEntity } from "../../user-like-stacks/entities/user-like-stack.entity";
+import { PurposeSettingEntity } from "./../../purpose-settings/entities/purpose-setting.entity";
+
 @Entity({ name: "users", synchronize: true }) // bat buoc co, false: migration bo qua,
 export class UserEntity extends DefaultEntity implements IUserEntity {
   @Column({ type: "varchar", nullable: true })
@@ -129,4 +135,13 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
 
   @OneToMany(() => UserImageEntity, (entity) => entity.user)
   userImages: UserImageEntity[];
+
+  @OneToMany(() => UserFriendsEntity, (entity) => entity.user || entity.friend)
+  userFriends: UserFriendsEntity[];
+
+  @OneToMany(() => ConversationEntity, (entity) => entity.user || entity.friend)
+  userConversations: ConversationEntity[];
+
+  @OneToMany(() => MessageEntity, (entity) => entity.user)
+  userMessages: MessageEntity[];
 }

@@ -470,4 +470,39 @@ export class UsersService implements IUserService {
       return responseData(null, ERROR_UNKNOWN, ERROR_UNKNOWN);
     }
   }
+
+  async getFriendProfile(
+    id: string
+  ): Promise<ResponseDto<UserProfileDto | string>> {
+    const user = await this.getUserById(id);
+
+    if (!user)
+      return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
+
+    const urlAvatar = await this.cloudinaryService.getImageUrl(user.avatar);
+
+    user.avatar = urlAvatar;
+
+    const album = await this.userImagesService.getUserAlbum(user.id, true);
+    if (!album)
+      responseData(
+        null,
+        "Can not get user album",
+        ERROR_CAN_NOT_GET_USER_ALBUM
+      );
+
+    user.album = album;
+
+    const hobbies = await this.userHobbiesServies.getUserHobbies(user.id);
+    if (!hobbies)
+      responseData(
+        null,
+        "Can not get user hobbies",
+        ERROR_CAN_NOT_GET_USER_HOBBIES
+      );
+
+    user.hobbies = hobbies;
+
+    return responseData(user);
+  }
 }
