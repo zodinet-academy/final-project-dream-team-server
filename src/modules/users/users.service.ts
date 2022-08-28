@@ -99,7 +99,14 @@ export class UsersService implements IUserService {
           "ERROR_USER_NOT_EXIST"
         );
       }
-      if (userFound && userFound.email === data.email) {
+      // check existed email
+      const checkEmail = await this.usersRepository.findOne({
+        where: {
+          email: data.email,
+        },
+      });
+
+      if (checkEmail && checkEmail.email === data.email) {
         return responseData(null, ERROR_EMAIL_CONFLICT, ERROR_EMAIL_CONFLICT);
       }
       const bthdayFormart = birthday.toString();
@@ -125,6 +132,7 @@ export class UsersService implements IUserService {
       };
       return responseData(respone, "Create User Successfull");
     } catch (err: unknown) {
+      console.log(err);
       return err as string;
     }
   }
