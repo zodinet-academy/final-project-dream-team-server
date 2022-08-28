@@ -10,13 +10,13 @@ import {
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
 import { UserRolesEnum } from "../../constants/enum";
-import { Roles } from "../auth/decorator";
+import { GetUser, Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
 import { AdminsService } from "./admins.service";
 import { CreateAdminsDto } from "./dto/create-admins.dto";
 import { UpdateAdminsDto } from "./dto/update-admins.dto";
 
-@Controller("admins")
+@Controller("secure/admins")
 @ApiTags("admins")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
@@ -34,8 +34,8 @@ export class AdminsController {
     return this.adminsService.findAll();
   }
 
-  @Get(":id")
-  findOne(@Param("id") id: string) {
+  @Get("get-current-admin")
+  findOne(@GetUser("id") id: string) {
     return this.adminsService.findOne(id);
   }
 
