@@ -30,8 +30,20 @@ export class UserImagesService implements IUserImagesService {
     private readonly configService: ConfigService
   ) {}
 
-  async getUserAlbum(userId: string): Promise<UserImagesDto[] | undefined> {
-    const images = await this.userImagesRepository.find({ userId: userId });
+  async getUserAlbum(
+    userId: string,
+    isOnlyFavoriteImages?: boolean
+  ): Promise<UserImagesDto[] | undefined> {
+    let images = [];
+    if (isOnlyFavoriteImages) {
+      images = await this.userImagesRepository.find({
+        userId: userId,
+        isFavorite: isOnlyFavoriteImages,
+      });
+    } else
+      images = await this.userImagesRepository.find({
+        userId: userId,
+      });
     if (!images) return undefined;
 
     const userAlbum: UserImagesDto[] = [];

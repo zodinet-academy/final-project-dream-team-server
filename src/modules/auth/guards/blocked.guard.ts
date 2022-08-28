@@ -1,10 +1,7 @@
-import { HttpService } from "@nestjs/axios";
-import { ConfigService } from "@nestjs/config";
-import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
-import { SocialEnum } from "../../../constants/enum";
+import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { IJwtPayloadDreamteam } from "../interfaces/jwt-payload.interface";
 import { UsersService } from "../../users/users.service";
+import { IJwtPayloadDreamteam } from "../interfaces/jwt-payload.interface";
 
 @Injectable()
 export class BlockedGuard implements CanActivate {
@@ -18,7 +15,7 @@ export class BlockedGuard implements CanActivate {
     const splitBearer = request.rawHeaders[9].split("Bearer ");
     const decodedJwtAccessToken = this.jwtService.decode(splitBearer[1]);
     const praseToken = decodedJwtAccessToken as IJwtPayloadDreamteam;
-    const isBlock = await this.userServices.checkUserIsBlock(praseToken.id);
+    const isBlock = await this.userServices.checkUserIsBlock(praseToken?.id);
     if (!isBlock) return true;
     return false;
   }

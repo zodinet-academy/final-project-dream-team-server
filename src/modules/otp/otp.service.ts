@@ -79,7 +79,6 @@ export class OtpService implements IOtpService {
           to: phone.number,
           channel: "sms",
         });
-
       if (response && response.status === OtpStatusEnum.PENDING) {
         return responseData(null, "Send OTP Successful") as ResponseDto<string>;
       }

@@ -1,16 +1,6 @@
-import {
-  IsBase64,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class SendMessageDto {
-  @IsNotEmpty()
-  @IsString()
-  socketId: string;
-
   @IsNotEmpty()
   @IsUUID()
   @IsString()

@@ -13,7 +13,7 @@ export class UserFriendsRepository
   implements IUserFriendsRepository {
   async getUserFriendsByUserId(userId: string): Promise<IInfoFriendUser[]> {
     const infoFriends = await this.createQueryBuilder("UF")
-      .leftJoinAndSelect("UF.friend", "friend")
+      .innerJoinAndSelect("UF.friend", "friend")
       .andWhere(`UF.user_id = '${userId}'`)
       .select([
         `UF.friend_id as id, friend.name as name, friend.avatar as avatar`,
@@ -21,7 +21,7 @@ export class UserFriendsRepository
       .getRawMany<IInfoFriendUser>();
 
     const infoUsers = await this.createQueryBuilder("UF")
-      .leftJoinAndSelect("UF.user", "user")
+      .innerJoinAndSelect("UF.user", "user")
       .andWhere(`UF.friend_id = '${userId}'`)
       .select([`UF.user_id as id, user.name as name, user.avatar as avatar`])
       .getRawMany<IInfoFriendUser>();
@@ -34,7 +34,7 @@ export class UserFriendsRepository
     friendId: string
   ): Promise<IInfoFriend> {
     const infoFriend = await this.createQueryBuilder("UF")
-      .leftJoinAndSelect("UF.friend", "friend")
+      .innerJoinAndSelect("UF.friend", "friend")
       .andWhere(`UF.user_id = '${userId}' AND UF.friend_id = '${friendId}'`)
       .select([
         `UF.friend_id as id, friend.name as name, friend.avatar as avatar, UF.created_at as "createAt"`,
@@ -43,7 +43,7 @@ export class UserFriendsRepository
 
     if (!infoFriend) {
       const infoUser = await this.createQueryBuilder("UF")
-        .leftJoinAndSelect("UF.user", "user")
+        .innerJoinAndSelect("UF.user", "user")
         .andWhere(`UF.user_id = '${friendId}' AND UF.friend_id = '${userId}'`)
         .select([
           `UF.user_id as id, user.name as name, user.avatar as avatar, UF.created_at as "createAt"`,

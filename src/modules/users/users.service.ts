@@ -11,6 +11,7 @@ import {
   ERROR_CAN_NOT_UPDATE_USER_PROFILE,
   ERROR_CHANGE_USER_AVATAR,
   ERROR_DATA_NOT_FOUND,
+  ERROR_EMAIL_CONFLICT,
   ERROR_MISSING_FIELD,
   ERROR_UNKNOWN,
   ERROR_USER_EXISTED,
@@ -91,7 +92,16 @@ export class UsersService implements IUserService {
       const userFound = await this.usersRepository.findOne({
         where: { phone: data.phone },
       });
-      if (!userFound) return responseData(null, ERROR_DATA_NOT_FOUND);
+      if (!userFound) {
+        return responseData(
+          null,
+          "ERROR_USER_NOT_EXIST",
+          "ERROR_USER_NOT_EXIST"
+        );
+      }
+      if (userFound && userFound.email === data.email) {
+        return responseData(null, ERROR_EMAIL_CONFLICT, ERROR_EMAIL_CONFLICT);
+      }
       const bthdayFormart = birthday.toString();
       const newDate = bthdayFormart.split("/").reverse().join("/");
       const newUser = await this.usersRepository.save({
@@ -480,6 +490,41 @@ export class UsersService implements IUserService {
       console.log(error);
       return responseData(null, ERROR_UNKNOWN, ERROR_UNKNOWN);
     }
+  }
+
+  async getFriendProfile(
+    id: string
+  ): Promise<ResponseDto<UserProfileDto | string>> {
+    const user = await this.getUserById(id);
+
+    if (!user)
+      return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
+
+    const urlAvatar = await this.cloudinaryService.getImageUrl(user.avatar);
+
+    user.avatar = urlAvatar;
+
+    const album = await this.userImagesService.getUserAlbum(user.id, true);
+    if (!album)
+      responseData(
+        null,
+        "Can not get user album",
+        ERROR_CAN_NOT_GET_USER_ALBUM
+      );
+
+    user.album = album;
+
+    const hobbies = await this.userHobbiesServies.getUserHobbies(user.id);
+    if (!hobbies)
+      responseData(
+        null,
+        "Can not get user hobbies",
+        ERROR_CAN_NOT_GET_USER_HOBBIES
+      );
+
+    user.hobbies = hobbies;
+
+    return responseData(user);
   }
 
   async blockUser(userId: string): Promise<ResponseDto<string>> {

@@ -163,6 +163,6 @@ export class UsersController {
 
   @Get("friend-profile/:id")
   getFriendProfile(@Param("id") id: string) {
-    return this.usersService.getUserProfile(id);
+    return this.usersService.getFriendProfile(id);
   }
 }

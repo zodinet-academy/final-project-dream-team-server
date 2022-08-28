@@ -133,6 +133,7 @@ export class UserLocationsService implements IUserLocationsService {
         blockedUsers,
         likedUsers
       );
+
       result.map(async (el) => {
         el.avatar = await this.cloudinaryService.getImageUrl(el.avatar);
         if (el.distance >= 1000) {
@@ -144,6 +145,7 @@ export class UserLocationsService implements IUserLocationsService {
         }
         return el;
       });
+
       return responseData(result, "Get friend near user success");
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);

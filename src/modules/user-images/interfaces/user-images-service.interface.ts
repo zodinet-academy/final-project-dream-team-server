@@ -1,5 +1,8 @@
 import { UserImagesDto } from "../dto";
 
 export interface IUserImagesService {
-  getUserAlbum(userId: string): Promise<UserImagesDto[] | undefined>;
+  getUserAlbum(
+    userId: string,
+    isOnlyFavoriteImages: boolean
+  ): Promise<UserImagesDto[] | undefined>;
 }

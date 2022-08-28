@@ -7,12 +7,12 @@ export class fixSocketDeviceTable1661412200162 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE "user_friends" DROP CONSTRAINT "FK_24f1e41a3801477d44228395e3b"`
     );
-    await queryRunner.query(
-      `ALTER TABLE "user_friends" DROP CONSTRAINT "FK_73aac2cba30951ed7c7000c6142"`
-    );
-    await queryRunner.query(
-      `ALTER TABLE "conversations" DROP CONSTRAINT "FK_3a9ae579e61e81cc0e989afeb4a"`
-    );
+    // await queryRunner.query(
+    //   `ALTER TABLE "user_friends" DROP CONSTRAINT "FK_73aac2cba30951ed7c7000c6142"`
+    // );
+    // await queryRunner.query(
+    //   `ALTER TABLE "conversations" DROP CONSTRAINT "FK_3a9ae579e61e81cc0e989afeb4a"`
+    // );
     await queryRunner.query(
       `ALTER TABLE "conversations" DROP CONSTRAINT "FK_c651a79bf709d5c8dd6095daed6"`
     );
