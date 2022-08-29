@@ -6,9 +6,13 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { imageFileFilter } from "../../common/helper/imageFilter.helper";
 import { UserRolesEnum } from "../../constants/enum";
 import { GetUser, Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
@@ -36,12 +40,35 @@ export class AdminsController {
 
   @Get("get-current-admin")
   findOne(@GetUser("id") id: string) {
-    return this.adminsService.findOne(id);
+    return this.adminsService.getAdminProfile(id);
   }
 
-  @Put(":id")
-  update(@Param("id") id: string, @Body() adminsUserDto: UpdateAdminsDto) {
-    return this.adminsService.update(id, adminsUserDto);
+  @Put()
+  @UseInterceptors(
+    FileInterceptor("file", {
+      fileFilter: imageFileFilter,
+    })
+  )
+  @ApiConsumes("multipart/form-data")
+  @ApiBody({
+    schema: {
+      type: "object",
+      properties: {
+        file: {
+          type: "string",
+          format: "binary",
+        },
+        email: { type: "string", nullable: true },
+        name: { type: "string", nullable: true },
+      },
+    },
+  })
+  update(
+    @GetUser("id") adminId: string,
+    @Body() adminsUserDto: UpdateAdminsDto,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    return this.adminsService.update(adminId, adminsUserDto, file);
   }
 
   @Delete(":id")
