@@ -16,7 +16,7 @@ import {
   ERROR_YOUR_ALBUM_IS_FULL,
 } from "../../constants/code-response.constant";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { ChangeFavoriteImageDto, UserImagesDto } from "./dto";
+import { UserImagesDto } from "./dto";
 import { UserImageEntity } from "./entities/user-images.entity";
 import { IUserImagesService } from "./interfaces/user-images-service.interface";
 import { UserImagesRepository } from "./user-images.repository";

@@ -1,20 +1,19 @@
-import { PurposeSettingEntity } from "./entities/purpose-setting.entity";
-import { PurposeSettingsRepository } from "./purpose-settings.repository";
+import { Mapper } from "@automapper/core";
+import { InjectMapper } from "@automapper/nestjs";
 import { Injectable } from "@nestjs/common";
-import { CreatePurposeSettingDto } from "./dto/create-purpose-setting.dto";
-import { UpdatePurposeSettingDto } from "./dto/update-purpose-setting.dto";
+import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
 import {
-  DATA_DELETED,
   ERROR_DATA_NOT_FOUND,
   ERROR_UNKNOWN,
 } from "../../constants/code-response.constant";
-import { ResponseDto } from "../../common/response.dto";
-import { IPurposeSettingsService } from "./interfaces";
-import { InjectMapper } from "@automapper/nestjs";
-import { Mapper } from "@automapper/core";
-import { ResponsePurposeSettingDto } from "./dto/response-purpose-setting.dto";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { CreatePurposeSettingDto } from "./dto/create-purpose-setting.dto";
+import { ResponsePurposeSettingDto } from "./dto/response-purpose-setting.dto";
+import { UpdatePurposeSettingDto } from "./dto/update-purpose-setting.dto";
+import { PurposeSettingEntity } from "./entities/purpose-setting.entity";
+import { IPurposeSettingsService } from "./interfaces";
+import { PurposeSettingsRepository } from "./purpose-settings.repository";
 
 @Injectable()
 export class PurposeSettingsService implements IPurposeSettingsService {

@@ -8,7 +8,7 @@ import {
   Put,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { UserRolesEnum } from "../../constants/enum";
 import { GetUser, Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";

@@ -1,7 +1,5 @@
 import { Body, Controller, Get, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { UserRolesEnum } from "../../constants/enum";
-import { Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
 import { CreateSettingDto } from "./dto/create-setting.dto";
 import { UpdateSettingDto } from "./dto/update-setting.dto";

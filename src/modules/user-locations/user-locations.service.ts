@@ -133,23 +133,20 @@ export class UserLocationsService implements IUserLocationsService {
         blockedUsers,
         likedUsers
       );
+      const data = result.filter((el) => el.id !== userId);
+      data &&
+        data.map(async (el) => {
+          el.avatar = await this.cloudinaryService.getImageUrl(el.avatar);
+          if (el.distance >= 1000) {
+            el.distance = +(el.distance / 1000).toFixed(1);
+            el.unit = "km";
+          } else {
+            el.distance = +el.distance.toFixed(1);
+            el.unit = "m";
+          }
+        });
 
-      result.map(async (el) => {
-        el.avatar = await this.cloudinaryService.getImageUrl(el.avatar);
-        if (el.distance >= 1000) {
-          el.distance = +(el.distance / 1000).toFixed(1);
-          el.unit = "km";
-        } else {
-          el.distance = +el.distance.toFixed(1);
-          el.unit = "m";
-        }
-        return el;
-      });
-
-      return responseData(
-        result.filter((el) => el.id !== userId),
-        "Get friend near user success"
-      );
+      return responseData(data, "Get friend near user success");
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);
     }
