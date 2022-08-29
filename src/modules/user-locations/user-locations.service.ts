@@ -146,7 +146,10 @@ export class UserLocationsService implements IUserLocationsService {
         return el;
       });
 
-      return responseData(result, "Get friend near user success");
+      return responseData(
+        result.filter((el) => el.id !== userId),
+        "Get friend near user success"
+      );
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);
     }
