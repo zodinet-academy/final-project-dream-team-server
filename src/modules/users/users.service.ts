@@ -5,6 +5,7 @@ import { responseData } from "../../common/utils";
 
 import {
   CHECK_PHONE_GET_OTP,
+  ERROR_CAN_NOT_BLOCK_WHEN_IS_NOT_VERIFIED,
   ERROR_CAN_NOT_GET_USER_ALBUM,
   ERROR_CAN_NOT_GET_USER_HOBBIES,
   ERROR_CAN_NOT_UPDATE_USER_PROFILE,
@@ -45,6 +46,7 @@ import { GetUserHobbiesDto } from "../user-hobbies/dto";
 import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
 import { UserImagesDto } from "../user-images/dto";
 import { UserImagesService } from "../user-images/user-images.service";
+import { UserResponseAdminDto } from "./dto/user-response-admin.dto";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -97,7 +99,14 @@ export class UsersService implements IUserService {
           "ERROR_USER_NOT_EXIST"
         );
       }
-      if (userFound && userFound.email === data.email) {
+      // check existed email
+      const checkEmail = await this.usersRepository.findOne({
+        where: {
+          email: data.email,
+        },
+      });
+
+      if (checkEmail && checkEmail.email === data.email) {
         return responseData(null, ERROR_EMAIL_CONFLICT, ERROR_EMAIL_CONFLICT);
       }
       const bthdayFormart = birthday.toString();
@@ -123,6 +132,7 @@ export class UsersService implements IUserService {
       };
       return responseData(respone, "Create User Successfull");
     } catch (err: unknown) {
+      console.log(err);
       return err as string;
     }
   }
@@ -146,10 +156,10 @@ export class UsersService implements IUserService {
     }
   }
 
-  async getAllUser(): Promise<ResponseDto<UserResponeDTO[]>> {
+  async getAllUser(): Promise<ResponseDto<UserResponseAdminDto[]>> {
     try {
       const users = await this.usersRepository.find();
-      const res = this.mapper.mapArray(users, UserEntity, UserResponeDTO);
+      const res = this.mapper.mapArray(users, UserEntity, UserResponseAdminDto);
 
       res.forEach(async (user) => {
         const avatarUrl = await this.cloudinaryService.getImageUrl(user.avatar);
@@ -300,8 +310,27 @@ export class UsersService implements IUserService {
     }
   }
 
-  // async deleteUserProfileById(): Promise<ResponseDto<UserEntity>> {
-  //   return null;
+  // async deleteUserProfileById(id: string): Promise<ResponseDto<string>> {
+  // 	try {
+  // 		const user = await this.getUserById(id);
+  // 		if (!user)
+  // 			return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
+
+  // 		const resultDeleteHobbies = await this.userHobbiesServies.deleteUserHobbies(
+  // 			id
+  // 		);
+  // 		if (!resultDeleteHobbies.status) return resultDeleteHobbies;
+
+  // 		const resultDeleteImages = await this.userImagesService.deleteImages(id);
+  // 		if (!resultDeleteImages.status) return resultDeleteImages;
+
+  // 		await this.usersRepository.delete({ id: id });
+
+  // 		return responseData(id, "Delete user success");
+  // 	} catch (error) {
+  // 		console.log(error);
+  // 		return responseData(null, "Can not delete user profile", ERROR_UNKNOWN);
+  // 	}
   // }
 
   async verifyUserByEmail(email: string) {
@@ -504,5 +533,40 @@ export class UsersService implements IUserService {
     user.hobbies = hobbies;
 
     return responseData(user);
+  }
+
+  async blockUser(userId: string): Promise<ResponseDto<string>> {
+    try {
+      const user = await this.getUserById(userId);
+      if (!user)
+        return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
+
+      if (!user.isVerify)
+        return responseData(
+          null,
+          "Can not block when user is not verified.",
+          ERROR_CAN_NOT_BLOCK_WHEN_IS_NOT_VERIFIED
+        );
+
+      await this.usersRepository.update({ id: userId }, { isBlock: true });
+
+      return responseData(userId, "Block user success");
+    } catch (error) {
+      return responseData(null, "Can not block user", ERROR_UNKNOWN);
+    }
+  }
+
+  async unblockUser(userId: string): Promise<ResponseDto<string>> {
+    try {
+      const user = await this.getUserById(userId);
+      if (!user)
+        return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
+
+      await this.usersRepository.update({ id: userId }, { isBlock: false });
+
+      return responseData(userId, "unblock user success");
+    } catch (error) {
+      return responseData(null, "Can not unblock user", ERROR_UNKNOWN);
+    }
   }
 }

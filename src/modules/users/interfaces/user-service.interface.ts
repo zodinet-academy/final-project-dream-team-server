@@ -5,9 +5,10 @@ import { ResponseDto } from "../../../common/response.dto";
 import { SocialDTO } from "../../auth/dto/social-login.dto";
 import { UpdateUserDto, UserProfileDto, VerifyUserDto } from "../dto";
 import { UserResponeDTO } from "../dto/user-respone.dto";
+import { UserResponseAdminDto } from "../dto/user-response-admin.dto";
 
 export interface IUserService {
-  getAllUser(): Promise<ResponseDto<UserResponeDTO[]>>;
+  getAllUser(): Promise<ResponseDto<UserResponseAdminDto[]>>;
   getPublicById(
     userId: string
   ): Promise<ResponseDto<ResponsePublicUserInterface | null>>;
