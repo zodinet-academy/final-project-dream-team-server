@@ -322,28 +322,20 @@ export class UsersService implements IUserService {
     }
   }
 
-  // async deleteUserProfileById(id: string): Promise<ResponseDto<string>> {
-  // 	try {
-  // 		const user = await this.getUserById(id);
-  // 		if (!user)
-  // 			return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
+  async deleteUserProfileById(id: string): Promise<ResponseDto<string>> {
+    try {
+      const user = await this.getUserById(id);
+      if (!user)
+        return responseData(null, "User not found", ERROR_USER_NOT_FOUND);
 
-  // 		const resultDeleteHobbies = await this.userHobbiesServies.deleteUserHobbies(
-  // 			id
-  // 		);
-  // 		if (!resultDeleteHobbies.status) return resultDeleteHobbies;
+      await this.usersRepository.softDelete({ id: id });
 
-  // 		const resultDeleteImages = await this.userImagesService.deleteImages(id);
-  // 		if (!resultDeleteImages.status) return resultDeleteImages;
-
-  // 		await this.usersRepository.delete({ id: id });
-
-  // 		return responseData(id, "Delete user success");
-  // 	} catch (error) {
-  // 		console.log(error);
-  // 		return responseData(null, "Can not delete user profile", ERROR_UNKNOWN);
-  // 	}
-  // }
+      return responseData(id, "Delete user success");
+    } catch (error) {
+      console.log(error);
+      return responseData(null, "Can not delete user profile", ERROR_UNKNOWN);
+    }
+  }
 
   async verifyUserByEmail(email: string) {
     try {

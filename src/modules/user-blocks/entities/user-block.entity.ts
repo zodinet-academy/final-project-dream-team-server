@@ -5,7 +5,7 @@ import { DefaultEntity } from "../../../common/entity";
 import { UserEntity } from "../../users/entities/user.entity";
 import { IUserBlockEntity } from "./../interfaces/user-block-entity.interface";
 
-@Entity({ name: "user_blocks", synchronize: true })
+@Entity({ name: "user_blocks", synchronize: false })
 export class UserBlockEntity extends DefaultEntity implements IUserBlockEntity {
   @Column({ name: "user_id", type: "uuid", nullable: false })
   @IsNotEmpty()
