@@ -11,7 +11,8 @@ export interface IAdminsService {
   findOne(id: string): Promise<ResponseDto<IAdminEntity | undefined | string>>;
   update(
     id: string,
-    updateAdminsDto: UpdateAdminsDto
+    updateAdminsDto: UpdateAdminsDto,
+    file: Express.Multer.File
   ): Promise<ResponseDto<IAdminEntity | string>>;
   remove(id: string): Promise<ResponseDto<string>>;
   findByUsernameAndPassword(

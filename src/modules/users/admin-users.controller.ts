@@ -4,9 +4,11 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Query,
   UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { PageOptionsDto } from "../../common/dto";
 
 import { UserRolesEnum } from "../../constants/enum";
 import { Roles } from "../auth/decorator";
@@ -23,8 +25,8 @@ export class AdminUsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get("get-all")
-  getAllBasicUses() {
-    return this.usersService.getAllUser();
+  getAllBasicUses(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.usersService.getAllUser(pageOptionsDto);
   }
 
   @Get("get-detail/:id")

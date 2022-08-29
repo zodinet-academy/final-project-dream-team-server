@@ -46,6 +46,8 @@ import { UserHobbiesService } from "../user-hobbies/user-hobbies.service";
 import { UserImagesDto } from "../user-images/dto";
 import { UserImagesService } from "../user-images/user-images.service";
 import { UserResponseAdminDto } from "./dto/user-response-admin.dto";
+import { PageOptionsDto } from "../../common/dto";
+import { IResponsePagination } from "../../common/interfaces/page-meta-dto-parameters.interface";
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -155,19 +157,30 @@ export class UsersService implements IUserService {
     }
   }
 
-  async getAllUser(): Promise<ResponseDto<UserResponseAdminDto[]>> {
+  async getAllUser(
+    pageOptionsDto: PageOptionsDto
+  ): Promise<ResponseDto<IResponsePagination | string>> {
     try {
-      const users = await this.usersRepository.find();
-      const res = this.mapper.mapArray(users, UserEntity, UserResponseAdminDto);
+      const data = await this.usersRepository.getAll(
+        pageOptionsDto.order,
+        +pageOptionsDto.page,
+        +pageOptionsDto.limit
+      );
+
+      const res = this.mapper.mapArray(
+        data.list,
+        UserEntity,
+        UserResponseAdminDto
+      );
 
       res.forEach(async (user) => {
         const avatarUrl = await this.cloudinaryService.getImageUrl(user.avatar);
         user.avatar = avatarUrl;
       });
-
-      return responseData(res);
+      data.list = res;
+      return responseData(data);
     } catch (error) {
-      return responseData([]);
+      return responseData("", "error", ERROR_UNKNOWN);
     }
   }
 
