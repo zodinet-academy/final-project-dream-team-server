@@ -13,17 +13,17 @@ import {
   ERROR_UNKNOWN,
 } from "./../../constants/code-response.constant";
 
-import { MessageEntity } from "./entities/messages.entity";
 import { ConversationEntity } from "./entities/conversations.entity";
+import { MessageEntity } from "./entities/messages.entity";
 import { SocketDeviceEntity } from "./entities/socket-devices.entity";
 
 import { ResponseDto } from "../../common/response.dto";
-import { ConnectChatDto, SendMessageDto, CreateDeviceDto } from "./dto";
+import { ConnectChatDto, CreateDeviceDto, SendMessageDto } from "./dto";
 
 import {
   IChatService,
-  IConversationMessage,
   IConversation,
+  IConversationMessage,
 } from "./interfaces";
 
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
@@ -217,7 +217,7 @@ export class ChatService implements IChatService {
     device: CreateDeviceDto
   ): Promise<ResponseDto<SocketDeviceEntity | null>> {
     try {
-      const isDelete = await this.deleteSocketDevice(device.userId);
+      await this.deleteSocketDevice(device.userId);
       const deviceEntity = await this.socketDeviceRepository.save(device);
 
       if (deviceEntity) {
