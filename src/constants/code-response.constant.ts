@@ -2,6 +2,7 @@
 export const CHECK_PHONE_GET_OTP = "check_phone_get_otp";
 export const DATA_DELETED = "data_deleted";
 export const SOMEONE_LIKE_YOU = "someone_like_you";
+export const MATCH_YOU = "match_you";
 
 // ------------------ ERROR --------------------------
 export const ERROR_USER_EXISTED = "error_user_existed";

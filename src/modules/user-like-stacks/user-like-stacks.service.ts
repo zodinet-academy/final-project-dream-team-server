@@ -2,7 +2,12 @@ import { Connection } from "typeorm";
 import { Injectable } from "@nestjs/common";
 
 import { responseData } from "../../common/utils";
-import { ERROR_UNKNOWN } from "../../constants/code-response.constant";
+import { SocketGateway } from "./../../common/socket.gateway";
+import {
+  ERROR_UNKNOWN,
+  SOMEONE_LIKE_YOU,
+  MATCH_YOU,
+} from "../../constants/code-response.constant";
 import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
 
 import { UserLikeStacksRepository } from "./user-like-stacks.repository";
@@ -12,14 +17,18 @@ import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
 import { DeleteUserLikeStackDto } from "./dto/delete-user-like-stacks.dto";
 
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { NotificationsService } from "../notifications/notifications.service";
+import { NotificationEnum } from "../../constants/enum";
 
 @Injectable()
 export class UserLikeStacksService {
   constructor(
     private readonly connection: Connection,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly notificationService: NotificationsService,
     private readonly userFriendsRepository: UserFriendsRepository,
-    private readonly userLikeStacksRepository: UserLikeStacksRepository
+    private readonly userLikeStacksRepository: UserLikeStacksRepository,
+    private readonly socketGateway: SocketGateway
   ) {}
   async create(
     fromUserId: string,
@@ -32,6 +41,16 @@ export class UserLikeStacksService {
           ...createUserLikeStackDto,
         })
       );
+
+      const notification = await this.notificationService.create({
+        type: NotificationEnum.LIKE,
+        message: SOMEONE_LIKE_YOU,
+        receiverId: fromUserId,
+      });
+
+      if (notification.status) {
+        this.socketGateway.sendnotifications(fromUserId, notification.data);
+      }
 
       return responseData(result);
     } catch (error) {
@@ -68,10 +87,35 @@ export class UserLikeStacksService {
               userId: userLikeStacks[i].fromUserId,
               friendId: userLikeStacks[i].toUserId,
             });
+
+            const notification1 = await this.notificationService.create({
+              type: NotificationEnum.MATCH,
+              message: MATCH_YOU,
+              receiverId: userLikeStacks[i].fromUserId,
+            });
+
+            const notification2 = await this.notificationService.create({
+              type: NotificationEnum.MATCH,
+              message: MATCH_YOU,
+              receiverId: userLikeStacks[i].toUserId,
+            });
+
+            if (notification1.status) {
+              this.socketGateway.sendnotifications(
+                userLikeStacks[i].fromUserId,
+                notification1.data
+              );
+              this.socketGateway.sendnotifications(
+                userLikeStacks[i].toUserId,
+                notification2.data
+              );
+            }
+
             idUserLikeStacks.push(userLikeStacks[i].id, userLikeStacks[j].id);
           }
         }
       }
+
       if (matchings && idUserLikeStacks) {
         try {
           const queryRunner = this.connection.createQueryRunner();
