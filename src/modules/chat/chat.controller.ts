@@ -5,10 +5,11 @@ import { GetUser } from "../auth/decorator";
 import { ChatService } from "./chat.service";
 import { JwtAuthGuard } from "../auth/guards";
 import { GetConversationByUserIdAndFriendIdDto } from "./dto";
+import { BlockedGuard } from "../auth/guards/blocked.guard";
 
 @Controller("secure/chat")
 @ApiTags("chat")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, BlockedGuard)
 @ApiBearerAuth()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}

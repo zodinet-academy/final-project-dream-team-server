@@ -10,6 +10,7 @@ import {
 } from "@nestjs/swagger";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
+import { BlockedGuard } from "../auth/guards/blocked.guard";
 import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
 import { DeleteUserLikeStackDto } from "./dto/delete-user-like-stacks.dto";
 import { UserLikeStacksService } from "./user-like-stacks.service";
@@ -20,8 +21,8 @@ export class UserLikeStacksController {
   constructor(private readonly userLikeStacksService: UserLikeStacksService) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, BlockedGuard)
   @ApiOperation({ summary: "Create user - blocked user" })
   @ApiOkResponse({ description: "user blocked entity" })
   @ApiNotAcceptableResponse({
@@ -43,14 +44,14 @@ export class UserLikeStacksController {
   }
 
   @Get("matching-friends")
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, BlockedGuard)
   @ApiBearerAuth()
   findOne(@GetUser("id") userId: string) {
     return this.userLikeStacksService.getMatchingFriends(userId);
   }
 
   @Delete()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, BlockedGuard)
   @ApiBearerAuth()
   delete(@Body() body: DeleteUserLikeStackDto) {
     return this.userLikeStacksService.remove(body);

@@ -10,6 +10,7 @@ import {
 import { ChatService } from "./chat.service";
 import { ChatController } from "./chat.controller";
 import { CloudinaryModule } from "../cloudinary/cloudinary.module";
+import { UsersModule } from "../users/users.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { CloudinaryModule } from "../cloudinary/cloudinary.module";
       SocketDeviceRepository,
     ]),
     CloudinaryModule,
+    UsersModule,
   ],
   controllers: [ChatController],
   providers: [ChatService],

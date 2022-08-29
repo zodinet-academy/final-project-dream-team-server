@@ -10,12 +10,14 @@ import { UserFriendsModule } from "../user-friends/user-friends.module";
 import { UserLikeStacksController } from "./user-like-stacks.controller";
 
 import { UserLikeStacksService } from "./user-like-stacks.service";
+import { UsersModule } from "../users/users.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserLikeStacksRepository, UserFriendsRepository]),
     UserFriendsModule,
     CloudinaryModule,
+    UsersModule,
   ],
   controllers: [UserLikeStacksController],
   providers: [UserLikeStacksService],
