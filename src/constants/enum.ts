@@ -59,3 +59,7 @@ export enum UpdateUserProfileEnum {
   EDUCATION = "education",
   PURPOSEID = "purposeId",
 }
+export enum Order {
+  ASC = "ASC",
+  DESC = "DESC",
+}
