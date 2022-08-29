@@ -9,19 +9,15 @@ import {
 import { Server, Socket } from "socket.io";
 
 import { responseData } from "./utils";
-import { NotificationEnum } from "../constants/enum";
 import { IChatGateway } from "../modules/chat/interfaces";
-import {
-  SOMEONE_LIKE_YOU,
-  ERROR_INTERNAL_SERVER,
-} from "../constants/code-response.constant";
+import { ERROR_INTERNAL_SERVER } from "../constants/code-response.constant";
 
 import { ResponseDto } from "./response.dto";
 import { SendMessageDto } from "../modules/chat/dto";
-import { CreateNotificationDto } from "../modules/notifications/dto";
 
 import { ConversationEntity } from "../modules/chat/entities/conversations.entity";
 import { SocketDeviceEntity } from "../modules/chat/entities/socket-devices.entity";
+import { NotificationEntity } from "./../modules/notifications/entities/notification.entity";
 
 import { ChatService } from "../modules/chat/chat.service";
 import { CloudinaryService } from "../modules/cloudinary/cloudinary.service";
@@ -81,6 +77,7 @@ export class SocketGateway
   async messages(client: Socket, payload: SendMessageDto) {
     try {
       const messageEntity = payload;
+      console.log("payload", payload, client.id, new Date());
 
       if (!payload.conversationId) {
         const conversation = await this.createConversation(
@@ -123,21 +120,14 @@ export class SocketGateway
     }
   }
 
-  @SubscribeMessage("send-notification")
-  async notifications(client: Socket, payload: string) {
+  // Handle Send Notification
+  async sendnotifications(userId: string, notification: NotificationEntity) {
     try {
-      const device = await this.chatService.getSocketDeviceByUserId(payload);
-      const notification = await this.notificationService.create({
-        type: NotificationEnum.LIKE,
-        message: SOMEONE_LIKE_YOU,
-        receiverId: payload,
-      });
+      const device = await this.chatService.getSocketDeviceByUserId(userId);
 
-      if (device.status && notification.status) {
+      if (device.status) {
         const emit = this.server;
-        emit
-          .to(device.data.socketId)
-          .emit("notification-received", notification.data);
+        emit.emit(`notification-received-${userId}`, notification);
       }
     } catch (error) {
       return responseData(null, error.message, ERROR_INTERNAL_SERVER);
