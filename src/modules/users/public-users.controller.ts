@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Query } from "@nestjs/common";
 import {
   ApiNotAcceptableResponse,
   ApiNotFoundResponse,
@@ -6,6 +6,7 @@ import {
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
+import { PageOptionsDto } from "../../common/dto";
 import { SocialDTO } from "../auth/dto/social-login.dto";
 
 import { CreateUserDto, VerifyUserByEmailDto, VerifyUserDto } from "./dto";
@@ -57,8 +58,8 @@ export class PublicUsersController {
   @Get()
   @ApiOperation({ summary: "Get list of all public users (all)" })
   @ApiOkResponse({ description: "Matching users list." })
-  getAllUser() {
-    return this.usersService.getAllUser();
+  getAllUser(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.usersService.getAllUser(pageOptionsDto);
   }
 
   @Get(":userId")
