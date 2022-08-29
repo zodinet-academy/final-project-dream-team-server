@@ -73,13 +73,15 @@ export class UserLikeStacksService {
 
   async matchFriends() {
     try {
-      const userLikeStacks = await this.userLikeStacksRepository.find();
+      // const userLikeStacks = await this.userLikeStacksRepository.find();
+      // console.log(await this.userLikeStacksRepository.getProfileMatching());
+      const userLikeStacks = await this.userLikeStacksRepository.getProfileMatching();
+
       const matchings = [],
         idUserLikeStacks = [];
       for (let i = 0; i < userLikeStacks.length - 1; i++) {
         for (let j = i + 1; j < userLikeStacks.length; j++) {
           if (
-            userLikeStacks[i].isFriend === false &&
             userLikeStacks[i]?.fromUserId === userLikeStacks[j]?.toUserId &&
             userLikeStacks[j]?.fromUserId === userLikeStacks[i]?.toUserId
           ) {
@@ -90,13 +92,13 @@ export class UserLikeStacksService {
 
             const notification1 = await this.notificationService.create({
               type: NotificationEnum.MATCH,
-              message: MATCH_YOU,
+              message: userLikeStacks[i].friendName,
               receiverId: userLikeStacks[i].fromUserId,
             });
 
             const notification2 = await this.notificationService.create({
               type: NotificationEnum.MATCH,
-              message: MATCH_YOU,
+              message: userLikeStacks[j].friendName,
               receiverId: userLikeStacks[i].toUserId,
             });
 

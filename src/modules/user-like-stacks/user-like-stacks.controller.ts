@@ -37,7 +37,8 @@ export class UserLikeStacksController {
     return this.userLikeStacksService.create(userId, createUserLikeStackDto);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  // @Cron(CronExpression.EVERY_MINUTE)
+  @Get()
   matchFriend() {
     return this.userLikeStacksService.matchFriends();
   }
