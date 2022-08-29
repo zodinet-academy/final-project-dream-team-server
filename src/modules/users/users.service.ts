@@ -502,13 +502,12 @@ export class UsersService implements IUserService {
     return res;
   }
 
-  async checkUserIsBlock(id: string): Promise<boolean | ResponseDto<string>> {
+  async checkUserIsBlock(id: string): Promise<boolean> {
     try {
       const isBlocked = await this.usersRepository.findOne(id);
       return isBlocked.isBlock;
     } catch (error) {
-      console.log(error);
-      return responseData(null, ERROR_UNKNOWN, ERROR_UNKNOWN);
+      throw new Error(error.message);
     }
   }
 

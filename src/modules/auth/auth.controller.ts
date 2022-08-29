@@ -28,8 +28,7 @@ export class AuthController {
   }
   @Get("/profile")
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @UseGuards(BlockedGuard)
+  @UseGuards(JwtAuthGuard, BlockedGuard)
   getProfile(@Req() req): Promise<ResponseDto<string | any>> {
     return this.authService.getProfileUser(req.user.id);
   }

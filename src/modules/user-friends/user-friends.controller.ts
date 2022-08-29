@@ -3,12 +3,13 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
+import { BlockedGuard } from "../auth/guards/blocked.guard";
 import { GetFriendByUserIdAndFriendIdDto } from "./dto";
 import { UserFriendsService } from "./user-friends.service";
 
 @Controller("secure/user-friends")
 @ApiTags("user-friends")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, BlockedGuard)
 @ApiBearerAuth()
 export class UserFriendsController {
   constructor(private readonly userFriendsService: UserFriendsService) {}

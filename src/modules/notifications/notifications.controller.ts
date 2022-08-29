@@ -3,12 +3,13 @@ import { ApiBearerAuth } from "@nestjs/swagger";
 
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
+import { BlockedGuard } from "../auth/guards/blocked.guard";
 import { CreateNotificationDto } from "./dto";
 
 import { NotificationsService } from "./notifications.service";
 
 @Controller("secure/notifications")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, BlockedGuard)
 @ApiBearerAuth()
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}

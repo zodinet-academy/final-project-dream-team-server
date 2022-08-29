@@ -9,12 +9,13 @@ import {
 } from "@nestjs/swagger";
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
+import { BlockedGuard } from "../auth/guards/blocked.guard";
 import { CreateUserBlockDto } from "./dto/create-user-block.dto";
 import { UserBlocksService } from "./user-blocks.service";
 
 @Controller("secure/user-blocks")
 @ApiTags("user-blocks")
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, BlockedGuard)
 @ApiBearerAuth()
 export class UserBlocksController {
   constructor(private readonly userBlocksService: UserBlocksService) {}
