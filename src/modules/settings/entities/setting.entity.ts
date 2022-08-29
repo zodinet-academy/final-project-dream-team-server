@@ -4,7 +4,7 @@ import { AutoMap } from "@automapper/classes";
 import { IsNotEmpty } from "class-validator";
 import { ISettingEntity } from "../interfaces";
 
-@Entity({ name: "settings", synchronize: true }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "settings", synchronize: false }) // bat buoc co, false: migration bo qua,
 export class SettingEntity extends DefaultEntity implements ISettingEntity {
   @Column({ type: "integer", default: 1 })
   @IsNotEmpty()
