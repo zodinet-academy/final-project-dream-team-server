@@ -8,17 +8,16 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
-import { responseData } from "./utils";
+import {
+  ERROR_INTERNAL_SERVER,
+  SOMEONE_LIKE_YOU,
+} from "../constants/code-response.constant";
 import { NotificationEnum } from "../constants/enum";
 import { IChatGateway } from "../modules/chat/interfaces";
-import {
-  SOMEONE_LIKE_YOU,
-  ERROR_INTERNAL_SERVER,
-} from "../constants/code-response.constant";
+import { responseData } from "./utils";
 
-import { ResponseDto } from "./response.dto";
 import { SendMessageDto } from "../modules/chat/dto";
-import { CreateNotificationDto } from "../modules/notifications/dto";
+import { ResponseDto } from "./response.dto";
 
 import { ConversationEntity } from "../modules/chat/entities/conversations.entity";
 import { SocketDeviceEntity } from "../modules/chat/entities/socket-devices.entity";

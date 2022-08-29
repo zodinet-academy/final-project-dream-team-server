@@ -1,20 +1,12 @@
 import {
   Controller,
-  Delete,
   Get,
   Param,
   ParseUUIDPipe,
   Post,
   UseGuards,
 } from "@nestjs/common";
-import {
-  ApiBearerAuth,
-  ApiNotAcceptableResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import { UserRolesEnum } from "../../constants/enum";
 import { Roles } from "../auth/decorator";
