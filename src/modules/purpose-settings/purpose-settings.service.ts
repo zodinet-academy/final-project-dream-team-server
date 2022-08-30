@@ -118,7 +118,10 @@ export class PurposeSettingsService implements IPurposeSettingsService {
         } else {
           return responseData(null, "Upload image fail.", ERROR_UNKNOWN);
         }
+      } else {
+        updatePurposeSettingDto.image = data.image;
       }
+
       const resultUpdate = await this.purposeSettingsRepository.save({
         id: data.id,
         ...updatePurposeSettingDto,

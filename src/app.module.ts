@@ -1,3 +1,4 @@
+import { SocketModule } from "./modules/socket/socket.module";
 import { classes } from "@automapper/classes";
 import { Logger, Module } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
@@ -7,7 +8,6 @@ import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 
 import * as Joi from "joi";
 import databaseConfig from "./config/database.config";
-import { SocketGateway } from "./common/socket.gateway";
 
 import { OtpModule } from "./modules/otp/otp.module";
 import { ChatModule } from "./modules/chat/chat.module";
@@ -27,7 +27,7 @@ import { UserLikeStacksModule } from "./modules/user-like-stacks/user-like-stack
 import { PurposeSettingsModule } from "./modules/purpose-settings/purpose-settings.module";
 
 @Module({
-  providers: [Logger, SocketGateway],
+  providers: [Logger],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -71,6 +71,7 @@ import { PurposeSettingsModule } from "./modules/purpose-settings/purpose-settin
     UserFriendsModule,
     UserLikeStacksModule,
     NotificationsModule,
+    SocketModule,
   ],
 })
 export class AppModule {}
