@@ -11,7 +11,8 @@ export class UserLocationsRepository
     radius: number,
     origin: IOrigin,
     blockedUsers: string[],
-    likedUsers: string[]
+    likedUsers: string[],
+    friends: string[]
   ): Promise<IFriendNearUser[]> {
     try {
       // const a = await this.createQueryBuilder("ul")
@@ -47,6 +48,7 @@ export class UserLocationsRepository
           `users.name AS "name"`,
           `users.birthday AS "birthday"`,
           `users.avatar AS "avatar"`,
+          `users.deletedAt as deletedAt`,
           "ST_Distance(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location))) AS distance",
         ])
         // .from("user_locations", "ul")
@@ -61,13 +63,15 @@ export class UserLocationsRepository
           range: radius * 1000, //KM conversion
           blockedUsers: blockedUsers,
           likedUsers: likedUsers,
+          friends: friends,
         });
 
       if (blockedUsers.length)
         query.andWhere(`ul.userId NOT IN (:...blockedUsers)`);
       if (likedUsers.length)
         query.andWhere(`ul.userId NOT IN (:...likedUsers)`);
-
+      if (friends.length) query.andWhere(`ul.userId NOT IN (:...friends)`);
+      console.log(await query.getMany());
       const result = await query.getRawMany<IFriendNearUser>();
       return result;
     } catch (error) {

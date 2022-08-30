@@ -1,3 +1,4 @@
+import { UserFriendsService } from "./../user-friends/user-friends.service";
 import { UserLikeStacksService } from "./../user-like-stacks/user-like-stacks.service";
 import { UserBlocksService } from "./../user-blocks/user-blocks.service";
 import { Point } from "geojson";
@@ -23,7 +24,8 @@ export class UserLocationsService implements IUserLocationsService {
     private readonly settingsService: SettingsService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly userBlocksService: UserBlocksService,
-    private readonly userLikeStacksService: UserLikeStacksService
+    private readonly userLikeStacksService: UserLikeStacksService,
+    private readonly userFriendsService: UserFriendsService
   ) {}
 
   /**
@@ -126,12 +128,13 @@ export class UserLocationsService implements IUserLocationsService {
       const likedUsers = await this.userLikeStacksService.getAllIdUserLiked(
         userId
       );
-
+      const friends = await this.userFriendsService.getAllIdFriend(userId);
       const result: IFriendNearUser[] = await this.userLocationsRepository.getFriendNearUser(
         radius,
         origin,
         blockedUsers,
-        likedUsers
+        likedUsers,
+        friends
       );
       const data = result.filter((el) => el.id !== userId);
       data &&
