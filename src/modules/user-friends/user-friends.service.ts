@@ -92,4 +92,24 @@ export class UserFriendsService implements IUserFriendsService {
       return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }
   }
+
+  async getAllIdFriend(userId: string): Promise<string[]> {
+    try {
+      const friend = await this.userFriendsRepository.find({
+        where: { fromUserId: userId },
+      });
+      const user = await this.userFriendsRepository.find({
+        where: { userId: userId },
+      });
+      const friendsId = friend.map((user) => {
+        return user.id;
+      });
+      const usersId = user.map((user) => {
+        return user.id;
+      });
+      return [...friendsId, ...usersId];
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
 }

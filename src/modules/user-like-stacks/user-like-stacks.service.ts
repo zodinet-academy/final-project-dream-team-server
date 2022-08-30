@@ -159,7 +159,7 @@ export class UserLikeStacksService {
       const result = await this.userLikeStacksRepository.getMatchingFriends(id);
       result.map(async (el) => {
         el.friend.avatar = await this.cloudinaryService.getImageUrl(
-          el.friend.avatar
+          el.friend?.avatar
         );
 
         return el;

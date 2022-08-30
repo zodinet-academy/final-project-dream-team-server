@@ -4,6 +4,7 @@ export interface IUserLocationsRepository {
     radius: number,
     origin: IOrigin,
     blockedUsers: string[],
-    likedUsers: string[]
+    likedUsers: string[],
+    friends: string[]
   ): Promise<IFriendNearUser[]>;
 }

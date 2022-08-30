@@ -11,7 +11,8 @@ export class UserLocationsRepository
     radius: number,
     origin: IOrigin,
     blockedUsers: string[],
-    likedUsers: string[]
+    likedUsers: string[],
+    friends: string[]
   ): Promise<IFriendNearUser[]> {
     try {
       // const a = await this.createQueryBuilder("ul")
@@ -61,12 +62,14 @@ export class UserLocationsRepository
           range: radius * 1000, //KM conversion
           blockedUsers: blockedUsers,
           likedUsers: likedUsers,
+          friends: friends,
         });
 
       if (blockedUsers.length)
         query.andWhere(`ul.userId NOT IN (:...blockedUsers)`);
       if (likedUsers.length)
         query.andWhere(`ul.userId NOT IN (:...likedUsers)`);
+      if (friends.length) query.andWhere(`ul.userId NOT IN (:...friends)`);
 
       const result = await query.getRawMany<IFriendNearUser>();
       return result;
