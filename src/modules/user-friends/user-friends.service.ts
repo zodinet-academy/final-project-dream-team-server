@@ -96,7 +96,7 @@ export class UserFriendsService implements IUserFriendsService {
   async getAllIdFriend(userId: string): Promise<string[]> {
     try {
       const friend = await this.userFriendsRepository.find({
-        where: { fromUserId: userId },
+        where: { friendId: userId },
       });
       const user = await this.userFriendsRepository.find({
         where: { userId: userId },

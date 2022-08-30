@@ -48,6 +48,7 @@ export class UserLocationsRepository
           `users.name AS "name"`,
           `users.birthday AS "birthday"`,
           `users.avatar AS "avatar"`,
+          `users.deletedAt as deletedAt`,
           "ST_Distance(location, ST_SetSRID(ST_GeomFromGeoJSON(:origin), ST_SRID(location))) AS distance",
         ])
         // .from("user_locations", "ul")
@@ -70,7 +71,7 @@ export class UserLocationsRepository
       if (likedUsers.length)
         query.andWhere(`ul.userId NOT IN (:...likedUsers)`);
       if (friends.length) query.andWhere(`ul.userId NOT IN (:...friends)`);
-
+      console.log(await query.getMany());
       const result = await query.getRawMany<IFriendNearUser>();
       return result;
     } catch (error) {
