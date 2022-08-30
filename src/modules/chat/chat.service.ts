@@ -5,7 +5,6 @@ import { ConversationRepository, MessageRepository } from "./chat.repository";
 import { responseData } from "../../common/utils";
 import {
   ERROR_DATA_NOT_FOUND,
-  ERROR_INTERNAL_SERVER,
   ERROR_UNKNOWN,
 } from "./../../constants/code-response.constant";
 
@@ -17,8 +16,8 @@ import { ResponseDto } from "../../common/response.dto";
 
 import {
   IChatService,
-  IConversationMessage,
   IConversation,
+  IConversationMessage,
 } from "./interfaces";
 
 import { CloudinaryService } from "../cloudinary/cloudinary.service";

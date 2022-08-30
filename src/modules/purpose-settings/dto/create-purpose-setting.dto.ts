@@ -1,5 +1,5 @@
 import { IPurposeSettingsEntity } from "./../interfaces/purpose-setting-entity.interface";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsString, IsNotEmpty } from "class-validator";
 
 export class CreatePurposeSettingDto implements IPurposeSettingsEntity {
@@ -19,11 +19,9 @@ export class CreatePurposeSettingDto implements IPurposeSettingsEntity {
   @IsNotEmpty()
   description: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: "image",
     default: "file/zt5jtrgktciqvm0rxbws.jpg",
   })
-  @IsString()
-  @IsNotEmpty()
   image: string;
 }

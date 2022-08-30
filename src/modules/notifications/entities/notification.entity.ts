@@ -5,7 +5,7 @@ import { DefaultEntity } from "../../../common/entity";
 import { UserEntity } from "../../users/entities/user.entity";
 import { INotificationEntity } from "../interfaces";
 
-@Entity({ name: "notifications", synchronize: true }) // bat buoc co, false: migration bo qua,
+@Entity({ name: "notifications", synchronize: false }) // bat buoc co, false: migration bo qua,
 export class NotificationEntity
   extends DefaultEntity
   implements INotificationEntity {

@@ -12,6 +12,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { UserImagesModule } from "../user-images/user-images.module";
 import { UserHobbiesModule } from "../user-hobbies/user-hobbies.module";
 import { CloudinaryModule } from "../cloudinary/cloudinary.module";
+import { AdminUsersController } from "./admin-users.controller";
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { CloudinaryModule } from "../cloudinary/cloudinary.module";
     }),
     CloudinaryModule,
   ],
-  controllers: [PublicUsersController, UsersController],
+  controllers: [PublicUsersController, UsersController, AdminUsersController],
   providers: [UsersService, UserProfile],
   exports: [UsersService],
 })

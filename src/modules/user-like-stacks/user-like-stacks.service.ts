@@ -7,7 +7,6 @@ import { SocketGateway } from "../socket/socket.gateway";
 import {
   ERROR_UNKNOWN,
   SOMEONE_LIKE_YOU,
-  MATCH_YOU,
 } from "../../constants/code-response.constant";
 import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
 
@@ -76,13 +75,13 @@ export class UserLikeStacksService {
 
   async matchFriends() {
     try {
-      const userLikeStacks = await this.userLikeStacksRepository.find();
+      const userLikeStacks = await this.userLikeStacksRepository.getProfileMatching();
+
       const matchings = [],
         idUserLikeStacks = [];
       for (let i = 0; i < userLikeStacks.length - 1; i++) {
         for (let j = i + 1; j < userLikeStacks.length; j++) {
           if (
-            userLikeStacks[i].isFriend === false &&
             userLikeStacks[i]?.fromUserId === userLikeStacks[j]?.toUserId &&
             userLikeStacks[j]?.fromUserId === userLikeStacks[i]?.toUserId
           ) {
@@ -93,26 +92,23 @@ export class UserLikeStacksService {
 
             const notificationUser = await this.notificationService.create({
               type: NotificationEnum.MATCH,
-              message: MATCH_YOU,
-              receiverId: userLikeStacks[i].toUserId,
-            });
-
-            if (notificationUser.status) {
-              this.socketGateway.sendNotifications(
-                userLikeStacks[i].toUserId,
-                notificationUser.data
-              );
-            }
-
-            const notificationFriend = await this.notificationService.create({
-              type: NotificationEnum.MATCH,
-              message: MATCH_YOU,
+              message: userLikeStacks[i].friendName,
               receiverId: userLikeStacks[i].fromUserId,
             });
 
-            if (notificationUser.status) {
+            const notificationFriend = await this.notificationService.create({
+              type: NotificationEnum.MATCH,
+              message: userLikeStacks[j].friendName,
+              receiverId: userLikeStacks[i].toUserId,
+            });
+
+            if (notificationUser.status && notificationFriend.status) {
               this.socketGateway.sendNotifications(
                 userLikeStacks[i].fromUserId,
+                notificationUser.data
+              );
+              this.socketGateway.sendNotifications(
+                userLikeStacks[i].toUserId,
                 notificationFriend.data
               );
             }

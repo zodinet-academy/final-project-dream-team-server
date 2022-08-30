@@ -33,3 +33,6 @@ export const ERROR_IN_DELETE_IMAGE_CLOUD = "error_in_delete_image_cloud";
 export const ERROR_YOUR_ALBUM_IS_FULL = "your_album_is_full";
 export const ERROR_EMAIL_CONFLICT = "ERROR_EMAIL_CONFLICT";
 export const ERROR_USER_NOT_EXIST = "ERROR_USER_NOT_EXIST";
+export const ERROR_CAN_NOT_GET_USER_IMAGES = "can_not_get_user_images";
+export const ERROR_CAN_NOT_BLOCK_WHEN_IS_NOT_VERIFIED =
+  "can_not_block_when_is _not_verified";

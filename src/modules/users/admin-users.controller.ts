@@ -1,5 +1,22 @@
-import { Controller, Get, Param, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
+import {
+  ApiBearerAuth,
+  ApiNotAcceptableResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
+import { PageOptionsDto } from "../../common/dto";
 
 import { UserRolesEnum } from "../../constants/enum";
 import { Roles } from "../auth/decorator";
@@ -16,29 +33,35 @@ export class AdminUsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get("get-all")
-  getAllBasicUses() {
-    return this.usersService.getAllUser();
+  getAllBasicUses(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.usersService.getAllUser(pageOptionsDto);
   }
 
-  @Get("user-profile/:id")
-  getUserProfile(@Param("id") id: string) {
+  @Get("get-detail/:id")
+  getDetail(@Param("id", ParseUUIDPipe) id: string) {
     return this.usersService.getUserProfile(id);
   }
 
-  // ------- Khong duoc xoa, nho lam -----------
-  // @Delete(":userId")
-  // @ApiOperation({ summary: "Delete user data (admin)" })
-  // @ApiOkResponse({ description: "User has been deleted." })
-  // @ApiNotAcceptableResponse({
-  //   description: "Request is not in correct form.",
-  // })
-  // @ApiNotFoundResponse({
-  //   description: "User id not found.",
-  // })
-  // deleteUserProfileById(
-  //   @Param("userId") userId: string,
-  //   @Body() dto: DeleteUserDto
-  // ) {
-  //   return this.usersService.deleteUserProfileById(userId, dto);
-  // }
+  @Post("block/:id")
+  blockUser(@Param("id", ParseUUIDPipe) id: string) {
+    return this.usersService.blockUser(id);
+  }
+
+  @Post("unblock/:id")
+  unblockUser(@Param("id", ParseUUIDPipe) id: string) {
+    return this.usersService.unblockUser(id);
+  }
+
+  @Delete(":userId")
+  @ApiOperation({ summary: "Delete user data (admin)" })
+  @ApiOkResponse({ description: "User has been deleted." })
+  @ApiNotAcceptableResponse({
+    description: "Request is not in correct form.",
+  })
+  @ApiNotFoundResponse({
+    description: "User id not found.",
+  })
+  deleteUserProfileById(@Param("userId") userId: string) {
+    return this.usersService.deleteUserProfileById(userId);
+  }
 }

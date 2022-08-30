@@ -12,7 +12,7 @@ import { DefaultEntity } from "../../../common/entity";
 import { IUserFriendsEntity } from "../interfaces";
 import { UserEntity } from "../../users/entities/user.entity";
 
-@Entity({ name: "user_friends", synchronize: true })
+@Entity({ name: "user_friends", synchronize: false })
 export class UserFriendsEntity
   extends DefaultEntity
   implements IUserFriendsEntity {

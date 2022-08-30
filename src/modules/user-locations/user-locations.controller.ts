@@ -18,12 +18,13 @@ import {
 import { UserRolesEnum } from "../../constants/enum";
 import { GetUser, Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
+import { BlockedGuard } from "../auth/guards/blocked.guard";
 import { CreateUserLocationDto } from "./dto/create-user-location.dto";
 import { UserLocationsService } from "./user-locations.service";
 
 @Controller("secure/user-locations")
 @ApiTags("user_locations")
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, BlockedGuard)
 @ApiBearerAuth()
 @Roles(UserRolesEnum.USER)
 export class UserLocationsController {

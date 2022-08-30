@@ -1,4 +1,15 @@
-import { PartialType } from "@nestjs/swagger";
-import { CreateAdminsDto } from "./create-admins.dto";
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { IsOptional, IsString } from "class-validator";
+import { IAdminEntity } from "../interfaces";
 
-export class UpdateAdminsDto extends PartialType(CreateAdminsDto) {}
+export class UpdateAdminsDto implements IAdminEntity {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  name: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  email: string;
+}

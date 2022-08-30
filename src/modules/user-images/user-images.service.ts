@@ -6,6 +6,7 @@ import { ResponseDto } from "../../common/response.dto";
 import { responseData } from "../../common/utils";
 import {
   ERROR_CAN_NOT_FIND_IMAGE,
+  ERROR_CAN_NOT_GET_USER_IMAGES,
   ERROR_CAN_NOT_SAVE_USER_IMAGE,
   ERROR_CAN_NOT_SAVE_USER_IMAGE_IN_CLOUD,
   ERROR_EXCEED_MAX_FAVORITE_IMAGE,
@@ -15,7 +16,7 @@ import {
   ERROR_YOUR_ALBUM_IS_FULL,
 } from "../../constants/code-response.constant";
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
-import { ChangeFavoriteImageDto, UserImagesDto } from "./dto";
+import { UserImagesDto } from "./dto";
 import { UserImageEntity } from "./entities/user-images.entity";
 import { IUserImagesService } from "./interfaces/user-images-service.interface";
 import { UserImagesRepository } from "./user-images.repository";
@@ -174,7 +175,10 @@ export class UserImagesService implements IUserImagesService {
     return count;
   }
 
-  async deleteImage(userId: string, imageId: string) {
+  async deleteImage(
+    userId: string,
+    imageId: string
+  ): Promise<ResponseDto<string>> {
     const image = await this.userImagesRepository.findOne({ id: imageId });
     if (!image)
       return responseData(null, "Can not find image", ERROR_CAN_NOT_FIND_IMAGE);
@@ -202,5 +206,21 @@ export class UserImagesService implements IUserImagesService {
     } catch (error) {
       return responseData(null, "Error in delete image", ERROR_UNKNOWN);
     }
+  }
+
+  async deleteImages(userId: string) {
+    const images = await this.userImagesRepository.find({ userId: userId });
+    if (!images)
+      return responseData(
+        null,
+        "Can not get user images",
+        ERROR_CAN_NOT_GET_USER_IMAGES
+      );
+    for (let i = 0; i < images.length; i++) {
+      const res = await this.deleteImage(userId, images[i].id);
+      if (!res.status) return res;
+    }
+
+    return responseData(null, "Delete user images success.");
   }
 }

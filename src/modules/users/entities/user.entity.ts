@@ -2,6 +2,7 @@ import { AutoMap } from "@automapper/classes";
 import { IsEnum, IsNotEmpty, IsOptional } from "class-validator";
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -113,6 +114,10 @@ export class UserEntity extends DefaultEntity implements IUserEntity {
   @IsNotEmpty()
   @AutoMap()
   purposeId: string;
+
+  @DeleteDateColumn({ name: "deleted_at", type: "timestamp" })
+  @AutoMap()
+  deletedAt: Date;
 
   @ManyToOne(() => PurposeSettingEntity, (entity) => entity.id)
   @JoinColumn({
