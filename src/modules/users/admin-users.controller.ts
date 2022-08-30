@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -7,7 +8,14 @@ import {
   Query,
   UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {
+  ApiBearerAuth,
+  ApiNotAcceptableResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from "@nestjs/swagger";
 import { PageOptionsDto } from "../../common/dto";
 
 import { UserRolesEnum } from "../../constants/enum";
@@ -44,16 +52,16 @@ export class AdminUsersController {
     return this.usersService.unblockUser(id);
   }
 
-  // @Delete(":userId")
-  // @ApiOperation({ summary: "Delete user data (admin)" })
-  // @ApiOkResponse({ description: "User has been deleted." })
-  // @ApiNotAcceptableResponse({
-  // 	description: "Request is not in correct form.",
-  // })
-  // @ApiNotFoundResponse({
-  // 	description: "User id not found.",
-  // })
-  // deleteUserProfileById(@Param("userId") userId: string) {
-  // 	return this.usersService.deleteUserProfileById(userId);
-  // }
+  @Delete(":userId")
+  @ApiOperation({ summary: "Delete user data (admin)" })
+  @ApiOkResponse({ description: "User has been deleted." })
+  @ApiNotAcceptableResponse({
+    description: "Request is not in correct form.",
+  })
+  @ApiNotFoundResponse({
+    description: "User id not found.",
+  })
+  deleteUserProfileById(@Param("userId") userId: string) {
+    return this.usersService.deleteUserProfileById(userId);
+  }
 }

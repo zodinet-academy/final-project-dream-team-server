@@ -27,6 +27,7 @@ import { ResponseDto } from "../../common/response.dto";
 import { UserRolesEnum } from "../../constants/enum";
 import { GetUser, Roles } from "../auth/decorator";
 import { JwtAuthGuard, RolesGuard } from "../auth/guards";
+import { BlockedGuard } from "../auth/guards/blocked.guard";
 import {
   CreateUserHobbiesDto,
   DeleteUserHobbiesDto,
@@ -37,7 +38,7 @@ import { UsersService } from "./users.service";
 
 @Controller("secure/users")
 @ApiTags("users")
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, BlockedGuard)
 @Roles(UserRolesEnum.USER)
 @ApiBearerAuth()
 export class UsersController {

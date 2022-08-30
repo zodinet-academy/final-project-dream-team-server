@@ -1,22 +1,18 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../../users/users.service";
-import { IJwtPayloadDreamteam } from "../interfaces/jwt-payload.interface";
 
 @Injectable()
 export class BlockedGuard implements CanActivate {
-  constructor(
-    private readonly jwtService: JwtService,
-    private readonly userServices: UsersService
-  ) {}
+  constructor(private readonly userServices: UsersService) {}
 
-  async canActivate(context: ExecutionContext): Promise<any> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const splitBearer = request.rawHeaders[9].split("Bearer ");
-    const decodedJwtAccessToken = this.jwtService.decode(splitBearer[1]);
-    const praseToken = decodedJwtAccessToken as IJwtPayloadDreamteam;
-    const isBlock = await this.userServices.checkUserIsBlock(praseToken?.id);
-    if (!isBlock) return true;
-    return false;
+    if (!request.headers["authorization"]) return false;
+    const { user } = request;
+    const isBlocked = await this.checkIsBlockedUser(user.id);
+    return !isBlocked;
+  }
+  async checkIsBlockedUser(id) {
+    return await this.userServices.checkUserIsBlock(id);
   }
 }

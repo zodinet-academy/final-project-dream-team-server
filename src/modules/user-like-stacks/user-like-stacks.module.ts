@@ -14,12 +14,14 @@ import { NotificationsModule } from "./../notifications/notifications.module";
 import { UserLikeStacksController } from "./user-like-stacks.controller";
 
 import { UserLikeStacksService } from "./user-like-stacks.service";
+import { UsersModule } from "../users/users.module";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserLikeStacksRepository, UserFriendsRepository]),
     UserFriendsModule,
     CloudinaryModule,
+    UsersModule,
     NotificationsModule,
     ChatModule,
   ],

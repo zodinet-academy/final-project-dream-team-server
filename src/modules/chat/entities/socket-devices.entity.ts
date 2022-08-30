@@ -12,7 +12,7 @@ import { ISocketDevicesEntity } from "../interfaces";
 import { DefaultEntity } from "../../../common/entity";
 import { UserEntity } from "../../users/entities/user.entity";
 
-@Entity({ name: "socket_devices", synchronize: true })
+@Entity({ name: "socket_devices", synchronize: false })
 export class SocketDeviceEntity
   extends DefaultEntity
   implements ISocketDevicesEntity {
