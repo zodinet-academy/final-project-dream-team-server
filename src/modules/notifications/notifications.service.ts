@@ -9,10 +9,11 @@ import {
 import { NotificationEntity } from "./entities/notification.entity";
 
 import { ResponseDto } from "../../common/response.dto";
-import { CreateNotificationDto } from "./dto/create-notification.dto";
+import { CreateNotificationDto, UpdateNotificationDto } from "./dto";
+import { INotificationService } from "./interfaces/notification-service.interface";
 
 @Injectable()
-export class NotificationsService {
+export class NotificationsService implements INotificationService {
   constructor(
     private readonly notificationsRepository: NotificationsRepository
   ) {}
@@ -23,6 +24,20 @@ export class NotificationsService {
     try {
       const notificationEntity = await this.notificationsRepository.save(
         createNotificationDto
+      );
+
+      return responseData(notificationEntity);
+    } catch (error) {
+      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
+    }
+  }
+
+  async update(
+    updateNotificationDto: UpdateNotificationDto
+  ): Promise<ResponseDto<NotificationEntity>> {
+    try {
+      const notificationEntity = await this.notificationsRepository.save(
+        updateNotificationDto
       );
 
       return responseData(notificationEntity);
