@@ -1,10 +1,8 @@
 import { MessageEntity } from "../entities/messages.entity";
 import { ConversationEntity } from "../entities/conversations.entity";
-import { SocketDeviceEntity } from "../entities/socket-devices.entity";
 
 import { ConnectChatDto } from "../dto/connect-chat.dto";
 import { SendMessageDto } from "../dto/send-message.dto";
-import { CreateDeviceDto } from "../dto/create-device.dto";
 import { ResponseDto } from "../../../common/response.dto";
 
 import {
@@ -24,9 +22,6 @@ export interface IChatService {
   getConversationByUserId(
     friendId: string
   ): Promise<ResponseDto<IConversationMessage[] | null>>;
-  getSocketDeviceByUserId(
-    userId: string
-  ): Promise<ResponseDto<SocketDeviceEntity | null>>;
 
   createConversation(
     conversation: ConnectChatDto
@@ -34,11 +29,7 @@ export interface IChatService {
   createMessage(
     message: SendMessageDto
   ): Promise<ResponseDto<MessageEntity | null>>;
-  createSocketDevice(
-    device: CreateDeviceDto
-  ): Promise<ResponseDto<SocketDeviceEntity | null>>;
 
-  deleteSocketDevice(socketId: string): Promise<ResponseDto<boolean | null>>;
   deleteConversation(
     userId: string,
     friendId: string

@@ -8,20 +8,19 @@ import {
 } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 
-import { responseData } from "./utils";
-import { IChatGateway } from "../modules/chat/interfaces";
-import { ERROR_INTERNAL_SERVER } from "../constants/code-response.constant";
+import { responseData } from "../../common/utils";
+import { ISocketGateway } from "./interfaces/socket-gateway.interface";
+import { ERROR_INTERNAL_SERVER } from "../../constants/code-response.constant";
 
-import { ResponseDto } from "./response.dto";
-import { SendMessageDto } from "../modules/chat/dto";
+import { SendMessageDto } from "../chat/dto";
+import { ResponseDto } from "../../common/response.dto";
 
-import { ConversationEntity } from "../modules/chat/entities/conversations.entity";
-import { SocketDeviceEntity } from "../modules/chat/entities/socket-devices.entity";
-import { NotificationEntity } from "./../modules/notifications/entities/notification.entity";
+import { ConversationEntity } from "../chat/entities/conversations.entity";
+import { NotificationEntity } from "../notifications/entities/notification.entity";
 
-import { ChatService } from "../modules/chat/chat.service";
-import { CloudinaryService } from "../modules/cloudinary/cloudinary.service";
-import { NotificationsService } from "./../modules/notifications/notifications.service";
+import { ChatService } from "../chat/chat.service";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { NotificationsService } from "../notifications/notifications.service";
 
 @WebSocketGateway(3006, { cors: true })
 export class SocketGateway
@@ -29,7 +28,7 @@ export class SocketGateway
     OnGatewayInit,
     OnGatewayConnection,
     OnGatewayDisconnect,
-    IChatGateway {
+    ISocketGateway {
   @WebSocketServer() server: Server;
   constructor(
     private readonly chatService: ChatService,
@@ -43,33 +42,12 @@ export class SocketGateway
 
   // Handle Connect Chat
   async handleConnection(client: Socket) {
-    console.log("Connect Success Websocket - Port 3006");
-    const { userId } = client.handshake?.query;
-    const socketId = client.id;
-
-    try {
-      const device = await this.createDevice(userId as string, socketId);
-
-      return device;
-    } catch (error) {
-      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
-    }
+    console.log("Connect Success Websocket - Port 3006", client.id);
   }
 
   // Handle Disconnect Chat
   async handleDisconnect(client: Socket) {
-    console.log("Disconnect Success Websocket - Port 3006");
-    const { userId } = client.handshake?.query;
-
-    try {
-      const deleteSocketDevice = await this.chatService.deleteSocketDevice(
-        userId as string
-      );
-
-      return deleteSocketDevice;
-    } catch (error) {
-      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
-    }
+    console.log("Disconnect Success Websocket - Port 3006", client.id);
   }
 
   // Handle Send & Receive Message
@@ -77,7 +55,7 @@ export class SocketGateway
   async messages(client: Socket, payload: SendMessageDto) {
     try {
       const messageEntity = payload;
-      console.log("payload", payload, client.id, new Date());
+      const isGetConversation = payload.conversationId === "" ? true : false;
 
       if (!payload.conversationId) {
         const conversation = await this.createConversation(
@@ -92,9 +70,6 @@ export class SocketGateway
 
       if (messageEntity.conversationId) {
         const message = await this.chatService.createMessage(messageEntity);
-        const device = await this.chatService.getSocketDeviceByUserId(
-          payload.friendId
-        );
 
         if (message.status) {
           if (message.data.image) {
@@ -106,12 +81,22 @@ export class SocketGateway
           }
 
           const emit = this.server;
-          emit.to(client.id).emit("message-received", message.data);
+          emit.emit(`message-received-${payload.senderId}`, message.data);
+          emit.emit(`message-received-${payload.friendId}`, message.data);
+          emit.emit(`message-notification-${payload.friendId}`, message.data);
 
-          if (device.status) {
-            emit
-              .to(device.data.socketId)
-              .emit("message-received", message.data);
+          if (isGetConversation) {
+            emit.emit(`conversation-received-${payload.senderId}`, null);
+            emit.emit(`conversation-received-${payload.friendId}`, null);
+          } else {
+            emit.emit(
+              `conversation-received-${payload.senderId}`,
+              message.data
+            );
+            emit.emit(
+              `conversation-received-${payload.friendId}`,
+              message.data
+            );
           }
         }
       }
@@ -121,14 +106,10 @@ export class SocketGateway
   }
 
   // Handle Send Notification
-  async sendnotifications(userId: string, notification: NotificationEntity) {
+  async sendNotifications(userId: string, notification: NotificationEntity) {
     try {
-      const device = await this.chatService.getSocketDeviceByUserId(userId);
-
-      if (device.status) {
-        const emit = this.server;
-        emit.emit(`notification-received-${userId}`, notification);
-      }
+      const emit = this.server;
+      emit.emit(`notification-received-${userId}`, notification);
     } catch (error) {
       return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }
@@ -159,25 +140,6 @@ export class SocketGateway
       }
 
       return conversation;
-    } catch (error) {
-      return responseData(null, error.message, ERROR_INTERNAL_SERVER);
-    }
-  }
-
-  // Handle Create New Socket Device When Connect
-  async createDevice(
-    userId: string,
-    socketId: string
-  ): Promise<ResponseDto<SocketDeviceEntity | boolean | null>> {
-    try {
-      const deviceEntity = {
-        userId,
-        socketId,
-      };
-
-      const device = await this.chatService.createSocketDevice(deviceEntity);
-
-      return device;
     } catch (error) {
       return responseData(null, error.message, ERROR_INTERNAL_SERVER);
     }

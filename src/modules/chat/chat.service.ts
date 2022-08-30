@@ -1,10 +1,6 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 
-import {
-  ConversationRepository,
-  MessageRepository,
-  SocketDeviceRepository,
-} from "./chat.repository";
+import { ConversationRepository, MessageRepository } from "./chat.repository";
 
 import { responseData } from "../../common/utils";
 import {
@@ -15,10 +11,9 @@ import {
 
 import { MessageEntity } from "./entities/messages.entity";
 import { ConversationEntity } from "./entities/conversations.entity";
-import { SocketDeviceEntity } from "./entities/socket-devices.entity";
 
+import { ConnectChatDto, SendMessageDto } from "./dto";
 import { ResponseDto } from "../../common/response.dto";
-import { ConnectChatDto, SendMessageDto, CreateDeviceDto } from "./dto";
 
 import {
   IChatService,
@@ -33,7 +28,6 @@ export class ChatService implements IChatService {
   constructor(
     private readonly conversationRepository: ConversationRepository,
     private readonly messageRepository: MessageRepository,
-    private readonly socketDeviceRepository: SocketDeviceRepository,
     private readonly cloudinaryService: CloudinaryService
   ) {}
 
@@ -131,28 +125,6 @@ export class ChatService implements IChatService {
     }
   }
 
-  async getSocketDeviceByUserId(
-    userId: string
-  ): Promise<ResponseDto<SocketDeviceEntity | null>> {
-    try {
-      const socketDeviceEntity = await this.socketDeviceRepository.findOne({
-        userId,
-      });
-
-      if (socketDeviceEntity) {
-        return responseData(socketDeviceEntity);
-      }
-
-      return responseData(
-        null,
-        "Not Found Socket Device",
-        ERROR_DATA_NOT_FOUND
-      );
-    } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
-    }
-  }
-
   async createConversation(
     conversation: ConnectChatDto
   ): Promise<ResponseDto<ConversationEntity | null>> {
@@ -207,45 +179,6 @@ export class ChatService implements IChatService {
         null,
         "Create Message Failed",
         HttpStatus.BAD_REQUEST
-      );
-    } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
-    }
-  }
-
-  async createSocketDevice(
-    device: CreateDeviceDto
-  ): Promise<ResponseDto<SocketDeviceEntity | null>> {
-    try {
-      const isDelete = await this.deleteSocketDevice(device.userId);
-      const deviceEntity = await this.socketDeviceRepository.save(device);
-
-      if (deviceEntity) {
-        return responseData(deviceEntity);
-      }
-
-      return responseData(null, "Created Device Failed", ERROR_INTERNAL_SERVER);
-    } catch (error) {
-      return responseData(null, error.message, ERROR_UNKNOWN);
-    }
-  }
-
-  async deleteSocketDevice(
-    userId: string
-  ): Promise<ResponseDto<boolean | null>> {
-    try {
-      const device = await this.socketDeviceRepository.delete({
-        userId,
-      });
-
-      if (device.affected > 0) {
-        return responseData(true, "Delete Socket Device Success");
-      }
-
-      return responseData(
-        false,
-        "Delete Socket Device Failed",
-        ERROR_INTERNAL_SERVER
       );
     } catch (error) {
       return responseData(null, error.message, ERROR_UNKNOWN);

@@ -2,7 +2,8 @@ import { Connection } from "typeorm";
 import { Injectable } from "@nestjs/common";
 
 import { responseData } from "../../common/utils";
-import { SocketGateway } from "./../../common/socket.gateway";
+import { NotificationEnum } from "../../constants/enum";
+import { SocketGateway } from "../socket/socket.gateway";
 import {
   ERROR_UNKNOWN,
   SOMEONE_LIKE_YOU,
@@ -18,7 +19,6 @@ import { DeleteUserLikeStackDto } from "./dto/delete-user-like-stacks.dto";
 
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
 import { NotificationsService } from "../notifications/notifications.service";
-import { NotificationEnum } from "../../constants/enum";
 
 @Injectable()
 export class UserLikeStacksService {
@@ -45,11 +45,14 @@ export class UserLikeStacksService {
       const notification = await this.notificationService.create({
         type: NotificationEnum.LIKE,
         message: SOMEONE_LIKE_YOU,
-        receiverId: fromUserId,
+        receiverId: createUserLikeStackDto.toUserId,
       });
 
       if (notification.status) {
-        this.socketGateway.sendnotifications(fromUserId, notification.data);
+        this.socketGateway.sendNotifications(
+          createUserLikeStackDto.toUserId,
+          notification.data
+        );
       }
 
       return responseData(result);
@@ -88,16 +91,29 @@ export class UserLikeStacksService {
               friendId: userLikeStacks[i].toUserId,
             });
 
-            const notification = await this.notificationService.create({
+            const notificationUser = await this.notificationService.create({
               type: NotificationEnum.MATCH,
               message: MATCH_YOU,
               receiverId: userLikeStacks[i].toUserId,
             });
 
-            if (notification.status) {
-              this.socketGateway.sendnotifications(
+            if (notificationUser.status) {
+              this.socketGateway.sendNotifications(
                 userLikeStacks[i].toUserId,
-                notification.data
+                notificationUser.data
+              );
+            }
+
+            const notificationFriend = await this.notificationService.create({
+              type: NotificationEnum.MATCH,
+              message: MATCH_YOU,
+              receiverId: userLikeStacks[i].fromUserId,
+            });
+
+            if (notificationUser.status) {
+              this.socketGateway.sendNotifications(
+                userLikeStacks[i].fromUserId,
+                notificationFriend.data
               );
             }
 
