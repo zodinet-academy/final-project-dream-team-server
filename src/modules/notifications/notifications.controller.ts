@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Put, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth } from "@nestjs/swagger";
 
 import { GetUser } from "../auth/decorator";
 import { JwtAuthGuard } from "../auth/guards";
 import { BlockedGuard } from "../auth/guards/blocked.guard";
-import { CreateNotificationDto } from "./dto";
+import { CreateNotificationDto, UpdateNotificationDto } from "./dto";
 
 import { NotificationsService } from "./notifications.service";
 
@@ -22,5 +22,10 @@ export class NotificationsController {
   @Post()
   create(@Body() createNotificationDto: CreateNotificationDto) {
     return this.notificationsService.create(createNotificationDto);
+  }
+
+  @Put()
+  update(@Body() updateNotificationDto: UpdateNotificationDto) {
+    return this.notificationsService.update(updateNotificationDto);
   }
 }

@@ -5,6 +5,7 @@ export interface IConversationMessage {
   avatar: string;
   content: string;
   createAt: Date;
+  senderId: string;
 }
 
 export interface IMessage {
