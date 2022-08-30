@@ -11,10 +11,10 @@ import { SettingsService } from "./settings.service";
 @ApiTags("settings")
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
-// @Roles(UserRolesEnum.ADMIN)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
+  @Roles(UserRolesEnum.ADMIN)
   @Post()
   createSetting(@Body() createSettingDto: CreateSettingDto) {
     return this.settingsService.createSetting(createSettingDto);
@@ -25,6 +25,7 @@ export class SettingsController {
     return this.settingsService.findSetting();
   }
 
+  @Roles(UserRolesEnum.ADMIN)
   @Put()
   update(@Body() updateSettingDto: UpdateSettingDto) {
     return this.settingsService.updateSetting(updateSettingDto);

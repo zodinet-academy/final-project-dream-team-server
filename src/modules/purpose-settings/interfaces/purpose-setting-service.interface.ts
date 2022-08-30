@@ -6,8 +6,9 @@ import { PurposeSettingEntity } from "../entities/purpose-setting.entity";
 
 export interface IPurposeSettingsService {
   create(
-    createPurposeSettingDto: CreatePurposeSettingDto
-  ): Promise<ResponseDto<PurposeSettingEntity | string>>;
+    createPurposeSettingDto: CreatePurposeSettingDto,
+    file: Express.Multer.File
+  ): Promise<ResponseDto<ResponsePurposeSettingDto | string>>;
 
   findAll(): Promise<ResponseDto<ResponsePurposeSettingDto[] | string>>;
   findOne(
@@ -15,7 +16,8 @@ export interface IPurposeSettingsService {
   ): Promise<ResponseDto<PurposeSettingEntity | undefined | string>>;
   update(
     id: string,
-    updatePurposeSettingDto: UpdatePurposeSettingDto
+    updatePurposeSettingDto: UpdatePurposeSettingDto,
+    file: Express.Multer.File
   ): Promise<ResponseDto<PurposeSettingEntity | string>>;
   remove(id: string): Promise<ResponseDto<string>>;
 }

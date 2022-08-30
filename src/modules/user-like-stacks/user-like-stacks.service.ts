@@ -2,6 +2,8 @@ import { Connection } from "typeorm";
 import { Injectable } from "@nestjs/common";
 
 import { responseData } from "../../common/utils";
+import { NotificationEnum } from "../../constants/enum";
+import { SocketGateway } from "../socket/socket.gateway";
 import { ERROR_UNKNOWN } from "../../constants/code-response.constant";
 import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
 
@@ -12,14 +14,17 @@ import { CreateUserLikeStackDto } from "./dto/create-user-like-stack.dto";
 import { DeleteUserLikeStackDto } from "./dto/delete-user-like-stacks.dto";
 
 import { CloudinaryService } from "../cloudinary/cloudinary.service";
+import { NotificationsService } from "../notifications/notifications.service";
 
 @Injectable()
 export class UserLikeStacksService {
   constructor(
     private readonly connection: Connection,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly notificationService: NotificationsService,
     private readonly userFriendsRepository: UserFriendsRepository,
-    private readonly userLikeStacksRepository: UserLikeStacksRepository
+    private readonly userLikeStacksRepository: UserLikeStacksRepository,
+    private readonly socketGateway: SocketGateway
   ) {}
   async create(
     fromUserId: string,
@@ -32,6 +37,19 @@ export class UserLikeStacksService {
           ...createUserLikeStackDto,
         })
       );
+
+      const notification = await this.notificationService.create({
+        type: NotificationEnum.LIKE,
+        message: "",
+        receiverId: createUserLikeStackDto.toUserId,
+      });
+
+      if (notification.status) {
+        this.socketGateway.sendNotifications(
+          createUserLikeStackDto.toUserId,
+          notification.data
+        );
+      }
 
       return responseData(result);
     } catch (error) {
@@ -54,13 +72,13 @@ export class UserLikeStacksService {
 
   async matchFriends() {
     try {
-      const userLikeStacks = await this.userLikeStacksRepository.find();
+      const userLikeStacks = await this.userLikeStacksRepository.getProfileMatching();
+
       const matchings = [],
         idUserLikeStacks = [];
       for (let i = 0; i < userLikeStacks.length - 1; i++) {
         for (let j = i + 1; j < userLikeStacks.length; j++) {
           if (
-            userLikeStacks[i].isFriend === false &&
             userLikeStacks[i]?.fromUserId === userLikeStacks[j]?.toUserId &&
             userLikeStacks[j]?.fromUserId === userLikeStacks[i]?.toUserId
           ) {
@@ -68,10 +86,35 @@ export class UserLikeStacksService {
               userId: userLikeStacks[i].fromUserId,
               friendId: userLikeStacks[i].toUserId,
             });
+
+            const notificationUser = await this.notificationService.create({
+              type: NotificationEnum.MATCH,
+              message: userLikeStacks[i].friendName,
+              receiverId: userLikeStacks[i].fromUserId,
+            });
+
+            const notificationFriend = await this.notificationService.create({
+              type: NotificationEnum.MATCH,
+              message: userLikeStacks[j].friendName,
+              receiverId: userLikeStacks[i].toUserId,
+            });
+
+            if (notificationUser.status && notificationFriend.status) {
+              this.socketGateway.sendNotifications(
+                userLikeStacks[i].fromUserId,
+                notificationUser.data
+              );
+              this.socketGateway.sendNotifications(
+                userLikeStacks[i].toUserId,
+                notificationFriend.data
+              );
+            }
+
             idUserLikeStacks.push(userLikeStacks[i].id, userLikeStacks[j].id);
           }
         }
       }
+
       if (matchings && idUserLikeStacks) {
         try {
           const queryRunner = this.connection.createQueryRunner();
@@ -113,7 +156,7 @@ export class UserLikeStacksService {
       const result = await this.userLikeStacksRepository.getMatchingFriends(id);
       result.map(async (el) => {
         el.friend.avatar = await this.cloudinaryService.getImageUrl(
-          el.friend.avatar
+          el.friend?.avatar
         );
 
         return el;

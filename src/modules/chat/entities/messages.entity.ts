@@ -7,7 +7,7 @@ import { DefaultEntity } from "../../../common/entity";
 import { ConversationEntity } from "./conversations.entity";
 import { UserEntity } from "./../../users/entities/user.entity";
 
-@Entity({ name: "messages", synchronize: true })
+@Entity({ name: "messages", synchronize: false })
 export class MessageEntity extends DefaultEntity implements IMessageEntity {
   @Column({ name: "sender_id", type: "uuid" })
   @IsNotEmpty()

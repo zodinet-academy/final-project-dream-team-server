@@ -1,9 +1,7 @@
 import { HttpModule, Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { RateLimiterModule, RateLimiterGuard } from "nestjs-rate-limiter";
 import { SocialGuard } from "../auth/guards/social.guard";
 import { JwtStrategy } from "../auth/strategies";
 import { PhoneOtpModule } from "../phone-otp/phone-otp.module";

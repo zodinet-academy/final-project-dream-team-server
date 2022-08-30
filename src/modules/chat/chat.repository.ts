@@ -2,7 +2,6 @@ import { EntityRepository, Repository } from "typeorm";
 
 import { MessageEntity } from "./entities/messages.entity";
 import { ConversationEntity } from "./entities/conversations.entity";
-import { SocketDeviceEntity } from "./entities/socket-devices.entity";
 
 import { IConversationMessage, IMessage, IChatRepository } from "./interfaces";
 
@@ -14,8 +13,8 @@ export class ConversationRepository
     userId: string
   ): Promise<IConversationMessage[]> {
     const conversationFriends = await this.createQueryBuilder("C")
-      .leftJoinAndSelect("C.friend", "friend")
-      .leftJoinAndSelect("C.messages", "messages")
+      .innerJoinAndSelect("C.friend", "friend")
+      .innerJoinAndSelect("C.messages", "messages")
       .andWhere(`C.user_id = '${userId}'`)
       .select([
         `C.id as "conversationId", C.friend_id as "friendId", friend.name as name, friend.avatar as avatar, messages.content as content, messages.created_at as "createAt"`,
@@ -25,8 +24,8 @@ export class ConversationRepository
       .getRawMany<IConversationMessage>();
 
     const conversationUsers = await this.createQueryBuilder("C")
-      .leftJoinAndSelect("C.user", "user")
-      .leftJoinAndSelect("C.messages", "messages")
+      .innerJoinAndSelect("C.user", "user")
+      .innerJoinAndSelect("C.messages", "messages")
       .andWhere(`C.friend_id = '${userId}'`)
       .select([
         `C.id as "conversationId", C.user_id as "friendId", user.name as name, user.avatar as avatar, messages.content as content, messages.created_at as "createAt"`,
@@ -43,7 +42,7 @@ export class ConversationRepository
   ): Promise<IMessage[]> {
     const messages = await this.createQueryBuilder("C")
       .andWhere(`C.id = '${conversationId}'`)
-      .leftJoinAndSelect("C.messages", "messages")
+      .innerJoinAndSelect("C.messages", "messages")
       .select([
         `messages.id as "messageId", messages.sender_id as "senderId", messages.content as content, messages.image as image, messages.created_at as "createAt"`,
       ])
@@ -60,6 +59,3 @@ export class ConversationRepository
 
 @EntityRepository(MessageEntity)
 export class MessageRepository extends Repository<MessageEntity> {}
-
-@EntityRepository(SocketDeviceEntity)
-export class SocketDeviceRepository extends Repository<SocketDeviceEntity> {}

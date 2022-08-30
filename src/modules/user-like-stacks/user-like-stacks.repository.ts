@@ -18,4 +18,26 @@ export class UserLikeStacksRepository extends Repository<UserLikeStackEntity> {
       throw new Error(error.message);
     }
   }
+
+  async getProfileMatching() {
+    try {
+      const query = this.createQueryBuilder("u")
+        .select([
+          `f.name AS "friendName"`,
+          `u.is_friend AS "isFriend"`,
+          `u.from_user_id AS "fromUserId"`,
+          `u.to_user_id AS "toUserId"`,
+          `u.is_friend AS "isFriend"`,
+          `u.id as id`,
+        ])
+        .leftJoin("u.friend", "f")
+        .where(`u.is_friend = false`);
+
+      const result = await query.getRawMany();
+      return result;
+    } catch (error) {
+      console.log(error.message);
+      throw new Error(error.message);
+    }
+  }
 }

@@ -11,7 +11,7 @@ import {
 import { UserEntity } from "../../users/entities/user.entity";
 import { AutoMap } from "@automapper/classes";
 
-@Entity({ name: "user_like_stacks", synchronize: true })
+@Entity({ name: "user_like_stacks", synchronize: false })
 export class UserLikeStackEntity
   extends DefaultEntity
   implements IUserLikeStackEntity {

@@ -5,9 +5,14 @@ import { ResponseDto } from "../../../common/response.dto";
 import { SocialDTO } from "../../auth/dto/social-login.dto";
 import { UpdateUserDto, UserProfileDto, VerifyUserDto } from "../dto";
 import { UserResponeDTO } from "../dto/user-respone.dto";
+import { UserResponseAdminDto } from "../dto/user-response-admin.dto";
+import { PageOptionsDto } from "../../../common/dto";
+import { IResponsePagination } from "../../../common/interfaces/page-meta-dto-parameters.interface";
 
 export interface IUserService {
-  getAllUser(): Promise<ResponseDto<UserResponeDTO[]>>;
+  getAllUser(
+    pageOptionsDto: PageOptionsDto
+  ): Promise<ResponseDto<IResponsePagination | string>>;
   getPublicById(
     userId: string
   ): Promise<ResponseDto<ResponsePublicUserInterface | null>>;

@@ -7,6 +7,8 @@ import { Module } from "@nestjs/common";
 import { UserLocationsService } from "./user-locations.service";
 import { UserLocationsController } from "./user-locations.controller";
 import { UserLocationsRepository } from "./user-locations.repository";
+import { UsersModule } from "../users/users.module";
+import { UserFriendsModule } from "../user-friends/user-friends.module";
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { UserLocationsRepository } from "./user-locations.repository";
     CloudinaryModule,
     UserBlocksModule,
     UserLikeStacksModule,
+    UsersModule,
+    UserFriendsModule,
   ],
   controllers: [UserLocationsController],
   providers: [UserLocationsService],

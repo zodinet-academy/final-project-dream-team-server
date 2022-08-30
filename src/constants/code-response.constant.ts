@@ -2,6 +2,7 @@
 export const CHECK_PHONE_GET_OTP = "check_phone_get_otp";
 export const DATA_DELETED = "data_deleted";
 export const SOMEONE_LIKE_YOU = "someone_like_you";
+export const MATCH_YOU = "match_you";
 
 // ------------------ ERROR --------------------------
 export const ERROR_USER_EXISTED = "error_user_existed";
@@ -30,3 +31,8 @@ export const ERROR_USER_NOT_MATCH_WITH_IMAGE = "user_not_match_with_image";
 export const ERROR_EXCEED_MAX_FAVORITE_IMAGE = "exceed_max_favorite_image";
 export const ERROR_IN_DELETE_IMAGE_CLOUD = "error_in_delete_image_cloud";
 export const ERROR_YOUR_ALBUM_IS_FULL = "your_album_is_full";
+export const ERROR_EMAIL_CONFLICT = "ERROR_EMAIL_CONFLICT";
+export const ERROR_USER_NOT_EXIST = "ERROR_USER_NOT_EXIST";
+export const ERROR_CAN_NOT_GET_USER_IMAGES = "can_not_get_user_images";
+export const ERROR_CAN_NOT_BLOCK_WHEN_IS_NOT_VERIFIED =
+  "can_not_block_when_is _not_verified";
