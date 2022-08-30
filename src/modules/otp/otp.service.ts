@@ -65,9 +65,9 @@ export class OtpService implements IOtpService {
         "SEND_OTP_ERROR"
       ) as ResponseDto<string>;
 
-    if (process.env.NODE_ENV === "local") {
-      return responseData("Please fill otp default") as ResponseDto<string>;
-    }
+    // if (process.env.NODE_ENV === "local") {
+    //   return responseData("Please fill otp default") as ResponseDto<string>;
+    // }
 
     const serviceSid = this.configService.get(
       "TWILIO_VERIFICATION_SERVICE_SID"
@@ -106,56 +106,56 @@ export class OtpService implements IOtpService {
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
-    if (process.env.NODE_ENV === "local") {
-      if (process.env.OTP_DEFAULT === code) {
-        const isExistWithPhone = await this.userExistedByPhone(
-          "0" + phone.nationalNumber
-        );
+    // if (process.env.NODE_ENV === "local") {
+    //   if (process.env.OTP_DEFAULT === code) {
+    //     const isExistWithPhone = await this.userExistedByPhone(
+    //       "0" + phone.nationalNumber
+    //     );
 
-        // If DB Have User Return Token
-        if (isExistWithPhone?.name) {
-          const payLoad: IJwtPayloadDreamteam = {
-            id: isExistWithPhone.id,
-            role: UserRolesEnum.USER,
-            phone: isExistWithPhone.phone,
-            isBlock: isExistWithPhone.isBlock,
-          };
+    //     // If DB Have User Return Token
+    //     if (isExistWithPhone?.name) {
+    //       const payLoad: IJwtPayloadDreamteam = {
+    //         id: isExistWithPhone.id,
+    //         role: UserRolesEnum.USER,
+    //         phone: isExistWithPhone.phone,
+    //         isBlock: isExistWithPhone.isBlock,
+    //       };
 
-          const token = this.jwtService.sign(payLoad);
-          return responseData(token, "Verify OTP success");
-        }
-        if (isExistWithPhone && isExistWithPhone.isVerify) {
-          return responseData(null, "Verify OTP success");
-        }
+    //       const token = this.jwtService.sign(payLoad);
+    //       return responseData(token, "Verify OTP success");
+    //     }
+    //     if (isExistWithPhone && isExistWithPhone.isVerify) {
+    //       return responseData(null, "Verify OTP success");
+    //     }
 
-        await this.usersRepository.save({
-          phone: "0" + phone.nationalNumber,
-          isVerify: true,
-        });
-        return responseData(null, "Verify OTP success");
-      }
+    //     await this.usersRepository.save({
+    //       phone: "0" + phone.nationalNumber,
+    //       isVerify: true,
+    //     });
+    //     return responseData(null, "Verify OTP success");
+    //   }
 
-      const timesLimit = this.configService.get("TIME_LIMIT");
-      const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
-        "0" + phone.nationalNumber
-      );
+    //   const timesLimit = this.configService.get("TIME_LIMIT");
+    //   const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
+    //     "0" + phone.nationalNumber
+    //   );
 
-      if (countTimesWrongOtp + 1 >= timesLimit) {
-        return responseData(
-          null,
-          "EXCEED_TIMES_WRONG_OTP",
-          "EXCEED_TIMES_WRONG_OTP"
-        );
-      }
+    //   if (countTimesWrongOtp + 1 >= timesLimit) {
+    //     return responseData(
+    //       null,
+    //       "EXCEED_TIMES_WRONG_OTP",
+    //       "EXCEED_TIMES_WRONG_OTP"
+    //     );
+    //   }
 
-      await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
+    //   await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
 
-      return responseData(
-        null,
-        "OTP_NOT_VALID",
-        "OTP_NOT_VALID"
-      ) as ResponseDto<string>;
-    }
+    //   return responseData(
+    //     null,
+    //     "OTP_NOT_VALID",
+    //     "OTP_NOT_VALID"
+    //   ) as ResponseDto<string>;
+    // }
     const serviceSid = this.configService.get(
       "TWILIO_VERIFICATION_SERVICE_SID"
     );
@@ -239,67 +239,67 @@ export class OtpService implements IOtpService {
 
     const phone = parsePhoneNumber(phoneNumber, "VN");
 
-    if (process.env.NODE_ENV === "local") {
-      if (process.env.OTP_DEFAULT === code) {
-        const isExistWithPhone = await this.userExistedByPhone(
-          "0" + phone.nationalNumber
-        );
-        if (isExistWithPhone) {
-          if (isExistWithPhone?.email !== email) {
-            return responseData(
-              null,
-              "THIS_PHONE_NUMBER_IS_EXISTED",
-              "THIS_PHONE_NUMBER_IS_EXISTED"
-            );
-          }
-        }
-        const userExistedByEmail = await this.userExistedByEmail(email);
-        if (!userExistedByEmail) {
-          return responseData(null, null, ERROR_DATA_NOT_FOUND);
-        }
-        const payLoad: IJwtPayloadDreamteam = {
-          id: userExistedByEmail.id,
-          role: UserRolesEnum.USER,
-          phone: userExistedByEmail.phone,
-          isBlock: userExistedByEmail.isBlock,
-        };
-        const token = this.jwtService.sign(payLoad);
-        if (isExistWithPhone?.email === email) {
-          return responseData(token, "Verify OTP success");
-        }
+    // if (process.env.NODE_ENV === "local") {
+    //   if (process.env.OTP_DEFAULT === code) {
+    //     const isExistWithPhone = await this.userExistedByPhone(
+    //       "0" + phone.nationalNumber
+    //     );
+    //     if (isExistWithPhone) {
+    //       if (isExistWithPhone?.email !== email) {
+    //         return responseData(
+    //           null,
+    //           "THIS_PHONE_NUMBER_IS_EXISTED",
+    //           "THIS_PHONE_NUMBER_IS_EXISTED"
+    //         );
+    //       }
+    //     }
+    //     const userExistedByEmail = await this.userExistedByEmail(email);
+    //     if (!userExistedByEmail) {
+    //       return responseData(null, null, ERROR_DATA_NOT_FOUND);
+    //     }
+    //     const payLoad: IJwtPayloadDreamteam = {
+    //       id: userExistedByEmail.id,
+    //       role: UserRolesEnum.USER,
+    //       phone: userExistedByEmail.phone,
+    //       isBlock: userExistedByEmail.isBlock,
+    //     };
+    //     const token = this.jwtService.sign(payLoad);
+    //     if (isExistWithPhone?.email === email) {
+    //       return responseData(token, "Verify OTP success");
+    //     }
 
-        if (!userExistedByEmail?.isVerify) {
-          await this.usersRepository.save({
-            ...userExistedByEmail,
-            phone: "0" + phone.nationalNumber,
-            isVerify: true,
-          });
+    //     if (!userExistedByEmail?.isVerify) {
+    //       await this.usersRepository.save({
+    //         ...userExistedByEmail,
+    //         phone: "0" + phone.nationalNumber,
+    //         isVerify: true,
+    //       });
 
-          return responseData(token, "Verify OTP success");
-        }
-      }
+    //       return responseData(token, "Verify OTP success");
+    //     }
+    //   }
 
-      const timesLimit = this.configService.get("TIME_LIMIT");
-      const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
-        "0" + phone.nationalNumber
-      );
+    //   const timesLimit = this.configService.get("TIME_LIMIT");
+    //   const countTimesWrongOtp = await this.phoneOtpService.numberOfWrongOtp(
+    //     "0" + phone.nationalNumber
+    //   );
 
-      if (countTimesWrongOtp + 1 >= timesLimit) {
-        return responseData(
-          null,
-          "EXCEED_TIMES_WRONG_OTP",
-          "EXCEED_TIMES_WRONG_OTP"
-        );
-      }
+    //   if (countTimesWrongOtp + 1 >= timesLimit) {
+    //     return responseData(
+    //       null,
+    //       "EXCEED_TIMES_WRONG_OTP",
+    //       "EXCEED_TIMES_WRONG_OTP"
+    //     );
+    //   }
 
-      await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
+    //   await this.phoneOtpService.addOneTimeWrongOtp("0" + phone.nationalNumber);
 
-      return responseData(
-        null,
-        "OTP_NOT_VALID",
-        "OTP_NOT_VALID"
-      ) as ResponseDto<string>;
-    }
+    //   return responseData(
+    //     null,
+    //     "OTP_NOT_VALID",
+    //     "OTP_NOT_VALID"
+    //   ) as ResponseDto<string>;
+    // }
     const serviceSid = this.configService.get(
       "TWILIO_VERIFICATION_SERVICE_SID"
     );

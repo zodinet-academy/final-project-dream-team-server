@@ -4,10 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { responseData } from "../../common/utils";
 import { NotificationEnum } from "../../constants/enum";
 import { SocketGateway } from "../socket/socket.gateway";
-import {
-  ERROR_UNKNOWN,
-  SOMEONE_LIKE_YOU,
-} from "../../constants/code-response.constant";
+import { ERROR_UNKNOWN } from "../../constants/code-response.constant";
 import { UserLikeStackEntity } from "./entities/user-like-stack.entity";
 
 import { UserLikeStacksRepository } from "./user-like-stacks.repository";
@@ -43,7 +40,7 @@ export class UserLikeStacksService {
 
       const notification = await this.notificationService.create({
         type: NotificationEnum.LIKE,
-        message: SOMEONE_LIKE_YOU,
+        message: "",
         receiverId: createUserLikeStackDto.toUserId,
       });
 
