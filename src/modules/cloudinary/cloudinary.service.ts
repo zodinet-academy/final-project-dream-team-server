@@ -34,7 +34,7 @@ export class CloudinaryService implements ICloudinaryService {
       return url;
     }
 
-    return "";
+    return "https://cpad.ask.fm/868/263/174/-79996965-206ftsc-cbcii2enl13de50/large/image.jpg";
   }
 
   deleteImage(pulbicId: string): boolean {
